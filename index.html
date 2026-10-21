@@ -3,38 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnswerDesk – Verified 24/7 Expert Consultation &amp; On-Demand Diagnostics</title>
-    <meta name="description" content="Connect 1-on-1 with independently verified specialists 24/7. Instant diagnostic triage for tech, automotive, appliances, and home. Pay only after verified solution.">
+    <title>AnswerDesk – 24/7 Verified Expert Answers & On-Demand Support</title>
+    <meta name="description" content="Connect with verified professionals in under 2 minutes. On-demand expert solutions for Tech, Legal, Medical, Automotive, and more. Pay only after solution.">
     <link rel="canonical" href="http://localhost:3000/">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><path d='M8 6C8 4.9 8.9 4 10 4H30C31.1 4 32 4.9 32 6V28C32 29.1 31.1 30 30 30H22L16 36V30H10C8.9 30 8 29.1 8 28V6Z' fill='%23278b7d'/><path d='M14 14L19 19L26 12' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg>" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="index.css?v=20261021_v4">
+    <link rel="stylesheet" href="home.css?v=20261021_v4">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#123e35">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="http://localhost:3000/support.html">
+    <meta property="og:url" content="http://localhost:3000/">
     <meta property="og:site_name" content="AnswerDesk">
-    <meta property="og:title" content="AnswerDesk Support – Live Expert Assistance & Technical Help 24/7">
-    <meta property="og:description" content="Get live technical support and on-demand problem solving from verified specialists. Real-time diagnosis for Windows, Mac, mobile, automotive, and more.">
+    <meta property="og:title" content="AnswerDesk – 24/7 Verified Expert Answers & On-Demand Support">
+    <meta property="og:description" content="Connect with verified professionals in under 2 minutes. On-demand expert solutions for Tech, Legal, Medical, Automotive, and more. Pay only after solution.">
     <meta property="og:image" content="http://localhost:3000/assets/cta-expert-pro.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="http://localhost:3000/support.html">
-    <meta name="twitter:title" content="AnswerDesk Support – Live Expert Assistance & Technical Help 24/7">
-    <meta name="twitter:description" content="Get live technical support and on-demand problem solving from verified specialists. Real-time diagnosis for Windows, Mac, mobile, automotive, and more.">
+    <meta name="twitter:url" content="http://localhost:3000/">
+    <meta name="twitter:title" content="AnswerDesk – 24/7 Verified Expert Answers & On-Demand Support">
+    <meta name="twitter:description" content="Connect with verified professionals in under 2 minutes. On-demand expert solutions for Tech, Legal, Medical, Automotive, and more. Pay only after solution.">
     <meta name="twitter:image" content="http://localhost:3000/assets/cta-expert-pro.png">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "AnswerDesk",
-      "url": "http://localhost:3000/",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "http://localhost:3000/articles.html?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "http://localhost:3000/#website",
+          "url": "http://localhost:3000/",
+          "name": "AnswerDesk",
+          "description": "On-demand expert consultation and technical support platform.",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "http://localhost:3000/support.html?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "ProfessionalService",
+          "@id": "http://localhost:3000/#organization",
+          "name": "AnswerDesk",
+          "url": "http://localhost:3000/",
+          "logo": "http://localhost:3000/assets/guarantees/vetting.png",
+          "image": "http://localhost:3000/assets/cta-expert-pro.png",
+          "description": "24/7 on-demand expert consultation platform connecting consumers with verified specialists in Tech, Legal, Medical, Automotive, and more.",
+          "priceRange": "$$",
+          "openingHours": "Mo-Su 00:00-24:00",
+          "telephone": "+1-800-ANSWERDESK",
+          "areaServed": "Global",
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "bestRating": "5",
+            "reviewCount": "12480"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "http://localhost:3000/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How quickly can I connect with an expert on AnswerDesk?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "You can connect with a verified professional in under 2 minutes, 24 hours a day, 7 days a week, with no appointments or waiting rooms."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How does the 'Pay After Solution' guarantee work?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "AnswerDesk operates on a solution-first guarantee: you only pay after your problem has been diagnosed and resolved to your satisfaction."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How are AnswerDesk experts vetted?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "All professionals undergo a multi-stage vetting process including credential verification, rigorous domain knowledge assessments, and ongoing customer feedback monitoring."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is my data and conversation private?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, AnswerDesk adheres to strict zero-data-sharing principles, end-to-end encryption, and full GDPR and CCPA compliance."
+              }
+            }
+          ]
+        }
+      ]
     }
     </script>
 </head>
@@ -42,8 +108,8 @@
     <!-- ===== TOP BAR ===== -->
     <div class="top-bar">
         <div class="top-bar-inner">
-            <span>Independent 24/7 Expert Consultation Platform &bull; Not affiliated with third-party brands</span>
-            <span>Verified Experts Available 24/7 &bull; Pay Only After Solution</span>
+            <span>Independent 24/7 Expert Consultation Platform • Not affiliated with third-party brands</span>
+            <span>Verified Experts Available 24/7 • Pay Only After Solution</span>
         </div>
     </div>
 
@@ -69,194 +135,36 @@
         </div>
     </header>
 
-    <!-- ===== HERO SECTION ===== -->
+    <!-- ===== HERO SECTION WITH VIDEO ===== -->
     <section class="hero" id="hero">
-        <div class="hero-bg-image"></div>
-        <div class="hero-overlay"></div>
-
-        <div class="hero-inner">
-            <!-- Left Pane -->
-            <div class="hero-left">
-                <h1 class="hero-headline" id="heroHeadline">
-                    Real help from real<br><span class="highlight-word" id="dynamicCategory">Tech Pros</span>, 24/7
-                </h1>
-                <p class="hero-subtext" id="heroSubtext">Talk or text with thousands of verified Experts.</p>
-
-                <div class="suggestion-pills" id="suggestionPills">
-                    <button class="pill" data-query="My Windows won't start">
-                        <svg class="pill-icon" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                        My Windows won't start
-                    </button>
-                    <button class="pill" data-query="Printer is offline">
-                        <svg class="pill-icon" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                        Printer is offline
-                    </button>
-                    <button class="pill" data-query="Blue screen error">
-                        <svg class="pill-icon" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                        Blue screen error
-                    </button>
-                    <button class="pill" data-query="Outlook password loop">
-                        <svg class="pill-icon" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                        Outlook password loop
-                    </button>
-                </div>
-
-                
-            </div>
-
-            <!-- Right Pane: Interactive Chat Panel -->
-            <div class="chat-panel" id="chatPanel">
-                <div class="chat-header">
-                    <h2 class="chat-header-title">Get answers until you're satisfied</h2>
-                    <div class="experts-row">
-                        <div class="expert-avatars">
-                            <img src="assets/expert-1.png" alt="Expert 1" class="expert-avatar" width="640" height="640" decoding="async">
-                            <img src="assets/expert-2.png" alt="Expert 2" class="expert-avatar" width="640" height="640" decoding="async">
-                            <img src="assets/expert-3.png" alt="Expert 3" class="expert-avatar" width="640" height="640" decoding="async">
-                            <img src="assets/expert-4.png" alt="Expert 4" class="expert-avatar" width="640" height="640" decoding="async">
-                        </div>
-                        <p class="experts-count"><strong>35+ Experts</strong> online now ready to help!</p>
-                    </div>
-                </div>
-
-                <div class="chat-advisory-banner hidden" id="chatAdvisoryBanner"></div>
-
-                <div class="chat-body" id="chatBody">
-                    <!-- Dynamic chat injected by app.js -->
-                </div>
-
-                <div class="chat-suggestion-pills hidden" id="chatSuggestionPills"></div>
-
-                <div class="chat-input-area" id="chatInputArea">
-                    <div class="input-tooltip">Type your question here...</div>
-                    <div class="chat-input-wrapper">
-                        <input type="text" id="chatInput" class="chat-input" placeholder="Type your question here..." autocomplete="off">
-                    </div>
-                    <button class="start-chat-btn" id="startChatBtn">START CHAT</button>
-                    <div class="online-status">
-                        <span class="online-dot"></span>
-                        <span id="onlineCount">4 Tech Support Specialists are online now</span>
-                    </div>
-                </div>
-            </div>
+        <div class="hero-video-wrapper">
+            <video class="hero-video" autoplay muted loop playsinline>
+                <source src="assets/answerdesk.webm" type="video/webm">
+            </video>
+            <div class="hero-overlay"></div>
         </div>
-    </section>
-
-    <!-- ===== HOW IT WORKS ===== -->
-    <section class="section how-it-works" id="howItWorks">
-        <div class="section-container">
-            <h2 class="section-title">How It Works</h2>
-            <p class="section-subtitle">Get expert help in 3 simple steps</p>
-
-            <div class="steps-grid">
-                <!-- STEP 1: Interactive Question Prompt Screen -->
-                <div class="step-card">
-                    <div class="step-header">
-                        <span class="step-pill"><span class="step-pill-dot"></span>STEP 01</span>
-                        <span class="step-time">Instant Setup</span>
-                    </div>
-
-                    <div class="stage-screen">
-                        <div class="screen-topbar">
-                            <span class="dot-btn dot-red"></span>
-                            <span class="dot-btn dot-yellow"></span>
-                            <span class="dot-btn dot-green"></span>
-                            <span class="screen-title">QUERY_INPUT.SYS</span>
-                        </div>
-                        <div class="typing-box">
-                            <span>My Windows 11 won't boot after update...</span>
-                            <span class="typing-cursor"></span>
-                        </div>
-                        <div class="stage-footer">
-                            <span class="stage-status-tag">⚡ LIVE_QUERY</span>
-                            <span class="stage-speed-tag">QUEUED &bull; 0.2s</span>
-                        </div>
-                    </div>
-
-                    <h3>Ask Your Question</h3>
-                    <p>Describe your issue in plain English. Our system immediately parses error symptoms and routes your ticket.</p>
+        <div class="hero-content">
+            <h1 class="hero-headline">Expert Answers,<br><span class="hero-highlight">On Demand</span></h1>
+            <p class="hero-subtext">Connect with verified professionals in minutes. No appointments. No waiting. Just answers.</p>
+            <div class="hero-search-box">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" class="hero-search-input" id="heroSearchInput" placeholder="Describe your issue or ask a question..." autocomplete="off">
                 </div>
-
-                <!-- STEP 2: Real-Time AI Diagnostic Engine Screen -->
-                <div class="step-card">
-                    <div class="step-header">
-                        <span class="step-pill"><span class="step-pill-dot"></span>STEP 02</span>
-                        <span class="step-time">Under 60s</span>
-                    </div>
-
-                    <div class="stage-screen stage-screen-ai">
-                        <div class="screen-topbar">
-                            <span class="dot-btn dot-red"></span>
-                            <span class="dot-btn dot-yellow"></span>
-                            <span class="dot-btn dot-green"></span>
-                            <span class="screen-title">AI_DIAGNOSTIC.CORE</span>
-                        </div>
-                        <div class="scan-laser-wrap">
-                            <div class="scan-line"></div>
-                            <div class="scan-item">
-                                <span>Scanning 12M+ fixes</span>
-                                <span class="scan-check">&check;</span>
-                            </div>
-                            <div class="scan-item">
-                                <span>Root cause isolated</span>
-                                <span class="scan-check">&check;</span>
-                            </div>
-                            <div class="scan-item">
-                                <span>Matching verified pro</span>
-                                <span class="scan-check">&check;</span>
-                            </div>
-                        </div>
-                        <div class="progress-bar-wrap">
-                            <div class="progress-bar-fill"></div>
-                        </div>
-                        <div class="stage-footer">
-                            <span class="stage-status-tag">🤖 NEURAL_MATCH</span>
-                            <span class="stage-speed-tag">99.4% CONFIDENCE</span>
-                        </div>
-                    </div>
-
-                    <h3>Get Instant AI Help</h3>
-                    <p>Our intelligent system matches your situation against millions of proven resolutions in real time.</p>
+                <button class="hero-search-btn" id="heroSearchBtn">Ask an Expert</button>
+            </div>
+            <div class="hero-trust-row">
+                <div class="trust-item">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+                    <span>35,000+ Verified Experts</span>
                 </div>
-
-                <!-- STEP 3: Live Expert Call & Voice Equalizer Screen -->
-                <div class="step-card">
-                    <div class="step-header">
-                        <span class="step-pill"><span class="step-pill-dot"></span>STEP 03</span>
-                        <span class="step-time">24/7 Available</span>
-                    </div>
-
-                    <div class="stage-screen stage-screen-expert">
-                        <div class="screen-topbar">
-                            <span class="dot-btn dot-red"></span>
-                            <span class="dot-btn dot-yellow"></span>
-                            <span class="dot-btn dot-green"></span>
-                            <span class="screen-title">SECURE_VOICE_CHAT</span>
-                        </div>
-                        <div class="expert-live-bar">
-                            <img loading="lazy" decoding="async" width="640" height="640" src="assets/expert-1.png" alt="David Miller" class="expert-mini-avatar">
-                            <div class="expert-info-text">
-                                <div class="expert-name">David Miller &bull; <span style="color:#10b981;">Online</span></div>
-                                <div class="expert-role">Systems Engineer &bull; &starf;&starf;&starf;&starf;&starf;</div>
-                            </div>
-                        </div>
-                        <div class="equalizer-wrap">
-                            <div class="eq-bar eq-1"></div>
-                            <div class="eq-bar eq-2"></div>
-                            <div class="eq-bar eq-3"></div>
-                            <div class="eq-bar eq-4"></div>
-                            <div class="eq-bar eq-5"></div>
-                            <div class="eq-bar eq-6"></div>
-                            <div class="eq-bar eq-7"></div>
-                        </div>
-                        <div class="stage-footer">
-                            <span class="stage-status-tag">🎧 LIVE_SESSION</span>
-                            <span class="stage-speed-tag">PAY AFTER SOLUTION</span>
-                        </div>
-                    </div>
-
-                    <h3>Connect with an Expert</h3>
-                    <p>Need personalized help? Chat or speak directly with a certified specialist until your issue is 100% resolved.</p>
+                <div class="trust-item">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+                    <span>12M+ Questions Answered</span>
+                </div>
+                <div class="trust-item">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+                    <span>Available 24/7</span>
                 </div>
             </div>
         </div>
@@ -380,42 +288,166 @@
         </div>
     </section>
 
-    <!-- ===== KNOWLEDGE BASE & POPULAR ISSUES (Step-by-Step Troubleshooting) ===== -->
-    <!-- ===== MEET THE EXPERTS ===== -->
-    <section class="section experts-section" id="meetExperts">
+        <!-- ===== HOW IT WORKS ===== -->
+    <section class="section how-it-works" id="howItWorks">
         <div class="section-container">
-            <h2 class="section-title">Meet Our Experts</h2>
-            <p class="section-subtitle">Verified professionals ready to help you 24/7</p>
-            <div class="experts-grid">
-                <div class="expert-card">
-                    <img src="assets/expert-1.png" alt="David Miller" class="expert-card-avatar" width="640" height="640" loading="lazy" decoding="async">
-                    <h3>David Miller</h3>
-                    <p class="expert-title">Senior Windows Systems Engineer</p>
-                    <p class="expert-meta">12,437 problems solved &bull; 99.4% satisfaction</p>
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Get expert help in 3 simple steps</p>
+
+            <div class="steps-grid">
+                <!-- STEP 1: Interactive Question Prompt Screen -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-pill"><span class="step-pill-dot"></span>STEP 01</span>
+                        <span class="step-time">Instant Setup</span>
+                    </div>
+
+                    <div class="stage-screen">
+                        <div class="screen-topbar">
+                            <span class="dot-btn dot-red"></span>
+                            <span class="dot-btn dot-yellow"></span>
+                            <span class="dot-btn dot-green"></span>
+                            <span class="screen-title">QUERY_INPUT.SYS</span>
+                        </div>
+                        <div class="typing-box">
+                            <span>My Windows 11 won't boot after update...</span>
+                            <span class="typing-cursor"></span>
+                        </div>
+                        <div class="stage-footer">
+                            <span class="stage-status-tag">⚡ LIVE_QUERY</span>
+                            <span class="stage-speed-tag">QUEUED &bull; 0.2s</span>
+                        </div>
+                    </div>
+
+                    <h3>Ask Your Question</h3>
+                    <p>Describe your issue in plain English. Our system immediately parses error symptoms and routes your ticket.</p>
                 </div>
-                <div class="expert-card">
-                    <img src="assets/expert-2.png" alt="James Wilson" class="expert-card-avatar" width="640" height="640" loading="lazy" decoding="async">
-                    <h3>James Wilson</h3>
-                    <p class="expert-title">Apple &amp; iOS Specialist</p>
-                    <p class="expert-meta">9,812 problems solved &bull; 99.1% satisfaction</p>
+
+                <!-- STEP 2: Real-Time AI Diagnostic Engine Screen -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-pill"><span class="step-pill-dot"></span>STEP 02</span>
+                        <span class="step-time">Under 60s</span>
+                    </div>
+
+                    <div class="stage-screen stage-screen-ai">
+                        <div class="screen-topbar">
+                            <span class="dot-btn dot-red"></span>
+                            <span class="dot-btn dot-yellow"></span>
+                            <span class="dot-btn dot-green"></span>
+                            <span class="screen-title">AI_DIAGNOSTIC.CORE</span>
+                        </div>
+                        <div class="scan-laser-wrap">
+                            <div class="scan-line"></div>
+                            <div class="scan-item">
+                                <span>Scanning 12M+ fixes</span>
+                                <span class="scan-check">&check;</span>
+                            </div>
+                            <div class="scan-item">
+                                <span>Root cause isolated</span>
+                                <span class="scan-check">&check;</span>
+                            </div>
+                            <div class="scan-item">
+                                <span>Matching verified pro</span>
+                                <span class="scan-check">&check;</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar-fill"></div>
+                        </div>
+                        <div class="stage-footer">
+                            <span class="stage-status-tag">🤖 NEURAL_MATCH</span>
+                            <span class="stage-speed-tag">99.4% CONFIDENCE</span>
+                        </div>
+                    </div>
+
+                    <h3>Get Instant AI Help</h3>
+                    <p>Our intelligent system matches your situation against millions of proven resolutions in real time.</p>
                 </div>
-                <div class="expert-card">
-                    <img src="assets/expert-3.png" alt="Robert Chen" class="expert-card-avatar" width="640" height="640" loading="lazy" decoding="async">
-                    <h3>Robert Chen</h3>
-                    <p class="expert-title">Master Automotive Technician (ASE)</p>
-                    <p class="expert-meta">8,245 problems solved &bull; 99.6% satisfaction</p>
-                </div>
-                <div class="expert-card">
-                    <img src="assets/expert-4.png" alt="Arun Patel" class="expert-card-avatar" width="640" height="640" loading="lazy" decoding="async">
-                    <h3>Arun Patel</h3>
-                    <p class="expert-title">Senior Tax &amp; Corporate Consultant</p>
-                    <p class="expert-meta">6,190 problems solved &bull; 98.9% satisfaction</p>
+
+                <!-- STEP 3: Live Expert Call & Voice Equalizer Screen -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-pill"><span class="step-pill-dot"></span>STEP 03</span>
+                        <span class="step-time">24/7 Available</span>
+                    </div>
+
+                    <div class="stage-screen stage-screen-expert">
+                        <div class="screen-topbar">
+                            <span class="dot-btn dot-red"></span>
+                            <span class="dot-btn dot-yellow"></span>
+                            <span class="dot-btn dot-green"></span>
+                            <span class="screen-title">SECURE_VOICE_CHAT</span>
+                        </div>
+                        <div class="expert-live-bar">
+                            <img loading="lazy" decoding="async" width="640" height="640" src="assets/expert-1.png" alt="David Miller" class="expert-mini-avatar">
+                            <div class="expert-info-text">
+                                <div class="expert-name">David Miller &bull; <span style="color:#10b981;">Online</span></div>
+                                <div class="expert-role">Systems Engineer &bull; &starf;&starf;&starf;&starf;&starf;</div>
+                            </div>
+                        </div>
+                        <div class="equalizer-wrap">
+                            <div class="eq-bar eq-1"></div>
+                            <div class="eq-bar eq-2"></div>
+                            <div class="eq-bar eq-3"></div>
+                            <div class="eq-bar eq-4"></div>
+                            <div class="eq-bar eq-5"></div>
+                            <div class="eq-bar eq-6"></div>
+                            <div class="eq-bar eq-7"></div>
+                        </div>
+                        <div class="stage-footer">
+                            <span class="stage-status-tag">🎧 LIVE_SESSION</span>
+                            <span class="stage-speed-tag">PAY AFTER SOLUTION</span>
+                        </div>
+                    </div>
+
+                    <h3>Connect with an Expert</h3>
+                    <p>Need personalized help? Chat or speak directly with a certified specialist until your issue is 100% resolved.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== CTA SECTION (When you can't afford to be wrong - S-Curve Design) ===== -->
+    <!-- ===== WHAT YOU GET ===== -->
+    <section class="section what-you-get" id="whatYouGet">
+        <div class="section-container">
+            <h2 class="section-title">What You Get</h2>
+            <p class="section-subtitle">Everything you need to solve your problems fast</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-img-wrap">
+                        <img loading="lazy" decoding="async" width="640" height="640" src="assets/expert-1.png" alt="Expert conversations" class="feature-img">
+                    </div>
+                    <h3>Unlimited Conversations</h3>
+                    <p>Connect with a verified expert in minutes. No waiting for appointments. No high fees. Just dependable answers for any issue.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-img-wrap">
+                        <img loading="lazy" decoding="async" width="640" height="640" src="assets/expert-2.png" alt="Business needs" class="feature-img">
+                    </div>
+                    <h3>For All Your Needs</h3>
+                    <p>From complicated tech outages to quick fixes, our network of qualified Experts answer your questions — now.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-img-wrap">
+                        <img loading="lazy" decoding="async" width="640" height="640" src="assets/expert-3.png" alt="Business support" class="feature-img">
+                    </div>
+                    <h3>For Your Business</h3>
+                    <p>Get quick answers to any business IT problem. Ask follow-up questions anytime for ongoing support.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-img-wrap">
+                        <img loading="lazy" decoding="async" width="640" height="640" src="assets/expert-4.png" alt="24/7 availability" class="feature-img">
+                    </div>
+                    <h3>At Any Hour</h3>
+                    <p>A team of Experts is available for your business 24/7. Even on holidays. We never close.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <!-- ===== WHEN YOU CAN'T AFFORD TO BE WRONG ===== -->
+        <!-- ===== CTA SECTION (When you can't afford to be wrong - S-Curve Design) ===== -->
     <section class="cta-section" id="ctaSection">
         <div class="section-container">
             <div class="cta-banner-card cta-banner-card-s">
@@ -455,7 +487,65 @@
         </div>
     </section>
 
-    
+    <!-- ===== STATS BAR (Rounded Card Redesign) ===== -->
+    <section class="stats-section-wrap">
+        <div class="section-container">
+            <div class="stats-rounded-card" id="statsBar">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="12" data-suffix="M+" data-decimals="0">0M+</span>
+                        <span class="stat-label">Questions Answered</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="35000" data-suffix="+" data-decimals="0" data-format="comma">0+</span>
+                        <span class="stat-label">Verified Experts</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="4.8" data-suffix="/5" data-decimals="1">0.0/5</span>
+                        <span class="stat-label">Average Rating</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="24" data-suffix="/7" data-decimals="0">0/7</span>
+                        <span class="stat-label">Available Around the Clock</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== TESTIMONIALS ===== -->
+    <section class="section testimonials-section" id="testimonials">
+        <div class="section-container">
+            <h2 class="section-title">What Our Customers Say</h2>
+            <p class="section-subtitle">Join millions of satisfied users worldwide</p>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"I was locked out of my Microsoft account and couldn't figure it out. Within minutes, the expert walked me through the recovery process. Incredible service!"</p>
+                    <div class="testimonial-author">
+                        <strong>Sarah M.</strong>
+                        <span>Microsoft Support</span>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"My iPhone screen was glitching after an update. The expert diagnosed it as a software issue and fixed it remotely. Saved me a trip to the Apple Store!"</p>
+                    <div class="testimonial-author">
+                        <strong>Mark T.</strong>
+                        <span>iOS Support</span>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"Fast, professional, and extremely knowledgeable. The AI chatbot gave me the initial steps, and the live expert helped me with the final configuration."</p>
+                    <div class="testimonial-author">
+                        <strong>Lisa K.</strong>
+                        <span>Tech Support</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
         <!-- ===== FOOTER ===== -->
     <footer class="site-footer">
@@ -552,45 +642,208 @@
         </div>
     </footer>
 
-    <!-- Call Panel Backdrop Overlay (Mobile & Tablet) -->
-    <div class="call-panel-backdrop" id="callPanelBackdrop"></div>
+    <!-- ===== FLOATING CHAT BUTTON ===== -->
+    <div class="floating-chat-btn" id="floatingChatBtn">
+        <img loading="lazy" decoding="async" width="1024" height="1024" src="assets/chat-avatar-btn.png" alt="Chat with Expert" class="chat-btn-avatar">
+        <span class="chat-badge" id="chatBadge" style="display:none;">1</span>
+    </div>
 
-    <!-- Call Details Panel (On-Top Window) -->
-    <div class="call-details-panel call-panel" id="callDetailsPanel" style="display: none;">
-        <button class="call-panel-close" id="callPanelClose" aria-label="Close call panel">&times;</button>
-        <div class="call-panel-badge">
-            <span class="blue-tick">&#10003;</span> VERIFIED SPECIALIST
-        </div>
-        <h3 class="call-panel-title" id="callPanelTitle">Talk to an Expert Now</h3>
-        <div class="call-panel-expert">
-            <img src="assets/expert-1.png" alt="Expert" class="call-panel-avatar" id="callPanelAvatar" width="640" height="640" decoding="async">
-            <div>
-                <strong id="callPanelExpertName">James Wilson</strong>
-                <span id="callPanelExpertRole">Apple &amp; iOS Specialist</span>
-                <span class="call-panel-customers" id="callPanelCustomers">32,619 satisfied customers</span>
+    <!-- ===== FLOATING CHAT PANEL ===== -->
+    <div class="floating-chat-panel" id="floatingChatPanel" style="display:none;">
+        <div class="fc-header">
+            <div class="fc-header-left">
+                <h3>Chat with an Expert</h3>
+                <div class="fc-online">
+                    <span class="online-dot"></span>
+                    <span>35+ Experts online now</span>
+                </div>
             </div>
+            <button class="fc-close" id="fcClose">&times;</button>
         </div>
-        <div class="call-panel-info">
-            <p>We're online and ready to help you right now</p>
-            <p class="call-panel-sub">Get your issue resolved in minutes. No charge until you're satisfied.</p>
+        <div class="fc-body" id="fcBody">
+            <div class="chat-label">⚛️ Quantum Chatbot, Expert's Assistant</div>
         </div>
-        
-        <div class="call-now-section">
-            <a href="tel:+18005550199" class="call-now-btn" id="callNowBtn" role="button" aria-label="Call verified specialist now">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                CALL NOW
-            </a>
-            <a href="tel:+18005550199" class="call-panel-number" id="callPanelPhoneDisplay" aria-label="Direct phone dialer">
-                <span class="phone-number" id="callPanelPhoneNumberVisible">(800) 555-0199</span>
-            </a>
-        </div>
-        <div class="call-panel-trust">
-            <span>&#128274; 100% Confidential</span>
-            <span>&#9889; Avg. 2 Min Connect</span>
+        <div class="fc-input-area">
+            <input type="text" class="fc-input" id="fcInput" placeholder="Type your question here..." autocomplete="off">
+            <button class="fc-send" id="fcSend">Send</button>
         </div>
     </div>
 
+    <script src="app.js?v=4"></script>
+    <script>
+        // Homepage-specific logic
+        (function() {
+            const heroSearchInput = document.getElementById('heroSearchInput');
+            const heroSearchBtn = document.getElementById('heroSearchBtn');
+            const floatingChatBtn = document.getElementById('floatingChatBtn');
+            const floatingChatPanel = document.getElementById('floatingChatPanel');
+            const fcClose = document.getElementById('fcClose');
+            const fcInput = document.getElementById('fcInput');
+            const fcSend = document.getElementById('fcSend');
+            const fcBody = document.getElementById('fcBody');
+            const chatBadge = document.getElementById('chatBadge');
+
+            // Hero search -> redirect to support page
+            if (heroSearchBtn) {
+                heroSearchBtn.addEventListener('click', () => {
+                    const query = heroSearchInput.value.trim();
+                    if (query) {
+                        window.location.href = 'support.html?q=' + encodeURIComponent(query);
+                    } else {
+                        window.location.href = 'support.html';
+                    }
+                });
+            }
+            if (heroSearchInput) {
+                heroSearchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        heroSearchBtn.click();
+                    }
+                });
+            }
+
+            // Floating chat toggle
+            if (floatingChatBtn) {
+                floatingChatBtn.addEventListener('click', () => {
+                    const isOpen = floatingChatPanel.style.display !== 'none';
+                    floatingChatPanel.style.display = isOpen ? 'none' : 'flex';
+                    floatingChatBtn.classList.toggle('active', !isOpen);
+                    chatBadge.style.display = 'none';
+                    if (!isOpen && !fcBody.querySelector('.chat-message')) {
+                        addFcMessage("Welcome! How can I help you today? You can ask me anything or I can connect you to a live expert.", 'bot');
+                    }
+                    if (!isOpen) fcInput.focus();
+                });
+            }
+            if (fcClose) {
+                fcClose.addEventListener('click', () => {
+                    floatingChatPanel.style.display = 'none';
+                    floatingChatBtn.classList.remove('active');
+                });
+            }
+
+            // Floating chat send
+            function handleFcSend() {
+                const text = fcInput.value.trim();
+                if (!text) return;
+                addFcMessage(text, 'user');
+                fcInput.value = '';
+                // Redirect to support page with query
+                setTimeout(() => {
+                    window.location.href = 'support.html?q=' + encodeURIComponent(text);
+                }, 600);
+            }
+            if (fcSend) fcSend.addEventListener('click', handleFcSend);
+            if (fcInput) fcInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') handleFcSend();
+            });
+
+            function addFcMessage(text, type) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'chat-message ' + type + '-message';
+                if (type === 'bot') {
+                    const avatar = document.createElement('img');
+                    avatar.src = 'assets/chat-avatar-btn.png';
+                    avatar.alt = 'Quantum';
+                    avatar.className = 'pearl-avatar';
+                    msgDiv.appendChild(avatar);
+                }
+                const bubble = document.createElement('div');
+                bubble.className = 'message-bubble ' + type + '-bubble';
+                bubble.textContent = text;
+                msgDiv.appendChild(bubble);
+                fcBody.appendChild(msgDiv);
+                fcBody.scrollTop = fcBody.scrollHeight;
+            }
+
+            // Show chat badge after 5 seconds
+            setTimeout(() => {
+                if (floatingChatPanel.style.display === 'none') {
+                    chatBadge.style.display = 'flex';
+                }
+            }, 5000);
+
+            // Sticky header + scroll spy for nav active states
+            const header = document.getElementById('siteHeader');
+            const navLinks = document.querySelectorAll('.header-nav .nav-link');
+            const sections = [
+                { id: 'hero', link: navLinks[0] },
+                { id: 'categories', link: navLinks[2] },
+                { id: 'howItWorks', link: navLinks[3] }
+            ];
+
+            function updateActiveNav() {
+                const scrollY = window.scrollY + 140;
+                let activeLink = navLinks[0]; // default to Home
+                
+                sections.forEach(({ id, link }) => {
+                    const el = document.getElementById(id);
+                    if (el && scrollY >= el.offsetTop) {
+                        activeLink = link;
+                    }
+                });
+
+                navLinks.forEach(l => l.classList.remove('active'));
+                activeLink.classList.add('active');
+            }
+
+            // Click handlers for nav links to ensure immediate active state
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href.startsWith('#')) {
+                        navLinks.forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                });
+            });
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 60) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+                updateActiveNav();
+            });
+
+            // CTA Two-Way Glide Animation (Left content + Right curvy image)
+            const ctaSection = document.querySelector('.cta-section');
+            if (ctaSection && 'IntersectionObserver' in window) {
+                const ctaObs = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const ctaContent = entry.target.querySelector('.cta-content');
+                            const ctaImage = entry.target.querySelector('.cta-image-wrap');
+                            if (ctaContent) ctaContent.classList.add('animated');
+                            if (ctaImage) ctaImage.classList.add('animated', 'visible');
+                            ctaObs.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.15 });
+                ctaObs.observe(ctaSection);
+            }
+
+            // Animate sections on scroll
+            const animateSections = document.querySelectorAll('.section');
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            animateSections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(30px)';
+                section.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                sectionObserver.observe(section);
+            });
+        })();
+    </script>
     <script src="app.js"></script>
     <script src="cookie-banner.js"></script>
-    </body>
+</body>
 </html>

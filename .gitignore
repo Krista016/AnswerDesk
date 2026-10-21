@@ -12,16 +12,21 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Test Screenshots & Dumps (Keep repo clean)
-*.png
-*.jpg
-*.jpeg
-!assets/
-!candidates/
+# Ignore temporary root test screenshots
+/*.png
+/*.jpg
+/*.jpeg
+
+# Ensure assets & candidates are fully tracked
+!/assets/**
+!/candidates/**
+
+# Audits & temp dumps
 seo_audit*/
 chat_body_dump.html
 
-# Scratch & capture scripts
+# Scratch scripts
+compare_sites.js
 test_more_transparent.js
 test_transparency_options*.js
 test_perfect_transparency.js
