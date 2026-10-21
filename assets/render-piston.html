@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
+      width: 512px;
+      height: 512px;
+    }
+    canvas {
+      display: block;
+      width: 512px !important;
+      height: 512px !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+
+    const width = 512;
+    const height = 512;
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 100);
+    camera.position.set(0, 0.2, 6.8);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(2);
+    renderer.setSize(width, height);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.3;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    document.getElementById('container').appendChild(renderer.domElement);
+
+    // Studio Environment Map (Apple-grade metallic reflections)
+    const envCanvas = document.createElement('canvas');
+    envCanvas.width = 1024;
+    envCanvas.height = 512;
+    const ectx = envCanvas.getContext('2d');
+    const envGrad = ectx.createLinearGradient(0, 0, 0, 512);
+    envGrad.addColorStop(0, '#ffffff');
+    envGrad.addColorStop(0.3, '#f1f5f9');
+    envGrad.addColorStop(0.5, '#64748b');
+    envGrad.addColorStop(0.7, '#1e293b');
+    envGrad.addColorStop(1, '#020617');
+    ectx.fillStyle = envGrad;
+    ectx.fillRect(0, 0, 1024, 512);
+
+    ectx.fillStyle = '#ffffff';
+    ectx.fillRect(250, 30, 450, 140);
+
+    const cyanGrad = ectx.createLinearGradient(0, 80, 0, 240);
+    cyanGrad.addColorStop(0, '#38bdf8');
+    cyanGrad.addColorStop(1, '#6366f1');
+    ectx.fillStyle = cyanGrad;
+    ectx.fillRect(40, 80, 170, 220);
+
+    const magGrad = ectx.createLinearGradient(0, 80, 0, 240);
+    magGrad.addColorStop(0, '#c084fc');
+    magGrad.addColorStop(1, '#f43f5e');
+    ectx.fillStyle = magGrad;
+    ectx.fillRect(740, 80, 170, 220);
+
+    const goldGrad = ectx.createLinearGradient(0, 80, 0, 240);
+    goldGrad.addColorStop(0, '#fde047');
+    goldGrad.addColorStop(1, '#f59e0b');
+    ectx.fillStyle = goldGrad;
+    ectx.fillRect(480, 70, 160, 150);
+
+    const envTexture = new THREE.CanvasTexture(envCanvas);
+    envTexture.mapping = THREE.EquirectangularReflectionMapping;
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmremGenerator.fromEquirectangular(envTexture).texture;
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    scene.add(ambientLight);
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.8);
+    keyLight.position.set(4, 5, 5);
+    scene.add(keyLight);
+
+    const rimCyan = new THREE.DirectionalLight(0x38bdf8, 2.5);
+    rimCyan.position.set(-5, 3, -3);
+    scene.add(rimCyan);
+
+    const rimGold = new THREE.DirectionalLight(0xf59e0b, 2.2);
+    rimGold.position.set(4, -2, -3);
+    scene.add(rimGold);
+
+    const rimViolet = new THREE.DirectionalLight(0xa855f7, 2.0);
+    rimViolet.position.set(-2, 6, 2);
+    scene.add(rimViolet);
+
+    // Soft drop shadow on floor
+    const shadowCanvas = document.createElement('canvas');
+    shadowCanvas.width = 512;
+    shadowCanvas.height = 512;
+    const sctx = shadowCanvas.getContext('2d');
+    const sgrad = sctx.createRadialGradient(256, 256, 20, 256, 256, 220);
+    sgrad.addColorStop(0, 'rgba(15, 23, 42, 0.45)');
+    sgrad.addColorStop(0.35, 'rgba(15, 23, 42, 0.2)');
+    sgrad.addColorStop(0.7, 'rgba(15, 23, 42, 0.04)');
+    sgrad.addColorStop(1, 'rgba(0,0,0,0)');
+    sctx.fillStyle = sgrad;
+    sctx.beginPath();
+    sctx.ellipse(256, 256, 170, 60, 0, 0, Math.PI * 2);
+    sctx.fill();
+
+    const shadowTex = new THREE.CanvasTexture(shadowCanvas);
+    const shadowMat = new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false });
+    const shadowPlane = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 1.4), shadowMat);
+    shadowPlane.rotation.x = -Math.PI / 2;
+    shadowPlane.position.set(0, -1.6, 0);
+    scene.add(shadowPlane);
+
+    // Materials
+    // Liquid Mirror Chrome (Apple 3D aesthetic)
+    const chromeMat = new THREE.MeshPhysicalMaterial({
+      color: 0xf8fafc,
+      metalness: 0.98,
+      roughness: 0.08,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.02,
+      ior: 1.6,
+      reflectivity: 0.98,
+      envMapIntensity: 2.2
+    });
+
+    // Dark Titanium Insets
+    const darkTitaniumMat = new THREE.MeshPhysicalMaterial({
+      color: 0x1e293b,
+      metalness: 0.88,
+      roughness: 0.18,
+      envMapIntensity: 1.5
+    });
+
+    // Anodized Gold / Brass Wrist Pin & Bolts
+    const goldMat = new THREE.MeshPhysicalMaterial({
+      color: 0xf59e0b,
+      metalness: 0.92,
+      roughness: 0.12,
+      clearcoat: 1.0,
+      envMapIntensity: 2.2
+    });
+
+    // Heat-treated Iridescent Cobalt Blue
+    const blueMat = new THREE.MeshPhysicalMaterial({
+      color: 0x2563eb,
+      metalness: 0.94,
+      roughness: 0.12,
+      clearcoat: 1.0,
+      envMapIntensity: 2.2
+    });
+
+    const group = new THREE.Group();
+
+    // ============================================
+    // A. PRECISION FORGED PISTON CROWN & SKIRT
+    // ============================================
+    const pistonGroup = new THREE.Group();
+
+    // Crown Dome with chamfered top
+    const crownGeo = new THREE.CylinderGeometry(0.88, 0.88, 0.95, 48);
+    const crownMesh = new THREE.Mesh(crownGeo, chromeMat);
+    crownMesh.position.y = 0.55;
+    pistonGroup.add(crownMesh);
+
+    // Top Dome chamfer lip
+    const domeLipGeo = new THREE.TorusGeometry(0.85, 0.06, 16, 48);
+    const domeLipMesh = new THREE.Mesh(domeLipGeo, chromeMat);
+    domeLipMesh.rotation.x = Math.PI / 2;
+    domeLipMesh.position.y = 1.02;
+    pistonGroup.add(domeLipMesh);
+
+    // 3 Compression Rings around upper crown
+    for (let r = 0; r < 3; r++) {
+      const ringGeo = new THREE.TorusGeometry(0.885, 0.028, 12, 48);
+      const ringMesh = new THREE.Mesh(ringGeo, r === 1 ? goldMat : darkTitaniumMat);
+      ringMesh.rotation.x = Math.PI / 2;
+      ringMesh.position.y = 0.85 - r * 0.12;
+      pistonGroup.add(ringMesh);
+    }
+
+    // Piston Skirt (Lower hollowed sides)
+    const skirtLGeo = new THREE.CylinderGeometry(0.87, 0.87, 0.65, 32, 1, false, -Math.PI * 0.35, Math.PI * 0.7);
+    const skirtLMesh = new THREE.Mesh(skirtLGeo, chromeMat);
+    skirtLMesh.position.y = -0.22;
+    pistonGroup.add(skirtLMesh);
+
+    const skirtRGeo = new THREE.CylinderGeometry(0.87, 0.87, 0.65, 32, 1, false, Math.PI * 0.65, Math.PI * 0.7);
+    const skirtRMesh = new THREE.Mesh(skirtRGeo, chromeMat);
+    skirtRMesh.position.y = -0.22;
+    pistonGroup.add(skirtRMesh);
+
+    // Golden Wrist Pin (Gudgeon Pin) through center
+    const wristPinGeo = new THREE.CylinderGeometry(0.24, 0.24, 1.45, 32);
+    const wristPinMesh = new THREE.Mesh(wristPinGeo, goldMat);
+    wristPinMesh.rotation.z = Math.PI / 2;
+    wristPinMesh.position.y = 0.05;
+    pistonGroup.add(wristPinMesh);
+
+    // Wrist Pin end clips
+    [-0.73, 0.73].forEach(x => {
+      const clipGeo = new THREE.TorusGeometry(0.2, 0.035, 12, 24);
+      const clipMesh = new THREE.Mesh(clipGeo, blueMat);
+      clipMesh.rotation.y = Math.PI / 2;
+      clipMesh.position.set(x, 0.05, 0);
+      pistonGroup.add(clipMesh);
+    });
+
+    // ============================================
+    // B. FORGED H-BEAM CONNECTING ROD
+    // ============================================
+    // Small end eye around wrist pin
+    const smallEyeGeo = new THREE.TorusGeometry(0.35, 0.11, 16, 32);
+    const smallEyeMesh = new THREE.Mesh(smallEyeGeo, chromeMat);
+    smallEyeMesh.rotation.y = Math.PI / 2;
+    smallEyeMesh.position.y = 0.05;
+    pistonGroup.add(smallEyeMesh);
+
+    // H-Beam Rod Shaft
+    const rodShaftGeo = new THREE.BoxGeometry(0.24, 1.1, 0.16);
+    const rodShaftMesh = new THREE.Mesh(rodShaftGeo, chromeMat);
+    rodShaftMesh.position.y = -0.65;
+    pistonGroup.add(rodShaftMesh);
+
+    // Recessed H-beam side channels
+    const rodFlangeL = new THREE.BoxGeometry(0.08, 1.05, 0.24);
+    const rodFlangeLMesh = new THREE.Mesh(rodFlangeL, blueMat);
+    rodFlangeLMesh.position.set(-0.11, -0.65, 0);
+    pistonGroup.add(rodFlangeLMesh);
+
+    const rodFlangeR = new THREE.BoxGeometry(0.08, 1.05, 0.24);
+    const rodFlangeRMesh = new THREE.Mesh(rodFlangeR, blueMat);
+    rodFlangeRMesh.position.set(0.11, -0.65, 0);
+    pistonGroup.add(rodFlangeRMesh);
+
+    // Big End Rod Journal / Cap
+    const bigEndGeo = new THREE.TorusGeometry(0.48, 0.14, 18, 36);
+    const bigEndMesh = new THREE.Mesh(bigEndGeo, chromeMat);
+    bigEndMesh.rotation.y = Math.PI / 2;
+    bigEndMesh.position.y = -1.25;
+    pistonGroup.add(bigEndMesh);
+
+    // Two Rod Cap Hex Bolts
+    [-0.38, 0.38].forEach(z => {
+      const boltGeo = new THREE.CylinderGeometry(0.065, 0.065, 0.25, 6);
+      const boltMesh = new THREE.Mesh(boltGeo, goldMat);
+      boltMesh.position.set(0, -1.25, z);
+      pistonGroup.add(boltMesh);
+    });
+
+    group.add(pistonGroup);
+
+    // ============================================
+    // C. CROSSED HEAVY-DUTY MECHANIC'S WRENCH
+    // ============================================
+    const wrenchGroup = new THREE.Group();
+
+    // Wrench Shaft
+    const wrenchShaftGeo = new THREE.BoxGeometry(0.22, 2.8, 0.12);
+    const wrenchShaftMesh = new THREE.Mesh(wrenchShaftGeo, chromeMat);
+    wrenchGroup.add(wrenchShaftMesh);
+
+    // Wrench Raised Center Beam with Anodized Inset
+    const wrenchInsetGeo = new THREE.BoxGeometry(0.14, 2.0, 0.14);
+    const wrenchInsetMesh = new THREE.Mesh(wrenchInsetGeo, darkTitaniumMat);
+    wrenchGroup.add(wrenchInsetMesh);
+
+    // Open Jaw End (Top)
+    const openJawShape = new THREE.Shape();
+    openJawShape.absarc(0, 0, 0.42, 0, Math.PI * 2, false);
+    // Cutout U-shaped open throat
+    const throatHole = new THREE.Path();
+    throatHole.moveTo(-0.18, 0.45);
+    throatHole.lineTo(-0.18, 0.02);
+    throatHole.absarc(0, 0.02, 0.18, Math.PI, 0, true);
+    throatHole.lineTo(0.18, 0.45);
+    throatHole.closePath();
+    openJawShape.holes.push(throatHole);
+
+    const openJawGeo = new THREE.ExtrudeGeometry(openJawShape, { depth: 0.14, bevelEnabled: true, bevelSegments: 3, bevelSize: 0.025, bevelThickness: 0.025 });
+    const openJawMesh = new THREE.Mesh(openJawGeo, chromeMat);
+    openJawMesh.position.set(0, 1.45, -0.07);
+    openJawMesh.rotation.z = 0.26; // 15-degree mechanic angle!
+    wrenchGroup.add(openJawMesh);
+
+    // Box End Ring (Bottom)
+    const boxEndShape = new THREE.Shape();
+    boxEndShape.absarc(0, 0, 0.38, 0, Math.PI * 2, false);
+    const boxHole = new THREE.Path();
+    boxHole.absarc(0, 0, 0.22, 0, Math.PI * 2, true);
+    boxEndShape.holes.push(boxHole);
+
+    const boxEndGeo = new THREE.ExtrudeGeometry(boxEndShape, { depth: 0.14, bevelEnabled: true, bevelSegments: 3, bevelSize: 0.025, bevelThickness: 0.025 });
+    const boxEndMesh = new THREE.Mesh(boxEndGeo, chromeMat);
+    boxEndMesh.position.set(0, -1.45, -0.07);
+    wrenchGroup.add(boxEndMesh);
+
+    // Position wrench crossing behind piston diagonally
+    wrenchGroup.rotation.z = Math.PI * 0.28;
+    wrenchGroup.position.set(0.15, -0.15, -0.32);
+    group.add(wrenchGroup);
+
+    // Dynamic 3D tilt
+    group.rotation.x = 0.18;
+    group.rotation.y = -0.32;
+    group.rotation.z = 0.12;
+    group.position.set(-0.05, 0.1, 0);
+
+    scene.add(group);
+
+    renderer.render(scene, camera);
+    window.sceneReady = true;
+  </script>
+</body>
+</html>

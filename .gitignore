@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs & temp files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test Screenshots & Dumps (Keep repo clean)
+*.png
+*.jpg
+*.jpeg
+!assets/
+!candidates/
+seo_audit*/
+chat_body_dump.html
+
+# Scratch & capture scripts
+test_more_transparent.js
+test_transparency_options*.js
+test_perfect_transparency.js
+take_*.js
+capture_*.js
+capture-*.js
+convert-*.js
+process-image.js
+verify-all-3d.js
+step_*.txt
