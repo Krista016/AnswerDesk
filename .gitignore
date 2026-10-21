@@ -26,6 +26,8 @@ seo_audit*/
 chat_body_dump.html
 
 # Scratch scripts
+compare_all_pages.js
+verify_vercel_fix.js
 compare_sites.js
 test_more_transparent.js
 test_transparency_options*.js
