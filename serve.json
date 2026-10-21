@@ -7,7 +7,7 @@
     { "source": "/home.html", "destination": "/home.html" },
     { "source": "/support", "destination": "/support.html" },
     { "source": "/support.html", "destination": "/support.html" },
-    { "source": "/index.html", "destination": "/support.html" },
+    { "source": "/index.html", "destination": "/home.html" },
     { "source": "/about", "destination": "/about.html" },
     { "source": "/about.html", "destination": "/about.html" },
     { "source": "/contact", "destination": "/contact.html" },
