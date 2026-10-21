@@ -10,7 +10,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="index.css?v=20261021_v4">
+    <link rel="preload" as="image" href="assets/hero-bg.png?v=20261021_v5" fetchpriority="high">
+    <link rel="stylesheet" href="index.css?v=20261021_v5">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#123e35">
     <meta property="og:type" content="website">
@@ -86,7 +87,9 @@
 
     <!-- ===== HERO SECTION ===== -->
     <section class="hero" id="hero">
-        <div class="hero-bg-image"></div>
+        <div class="hero-bg-image">
+            <img src="assets/hero-bg.png?v=20261021_v5" alt="AnswerDesk Live Support Specialists" class="hero-bg-photo" fetchpriority="high" decoding="sync">
+        </div>
         <div class="hero-overlay"></div>
 
         <div class="hero-inner">
