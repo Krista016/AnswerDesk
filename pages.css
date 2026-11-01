@@ -697,7 +697,7 @@ textarea.form-control {
     border-radius: var(--radius-md);
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     border: 1px solid #334155;
-    z-index: 9999;
+    z-index: 9000;
     display: none;
     align-items: center;
     justify-content: space-between;

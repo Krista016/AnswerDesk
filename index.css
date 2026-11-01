@@ -1795,6 +1795,9 @@ body.support-page .site-footer .section-container {
 /* ===== CALL NOW SECTION ===== */
 .call-now-section {
     margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .call-phone-display {
@@ -1881,12 +1884,36 @@ body.support-page .site-footer .section-container {
 }
 
 .call-panel-number {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
     text-align: center;
-    margin-bottom: 16px;
-    padding: 12px;
+    padding: 14px 16px;
     background: #f0fdf4;
-    border-radius: 10px;
-    border: 1px solid #dcfce7;
+    border-radius: 12px;
+    border: 1.5px solid #86efac;
+    text-decoration: none !important;
+    color: #16655a !important;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.call-panel-number:hover {
+    background: #dcfce7;
+    border-color: #4ade80;
+    color: #14532d !important;
+    transform: translateY(-1px);
+}
+
+.call-panel-number span,
+.call-panel-number .phone-number {
+    text-decoration: none !important;
+    color: inherit !important;
 }
 
 .call-number-label {
@@ -2671,7 +2698,7 @@ body.support-page .site-footer .section-container {
     border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     border: 1px solid #334155;
-    z-index: 9999;
+    z-index: 9000;
     display: none;
     align-items: center;
     justify-content: space-between;
