@@ -1,13 +1,33 @@
-// Universal AnswerDesk Mobile Navigation
+// Universal AnswerDesk Mobile Navigation & Responsive Header
 (function() {
     function initMobileNav() {
         const headerInner = document.querySelector('.header-inner');
         if (!headerInner) return;
 
+        // Enhance header-cta button with responsive text spans if not already present
+        const headerCta = headerInner.querySelector('.header-cta');
+        if (headerCta && !headerCta.querySelector('.cta-text-full')) {
+            const rawText = headerCta.textContent.trim() || 'Get Expert Help';
+            headerCta.innerHTML = `
+                <span class="cta-text-full">${rawText}</span>
+                <span class="cta-text-short">Get Help</span>
+            `;
+        }
+
         // Ensure right actions wrapper exists
         let rightActions = headerInner.querySelector('.header-right-actions');
-        const headerCta = headerInner.querySelector('.header-cta');
         let menuBtn = document.getElementById('mobileMenuBtn');
+
+        if (!rightActions) {
+            rightActions = document.createElement('div');
+            rightActions.className = 'header-right-actions';
+            if (headerCta) {
+                headerCta.parentNode.insertBefore(rightActions, headerCta);
+                rightActions.appendChild(headerCta);
+            } else {
+                headerInner.appendChild(rightActions);
+            }
+        }
 
         if (!menuBtn) {
             menuBtn = document.createElement('button');
@@ -20,17 +40,7 @@
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
             `;
-            if (headerCta) {
-                if (!rightActions) {
-                    rightActions = document.createElement('div');
-                    rightActions.className = 'header-right-actions';
-                    headerCta.parentNode.insertBefore(rightActions, headerCta);
-                    rightActions.appendChild(headerCta);
-                }
-                rightActions.appendChild(menuBtn);
-            } else {
-                headerInner.appendChild(menuBtn);
-            }
+            rightActions.appendChild(menuBtn);
         }
 
         // Check if drawer already exists

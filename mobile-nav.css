@@ -1,23 +1,39 @@
 /* ===== UNIVERSAL MOBILE NAVIGATION & TOP-BAR RESPONSIVENESS ===== */
 
-/* 1. Hide top disclaimer bar on mobile, tablet, and narrow screens (visible only on full desktop view) */
+/* 1. Hide top disclaimer bar on mobile, tablet, and narrow screens (visible only on full desktop view > 1024px) */
 @media (max-width: 1024px) {
-    .top-bar {
+    .top-bar,
+    #topBar,
+    div.top-bar {
         display: none !important;
     }
 }
 
-/* 2. Header layout */
+/* 2. Header Layout & Right Actions */
 .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .header-right-actions {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Responsive CTA text */
+.cta-text-short {
+    display: none;
+}
+
+.cta-text-full {
+    display: inline;
 }
 
 /* 3. Modern 3-line Hamburger Button */
@@ -27,7 +43,7 @@
     height: 40px;
     padding: 0;
     background: #ffffff;
-    border: 1.5px solid rgba(18, 62, 53, 0.18);
+    border: 1.5px solid rgba(18, 62, 53, 0.2);
     border-radius: 10px;
     cursor: pointer;
     align-items: center;
@@ -37,6 +53,8 @@
     transition: all 0.25s ease;
     z-index: 10002;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    flex-shrink: 0;
+    box-sizing: border-box;
 }
 
 .mobile-menu-btn:hover {
@@ -68,23 +86,115 @@
     transform: translateY(-7px) rotate(-45deg);
 }
 
-/* Show hamburger button whenever header-nav is hidden (<= 1024px) */
+/* Show hamburger and adjust header on screens <= 1024px */
 @media (max-width: 1024px) {
+    .header-nav {
+        display: none !important;
+    }
+
     .mobile-menu-btn {
-        display: flex;
+        display: flex !important;
     }
 
     .header-cta {
-        padding: 9px 18px !important;
+        padding: 8px 16px !important;
         font-size: 13px !important;
-        white-space: nowrap;
+        white-space: nowrap !important;
     }
 }
 
-@media (max-width: 480px) {
+/* Mobile Header Constraints (<= 768px) */
+@media (max-width: 768px) {
+    .header-inner {
+        padding: 0 14px !important;
+        gap: 8px !important;
+    }
+
+    .logo {
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .logo-icon {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .logo-name {
+        font-size: 18px !important;
+    }
+
+    .logo-sub {
+        display: none !important;
+    }
+
+    .header-right-actions {
+        gap: 8px !important;
+    }
+
     .header-cta {
         padding: 8px 12px !important;
+        font-size: 12.5px !important;
+    }
+
+    .mobile-menu-btn {
+        width: 38px !important;
+        height: 38px !important;
+    }
+}
+
+/* Extra-narrow screens (<= 440px) */
+@media (max-width: 440px) {
+    .header-inner {
+        padding: 0 10px !important;
+        gap: 6px !important;
+    }
+
+    .cta-text-full {
+        display: none !important;
+    }
+
+    .cta-text-short {
+        display: inline !important;
+    }
+
+    .logo-name {
+        font-size: 17px !important;
+    }
+
+    .header-cta {
+        padding: 7px 11px !important;
         font-size: 12px !important;
+    }
+
+    .mobile-menu-btn {
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    .mobile-menu-btn .hamburger-line {
+        width: 18px !important;
+    }
+}
+
+@media (max-width: 330px) {
+    .logo-name {
+        font-size: 15px !important;
+    }
+
+    .logo-icon {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    .header-cta {
+        padding: 6px 8px !important;
+        font-size: 11px !important;
+    }
+
+    .mobile-menu-btn {
+        width: 34px !important;
+        height: 34px !important;
     }
 }
 
