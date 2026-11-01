@@ -884,3 +884,76 @@ body:not(.support-page) .site-footer .section-container,
     margin-top: 1px !important;
     white-space: nowrap !important;
 }
+
+
+/* ===== RESPONSIVE FOOTER GUARANTEES UNIFIED ===== */
+.site-footer .footer-guarantees {
+    background: #ffffff !important;
+    border: 1.5px solid #dce7df !important;
+    border-radius: 18px !important;
+    padding: 22px 28px !important;
+    margin: 32px 0 28px 0 !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18) !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 20px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.site-footer .footer-guarantee-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    min-width: 0 !important;
+}
+
+.site-footer .guarantee-icon-wrap {
+    width: 44px !important;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+}
+
+.site-footer .guarantee-text {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+}
+
+.site-footer .footer-guarantee-item strong {
+    color: #123e35 !important;
+    font-size: 14.5px !important;
+    font-weight: 800 !important;
+    display: block !important;
+    margin-bottom: 3px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+.site-footer .footer-guarantee-item p {
+    color: #475a52 !important;
+    font-size: 12.5px !important;
+    line-height: 1.45 !important;
+    margin: 0 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+@media (max-width: 1024px) {
+    .site-footer .footer-guarantees {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 16px 20px !important;
+        padding: 20px 22px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .site-footer .footer-guarantees {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+        padding: 16px !important;
+    }
+}

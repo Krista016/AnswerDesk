@@ -181,7 +181,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 70px;
+    margin-top: 0;
     overflow: hidden;
 }
 
@@ -1057,11 +1057,27 @@ body {
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 24px;
     text-align: center;
     position: relative;
     z-index: 1;
+}
+
+@media (max-width: 900px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 16px !important;
+    }
+}
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px !important;
+    }
+    .stat-number {
+        font-size: 32px !important;
+    }
 }
 
 .stat-item {
@@ -2841,8 +2857,66 @@ body {
     margin: 32px 0 28px 0 !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18) !important;
     display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     gap: 20px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+}
+
+.site-footer .footer-guarantee-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    min-width: 0 !important;
+}
+
+.site-footer .guarantee-icon-wrap {
+    width: 44px !important;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+}
+
+.site-footer .guarantee-text {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+}
+
+.site-footer .footer-guarantee-item strong {
+    color: #123e35 !important;
+    font-size: 14.5px !important;
+    font-weight: 800 !important;
+    display: block !important;
+    margin-bottom: 3px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+.site-footer .footer-guarantee-item p {
+    color: #475a52 !important;
+    font-size: 12.5px !important;
+    line-height: 1.45 !important;
+    margin: 0 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+@media (max-width: 1024px) {
+    .site-footer .footer-guarantees {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 16px 20px !important;
+        padding: 20px 22px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .site-footer .footer-guarantees {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+        padding: 16px !important;
+    }
 }
 
 .site-footer .footer-guarantee-item strong {
