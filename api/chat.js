@@ -26,12 +26,12 @@ function cleanHumanText(text) {
 
     // Replace em-dash / en-dash / double hyphens between clauses with period + capital letter
     // E.g. "total sense—often" -> "total sense. Often"
-    s = s.replace(/([a-zA-Z0-9)])\s*(?:[\u2014\u2013\u2015\u2012]|&mdash;|&ndash;|--)\s*([a-z])/g, (m, p1, p2) => {
+    s = s.replace(/([a-zA-Z0-9)])\s*(?:[\u2014\u2013\u2015\u2012\u2212\uFE58]|&mdash;|&ndash;|--)\s*([a-zA-Z])/g, (m, p1, p2) => {
         return p1 + '. ' + p2.toUpperCase();
     });
 
-    // Replace any remaining em-dashes / en-dashes / double-hyphens with comma or period
-    s = s.replace(/\s*(?:[\u2014\u2013\u2015\u2012]|&mdash;|&ndash;|--)\s*/g, ', ');
+    // Replace any remaining em-dashes / en-dashes / double-hyphens with comma
+    s = s.replace(/\s*(?:[\u2014\u2013\u2015\u2012\u2212\uFE58]|&mdash;|&ndash;|--)\s*/g, ', ');
 
     // Clean up spaces around single dash used as punctuation " - "
     s = s.replace(/\s+-\s+/g, ', ');
@@ -80,9 +80,8 @@ CONVERSATIONAL RULES & TOPIC HANDLING:
    - TURN 2 (User answers your simple question):
      1. Validate warmly: "Got it, a Lenovo laptop! No worries at all about the exact model number."
      2. Seamlessly offer the connection to the verified specialist in 1 short sentence:
-        "I have a verified Computer Support Specialist available online right now who can walk through this with you in live chat. Would you like me to connect you?"
-     3. recommendation: "chat" (Default for tech, pets, appliances, plumbing, legal, billing).
-        Use "call" ONLY if the user is in an active physical emergency (car broke down on highway, active water flood gushing, pet swallowed toxic poison).
+        "I have a verified Computer Support Specialist available online right now who can help you over the phone or in live chat. Would you like to connect?"
+     3. recommendation: "call" (Always present both phone and live chat options for all categories).
 
 3. USER PIVOTS / ADDS NEW DETAILS / REVEALS SUSPECTED ROOT CAUSE:
    - Example: User says "no i am to connect airpods. i think issue with my iphone", "actually I think it's the charger", "wait, my car is also making a clicking sound".
@@ -106,12 +105,12 @@ CONVERSATIONAL RULES & TOPIC HANDLING:
 
 6. USER SAYS A STEP DID NOT WORK ("that didn't work", "still not connecting", "nothing happened"):
    - Acknowledge warmly:
-     "Thanks for trying that. Since that didn't resolve it, I can connect you directly with our verified Specialist in live chat to walk through advanced settings step by step. Would you like me to connect you?"
-   - recommendation: "chat" (or "call" if critical).
+     "Thanks for trying that. Since that didn't resolve it, I can connect you directly with our verified Specialist over the phone or in live chat. Would you like to connect?"
+   - recommendation: "call"
 
 7. DIRECT USER REQUEST FOR EXPERT:
    - If user explicitly says "can I call someone", "give me phone number", or "connect me on call" -> recommendation: "call".
-   - If user says "connect in chat", "prefer text" -> recommendation: "chat".
+   - If user says "connect in chat", "prefer text" -> recommendation: "call".
 
 8. NO REPEATED / BACK-TO-BACK BUTTONS:
    - Never offer buttons twice in a row. If the user continues conversing, drop the buttons and chat naturally with recommendation: "none".

@@ -581,19 +581,19 @@
         let s = text;
 
         // Remove any mentions of Quantum or AI chatbot
-        s = s.replace(/\bI'm Quantum[\s,—\-]*/gi, "Hi! ");
+        s = s.replace(/\b(?:Hi there!?\s*)?I'm Quantum[\s,\u2014\u2013\u2015\u2012\u2212\uFE58-]*/gi, "Hi! ");
         s = s.replace(/\bQuantum\b/gi, "our team");
         s = s.replace(/\bAI triage specialist\b/gi, "support specialist");
         s = s.replace(/\bAI\b/g, "");
 
         // Replace em-dash / en-dash / double hyphens between clauses with period + capital letter
         // E.g. "total sense—often" -> "total sense. Often"
-        s = s.replace(/([a-zA-Z0-9)])\s*(?:[\u2014\u2013\u2015\u2012]|&mdash;|&ndash;|--)\s*([a-z])/g, (m, p1, p2) => {
+        s = s.replace(/([a-zA-Z0-9)])\s*(?:[\u2014\u2013\u2015\u2012\u2212\uFE58]|&mdash;|&ndash;|--)\s*([a-zA-Z])/g, (m, p1, p2) => {
             return p1 + '. ' + p2.toUpperCase();
         });
 
-        // Replace any remaining em-dashes / en-dashes / double-hyphens with comma or period
-        s = s.replace(/\s*(?:[\u2014\u2013\u2015\u2012]|&mdash;|&ndash;|--)\s*/g, ', ');
+        // Replace any remaining em-dashes / en-dashes / double-hyphens with comma
+        s = s.replace(/\s*(?:[\u2014\u2013\u2015\u2012\u2212\uFE58]|&mdash;|&ndash;|--)\s*/g, ', ');
         s = s.replace(/\s+-\s+/g, ', ');
 
         s = s.replace(/,\s*\./g, '.');
@@ -756,93 +756,61 @@
 
         const expertTitle = options.expertRole ? options.expertRole : 'Specialist';
 
-        // When recommendation is CHAT: Show ONLY Live Chat (NEVER show a call button!)
-        if (options.recommendation === 'chat') {
-            optionsDiv.innerHTML = `
-                <button class="connect-option-pro chat-option-pro" id="inChatContinue">
-                    <div class="option-pro-icon chat-icon-pro">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
-                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                            <path d="M8 10h.01M12 10h.01M16 10h.01"/>
-                        </svg>
-                    </div>
-                    <div class="option-pro-content">
-                        <span class="option-pro-title">Connect with ${expertTitle} via Live Chat</span>
-                        <span class="option-pro-desc">Chat step-by-step with a verified specialist now</span>
-                    </div>
+        // Always show BOTH options: Direct Phone Call (★ RECOMMENDED) and Live Text Chat
+        optionsDiv.innerHTML = `
+            <button class="connect-option-pro call-option-pro call-option-priority" id="inChatCall">
+                <div class="option-pro-icon call-icon-pro">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+                        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+                    </svg>
+                </div>
+                <div class="option-pro-content">
+                    <span class="option-pro-title">Call ${expertTitle}</span>
+                    <span class="option-pro-desc">Direct phone connection with a verified specialist</span>
+                </div>
+                <div class="option-pro-right">
+                    <span class="badge-recommended">★ RECOMMENDED</span>
                     <div class="option-pro-arrow">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>
                     </div>
-                </button>
-            `;
+                </div>
+            </button>
+            <button class="connect-option-pro chat-option-pro" id="inChatContinue">
+                <div class="option-pro-icon chat-icon-pro">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                        <path d="M8 10h.01M12 10h.01M16 10h.01"/>
+                    </svg>
+                </div>
+                <div class="option-pro-content">
+                    <span class="option-pro-title">Prefer text? Chat with ${expertTitle}</span>
+                    <span class="option-pro-desc">Continue troubleshooting in text chat</span>
+                </div>
+                <div class="option-pro-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+            </button>
+        `;
 
-            chatBody.appendChild(optionsDiv);
-            scrollChatToBottom();
+        chatBody.appendChild(optionsDiv);
+        scrollChatToBottom();
 
-            document.getElementById('inChatContinue').addEventListener('click', () => {
-                optionsDiv.remove();
-                triggerSpecialistHandoff('Connect via live chat', expertTitle);
-            });
-            return;
-        }
+        document.getElementById('inChatCall').addEventListener('click', () => {
+            optionsDiv.remove();
+            lastMessageType = 'user';
+            addMessage('Yes, phone call please', 'user');
 
-        // When recommendation is CALL: Show Direct Phone Call with ★ RECOMMENDED
-        if (options.recommendation === 'call') {
-            optionsDiv.innerHTML = `
-                <button class="connect-option-pro call-option-pro call-option-priority" id="inChatCall">
-                    <div class="option-pro-icon call-icon-pro">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
-                            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
-                        </svg>
-                    </div>
-                    <div class="option-pro-content">
-                        <span class="option-pro-title">Call ${expertTitle}</span>
-                        <span class="option-pro-desc">Direct phone connection with a verified specialist</span>
-                    </div>
-                    <div class="option-pro-right">
-                        <span class="badge-recommended">★ RECOMMENDED</span>
-                        <div class="option-pro-arrow">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>
-                        </div>
-                    </div>
-                </button>
-                <button class="connect-option-pro chat-option-pro" id="inChatContinue">
-                    <div class="option-pro-icon chat-icon-pro">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
-                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                            <path d="M8 10h.01M12 10h.01M16 10h.01"/>
-                        </svg>
-                    </div>
-                    <div class="option-pro-content">
-                        <span class="option-pro-title">Prefer text? Chat with ${expertTitle}</span>
-                        <span class="option-pro-desc">Continue troubleshooting in text chat</span>
-                    </div>
-                    <div class="option-pro-arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>
-                    </div>
-                </button>
-            `;
+            setTimeout(() => {
+                showTypingThenMessage("Great choice! Connecting you with a specialist over the phone now.").then(() => {
+                    showCallDetailsPanel(options.ctaHeadline);
+                });
+            }, 300);
+        });
 
-            chatBody.appendChild(optionsDiv);
-            scrollChatToBottom();
-
-            document.getElementById('inChatCall').addEventListener('click', () => {
-                optionsDiv.remove();
-                lastMessageType = 'user';
-                addMessage('Yes, phone call please', 'user');
-
-                setTimeout(() => {
-                    showTypingThenMessage("Great choice! Connecting you with a specialist over the phone now.").then(() => {
-                        showCallDetailsPanel(options.ctaHeadline);
-                    });
-                }, 300);
-            });
-
-            document.getElementById('inChatContinue').addEventListener('click', () => {
-                optionsDiv.remove();
-                triggerSpecialistHandoff('Prefer text? Chat with ' + expertTitle, expertTitle);
-            });
-        }
+        document.getElementById('inChatContinue').addEventListener('click', () => {
+            optionsDiv.remove();
+            triggerSpecialistHandoff('Prefer text? Chat with ' + expertTitle, expertTitle);
+        });
     }
 
     // ===== Typing Indicator =====
