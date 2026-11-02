@@ -92,21 +92,28 @@ CONVERSATIONAL RULES & TOPIC HANDLING:
         "Got it! That makes total sense. If it's the iPhone itself, let's take a quick look. Does Bluetooth show as turned on in your iPhone Settings, or does it stay on the spinning wheel?"
      3. recommendation: "none" (DO NOT SHOW ANY BUTTONS).
 
-4. USER DECLINES CONNECTION ("no", "not now", "don't want to", "wait", "hold on"):
-   - Respect immediately with polite, helpful human warmth:
-     "No problem at all! You can try putting them back in the case for 15 seconds, or restarting your device. Just let me know if you need any other help!"
+4. USER DECLINES PRELIMINARY CHAT OFFER ("no", "not now", "don't want to", "wait", "hold on"):
+   - If user is just declining a text chat connection offer:
+     "No problem at all! You can try [quick 1-sentence tip]. Let me know if you need any other help!"
    - recommendation: "none" (DO NOT SHOW ANY BUTTONS).
 
-5. USER SAYS A STEP DID NOT WORK ("that didn't work", "still not connecting", "nothing happened"):
+5. USER REFUSES DIY / IS FRUSTRATED / WANTS AN EXPERT TO TAKE OVER ("not trying", "won't try", "not doing that", "too complicated", "just fix it", "can someone do this for me"):
+   - When a user says "not trying" or refuses to troubleshoot themselves, they came to get professional help and do not want to be a technician!
+   - NEVER say "no worries, whenever you're ready I'm here" and abandon the user!
+   - Acknowledge with immediate relief and escalate:
+     "I completely understand! You shouldn't have to troubleshoot this yourself. Let's get our verified Specialist on the phone with you right away so they can take care of it for you."
+   - recommendation: "call" (Direct phone connection with ★ RECOMMENDED).
+
+6. USER SAYS A STEP DID NOT WORK ("that didn't work", "still not connecting", "nothing happened"):
    - Acknowledge warmly:
      "Thanks for trying that. Since that didn't resolve it, I can connect you directly with our verified Specialist in live chat to walk through advanced settings step by step. Would you like me to connect you?"
    - recommendation: "chat" (or "call" if critical).
 
-6. DIRECT USER REQUEST FOR EXPERT:
+7. DIRECT USER REQUEST FOR EXPERT:
    - If user explicitly says "can I call someone", "give me phone number", or "connect me on call" -> recommendation: "call".
    - If user says "connect in chat", "prefer text" -> recommendation: "chat".
 
-7. NO REPEATED / BACK-TO-BACK BUTTONS:
+8. NO REPEATED / BACK-TO-BACK BUTTONS:
    - Never offer buttons twice in a row. If the user continues conversing, drop the buttons and chat naturally with recommendation: "none".
 
 RETURN STRICT JSON ONLY MATCHING THIS SCHEMA:
@@ -252,25 +259,36 @@ NO EM-DASHES. recommendation MUST be "none" unless they explicitly ask for a pho
                         const lastModelText = lastTurn && lastTurn.model ? lastTurn.model.toLowerCase() : '';
                         const hadRecentOffer = /connect you|direct phone connection|specialist for you|tap below|call the number|live chat/i.test(lastModelText);
 
-                        // Safeguard 1: Turn 1 of intake should never push connection buttons
-                        if (history.length === 0 && !isExplicitCall && !isExplicitChat) {
-                            parsedResult.recommendation = 'none';
-                        }
+                        // Check if user is refusing DIY or frustrated by troubleshooting
+                        const isRefusingDIY = /\b(not trying|won'?t try|not doing (that|this)|don'?t want to try|too complicated|too hard|can'?t do it|you do it|just fix it|i want (a )?(human|person|expert|specialist)|talk to (a )?(human|person|expert)|connect me|tired of|frustrated|give me (a )?person)\b/i.test(message);
 
-                        // Safeguard 2: When user is declining ("no"), pivoting, or providing diagnostic details
-                        // Real customer care agents NEVER push a button when customer is explaining
-                        if (isDecliningOrPivoting && !isExplicitCall && !isExplicitChat) {
-                            parsedResult.recommendation = 'none';
-                        }
+                        if (isRefusingDIY) {
+                            parsedResult.recommendation = 'call';
+                            if (!parsedResult.reply_text || /whenever you('re| are) ready|i'm right here|no worries/i.test(parsedResult.reply_text)) {
+                                const role = parsedResult.expert_role || 'Support Specialist';
+                                parsedResult.reply_text = `I completely understand. You shouldn't have to troubleshoot this yourself! Let's get our verified ${role} on the phone with you right away so they can take care of it for you.`;
+                            }
+                        } else {
+                            // Safeguard 1: Turn 1 of intake should never push connection buttons
+                            if (history.length === 0 && !isExplicitCall && !isExplicitChat) {
+                                parsedResult.recommendation = 'none';
+                            }
 
-                        // Safeguard 3: Never spam buttons back-to-back if previous turn already offered one
-                        if (hadRecentOffer && !isExplicitCall && !isExplicitChat) {
-                            parsedResult.recommendation = 'none';
-                        }
+                            // Safeguard 2: When user is declining ("no"), pivoting, or providing diagnostic details
+                            // Real customer care agents NEVER push a button when customer is explaining
+                            if (isDecliningOrPivoting && !isExplicitCall && !isExplicitChat) {
+                                parsedResult.recommendation = 'none';
+                            }
 
-                        // Safeguard 4: If handoff is active or already connected to specialist, don't show chat buttons
-                        if ((parsed.specialist_handoff || parsed.connected_to_expert) && !isExplicitCall) {
-                            parsedResult.recommendation = 'none';
+                            // Safeguard 3: Never spam buttons back-to-back if previous turn already offered one
+                            if (hadRecentOffer && !isExplicitCall && !isExplicitChat) {
+                                parsedResult.recommendation = 'none';
+                            }
+
+                            // Safeguard 4: If handoff is active or already connected to specialist, don't show chat buttons
+                            if ((parsed.specialist_handoff || parsed.connected_to_expert) && !isExplicitCall) {
+                                parsedResult.recommendation = 'none';
+                            }
                         }
 
                         // Clean and humanize text (removes em-dashes, fixes punctuation, strips robotic phrases)
