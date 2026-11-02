@@ -4603,16 +4603,33 @@ body.support-page .site-footer .section-container {
     border: 2px solid #278b7d !important;
     background: rgba(39, 139, 125, 0.08) !important;
 }
+
+.option-pro-content {
+    min-width: 0;
+}
+
+.option-pro-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
 .badge-recommended {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: #278b7d;
     color: #ffffff;
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     font-weight: 800;
-    padding: 2px 8px;
+    padding: 3px 8px;
     border-radius: 999px;
-    margin-left: 6px;
-    vertical-align: middle;
+    white-space: nowrap;
     letter-spacing: 0.04em;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    line-height: 1.2;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }

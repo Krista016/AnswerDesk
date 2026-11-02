@@ -699,11 +699,14 @@
                         </svg>
                     </div>
                     <div class="option-pro-content">
-                        <span class="option-pro-title">Call ${expertTitle} <span class="badge-recommended">★ RECOMMENDED</span></span>
+                        <span class="option-pro-title">Call ${expertTitle}</span>
                         <span class="option-pro-desc">Direct phone connection with a verified specialist</span>
                     </div>
-                    <div class="option-pro-arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>
+                    <div class="option-pro-right">
+                        <span class="badge-recommended">★ RECOMMENDED</span>
+                        <div class="option-pro-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>
+                        </div>
                     </div>
                 </button>
                 <button class="connect-option-pro chat-option-pro" id="inChatContinue">
