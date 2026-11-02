@@ -68,7 +68,7 @@ CONVERSATIONAL RULES & TOPIC HANDLING:
 2. INTAKE FOR PROBLEMS (Laptop, Phone, Pet, Car, Plumbing, Appliance, Legal, Health):
    - TURN 1 (User first mentions a problem):
      1. One warm sentence of real empathy ("Oh no, that's so stressful when your laptop won't charge!", "Oh no, poor pup! That sounds really concerning.").
-     2. Set the expectation anchor: "Our verified [Specialist Title] can definitely help you with this. I just have a quick question so I can connect you with the right specialist:"
+     2. Set the expectation anchor: "Our verified [Specialist Title] can definitely help you with this. I just have a quick question so I can get you matched with the right specialist:"
      3. Ask ONLY ONE simple, low-effort question:
         • Tech & Mobile: "What brand or type of phone/laptop is it (like Samsung, iPhone, Lenovo, or Dell)?"
         • Pet / Vet: "What kind of pet is it, and how long has this been going on?"
@@ -262,7 +262,7 @@ NO EM-DASHES. recommendation MUST be "none" unless they explicitly ask for a pho
                         // Check if previous assistant message in history already made a connection offer
                         const lastTurn = history.length > 0 ? history[history.length - 1] : null;
                         const lastModelText = lastTurn && lastTurn.model ? lastTurn.model.toLowerCase() : '';
-                        const hadRecentOffer = /connect you|direct phone connection|specialist for you|tap below|call the number|live chat/i.test(lastModelText);
+                        const hadRecentOffer = /would you like (me )?to connect|would you like to connect|direct phone connection with|tap below|call the number to get connected/i.test(lastModelText);
 
                         // Check if user is refusing DIY or frustrated by troubleshooting
                         const isRefusingDIY = /\b(not trying|won'?t try|not doing (that|this)|don'?t want to try|too complicated|too hard|can'?t do it|you do it|just fix it|i want (a )?(human|person|expert|specialist)|talk to (a )?(human|person|expert)|connect me|tired of|frustrated|give me (a )?person)\b/i.test(message);
