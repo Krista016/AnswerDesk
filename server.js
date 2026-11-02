@@ -40,7 +40,9 @@ const server = http.createServer((req, res) => {
 
     // Route /api/chat to our Gemini API handler
     if (pathname === '/api/chat') {
-        chatHandler(req, res);
+        delete require.cache[require.resolve('./api/chat.js')];
+        const freshHandler = require('./api/chat.js');
+        freshHandler(req, res);
         return;
     }
 
