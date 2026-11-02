@@ -174,6 +174,18 @@ module.exports = async function handler(req, res) {
                             if (!parsedResult.expert_role) parsedResult.expert_role = catInfo.expert;
                         }
 
+                        // HARD SAFEGUARD: Turn 1 of problem should NEVER push call/chat buttons
+                        // unless user explicitly asked to call or speak to someone
+                        const isExplicitDirect = /\b(call|phone|speak to|talk to (an? )?(expert|specialist|human|agent|person)|operator|give me (the )?number)\b/i.test(message);
+                        if (history.length === 0 && !isExplicitDirect) {
+                            parsedResult.recommendation = 'none';
+                            // Clean any accidental premature call/chat pitches from the text
+                            parsedResult.reply_text = parsedResult.reply_text
+                                .replace(/If the (battery indicator|issue|problem).*?I recommend connecting with.*?step-by-step\.?/gi, '')
+                                .replace(/I recommend connecting with a (Live )?(Specialist|Veterinary|Computer|Mechanic|Expert|Technician).*?(\.|$)/gi, '')
+                                .trim();
+                        }
+
                         res.statusCode = 200;
                         res.setHeader('Content-Type', 'application/json');
                         res.end(JSON.stringify({ success: true, data: parsedResult }));
