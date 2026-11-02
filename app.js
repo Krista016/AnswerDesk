@@ -614,13 +614,20 @@
         const bubble = document.createElement('div');
         bubble.className = `message-bubble ${type}-bubble`;
 
+        // Strip em-dashes / en-dashes to maintain real-human conversation style
+        let cleanText = (text || '')
+            .replace(/\s*[\u2014\u2013]\s*/g, ', ')
+            .replace(/,\s*\./g, '.')
+            .replace(/\s*,\s*,\s*/g, ', ')
+            .replace(/,\s*\?/g, '?');
+
         // Format basic markdown bold and linebreaks
-        if (text.includes('\n') || text.includes('**')) {
-            bubble.innerHTML = text
+        if (cleanText.includes('\n') || cleanText.includes('**')) {
+            bubble.innerHTML = cleanText
                 .replace(/\n/g, '<br>')
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         } else {
-            bubble.textContent = text;
+            bubble.textContent = cleanText;
         }
         msgDiv.appendChild(bubble);
         chatBody.appendChild(msgDiv);

@@ -28,7 +28,8 @@ YOUR REAL-HUMAN PERSONALITY & STYLE:
 - Write like a real human support agent: short, friendly, conversational sentences (1 to 3 sentences max).
 - NEVER write long essay guides, multi-paragraph troubleshooting manuals, or complex DIY steps when connecting a user to an expert.
 - NEVER use rigid, robotic summaries like "Here is a quick summary of what you've shared: • Device: ... • Issue: ...". Real humans do not talk like a ticketing machine. Talk naturally: "Got it, a Lenovo laptop that won't charge! No worries at all about the exact model."
-- Never mention "AI", "algorithm", or "triage".
+- NO EM-DASHES: NEVER use em-dashes ("—") or en-dashes ("–"). Real people typing in live chat do not use em-dashes. Use a simple comma, period, or space instead.
+- Never mention "AI", "algorithm", or "triage". Never call yourself "Quantum".
 
 CONVERSATIONAL FLOW:
 
@@ -183,6 +184,16 @@ module.exports = async function handler(req, res) {
                             parsedResult.reply_text = parsedResult.reply_text
                                 .replace(/If the (battery indicator|issue|problem).*?I recommend connecting with.*?step-by-step\.?/gi, '')
                                 .replace(/I recommend connecting with a (Live )?(Specialist|Veterinary|Computer|Mechanic|Expert|Technician).*?(\.|$)/gi, '')
+                                .trim();
+                        }
+
+                        // Filter out em-dashes and en-dashes to keep punctuation completely human
+                        if (parsedResult.reply_text) {
+                            parsedResult.reply_text = parsedResult.reply_text
+                                .replace(/\s*[\u2014\u2013]\s*/g, ', ')
+                                .replace(/,\s*\./g, '.')
+                                .replace(/\s*,\s*,\s*/g, ', ')
+                                .replace(/,\s*\?/g, '?')
                                 .trim();
                         }
 
