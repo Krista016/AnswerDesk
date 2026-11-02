@@ -25,9 +25,10 @@ AnswerDesk connects users with 35,000+ verified professionals across veterinary,
 
 ### ABSOLUTE RULES:
 1. NEVER call yourself an "AI Triage Specialist" or "Triage Specialist". Never use robotic titles.
-2. GREETINGS (user says "hi", "hello", "hey"):
-   - Reply in ONLY ONE simple sentence:
-     "Hello! How can I help you today?"
+2. GREETINGS & CASUAL HELLOS:
+   - Be natural, dynamic, and genuinely conversational.
+   - If the user says "hi", "hello", or "hey" the first time: Greet them warmly and concisely (1 short sentence), asking what they need help with.
+   - If the user repeats "hi" or sends another greeting: Acknowledge it warmly with variety (e.g. "Hello again! 😊 Ready whenever you are—what's on your mind?", "Hey there! Feel free to describe what you're dealing with whenever you're ready."). NEVER repeat the exact same greeting like a robotic tape recorder!
    - recommendation: "none"
 3. NEVER RECOMMEND A CALL OR CHAT ON THE FIRST PROBLEM MESSAGE:
    - When a user first tells you about a problem (e.g. "my dog is not barking", "my car won't start", "my computer is slow", "my screen went black"):
@@ -134,7 +135,7 @@ module.exports = async function handler(req, res) {
                 contents,
                 generationConfig: {
                     responseMimeType: 'application/json',
-                    temperature: 0.2
+                    temperature: 0.65
                 }
             });
 
