@@ -582,7 +582,8 @@
     function addChatLabel() {
         const label = document.createElement('div');
         label.className = 'chat-label';
-        label.innerHTML = '&#9883;&#65039; Quantum Chatbot, Expert\'s Assistant';
+        const expertName = selectedExpert ? selectedExpert.name : 'Verified Specialist';
+        label.innerHTML = `<span style="display:inline-block;width:7px;height:7px;background-color:#10b981;border-radius:50%;margin-right:5px;"></span>${expertName}, Support Specialist`;
         chatBody.appendChild(label);
     }
 
@@ -604,8 +605,8 @@
 
         if (type === 'bot') {
             const avatar = document.createElement('img');
-            avatar.src = 'assets/chat-avatar-btn.png';
-            avatar.alt = 'Quantum';
+            avatar.src = selectedExpert ? selectedExpert.avatar : 'assets/expert-1.png';
+            avatar.alt = selectedExpert ? selectedExpert.name : 'Specialist';
             avatar.className = 'pearl-avatar';
             msgDiv.appendChild(avatar);
         }
@@ -749,8 +750,10 @@
         const typingDiv = document.createElement('div');
         typingDiv.className = 'typing-indicator';
         typingDiv.id = 'typingIndicator';
+        const avatarSrc = selectedExpert ? selectedExpert.avatar : 'assets/expert-1.png';
+        const expertName = selectedExpert ? selectedExpert.name : 'Specialist';
         typingDiv.innerHTML = `
-            <img src="assets/chat-avatar-btn.png" alt="Quantum" class="pearl-avatar">
+            <img src="${avatarSrc}" alt="${expertName}" class="pearl-avatar">
             <div class="typing-dots">
                 <span></span><span></span><span></span>
             </div>
@@ -902,13 +905,14 @@
                     chatBody.innerHTML = '';
                     addChatLabel();
                     const cat = categories[catKey];
+                    const avatarSrc = selectedExpert ? selectedExpert.avatar : 'assets/expert-1.png';
+                    const expertName = selectedExpert ? selectedExpert.name : 'Specialist';
                     const greetingDiv = document.createElement('div');
                     greetingDiv.className = 'chat-message';
                     greetingDiv.innerHTML = `
-                        <img src="assets/chat-avatar-btn.png" alt="Quantum" class="pearl-avatar">
+                        <img src="${avatarSrc}" alt="${expertName}" class="pearl-avatar">
                         <div class="message-bubble bot-bubble">
-                            Hello! I see you are looking for assistance with <strong>${cat.label}</strong>. 
-                            How can I assist you with this today? Feel free to describe the issue or click a common topic on the left.
+                            Hi! I see you are looking for help with <strong>${cat.label}</strong>. How can I help you with this today?
                         </div>
                     `;
                     chatBody.appendChild(greetingDiv);
@@ -965,7 +969,7 @@
 
     // Initial Welcome
     setTimeout(() => {
-        showTypingThenMessage("Welcome! How can I help you today?");
+        showTypingThenMessage("Hi! How can I help you today?");
         renderLeftSuggestions('overall');
     }, 800);
 
