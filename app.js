@@ -606,22 +606,30 @@
         return s.trim();
     }
 
+    let connectedToExpert = false;
+    let activeExpertTitle = 'Support Specialist';
     let chatLabelAdded = false;
     let lastMessageType = null;
 
-    function addChatLabel() {
-        if (chatLabelAdded) return;
+    function addChatLabel(forceExpert = false) {
         const label = document.createElement('div');
         label.className = 'chat-label';
-        const expertName = selectedExpert ? selectedExpert.name : 'Verified Specialist';
-        label.innerHTML = `<span style="display:inline-block;width:7px;height:7px;background-color:#10b981;border-radius:50%;margin-right:5px;"></span>${expertName}, Support Specialist`;
+        if (connectedToExpert || forceExpert) {
+            const expertName = selectedExpert ? selectedExpert.name : 'Victoria Price';
+            const role = activeExpertTitle || 'Support Specialist';
+            label.innerHTML = `<span style="display:inline-block;width:7px;height:7px;background-color:#10b981;border-radius:50%;margin-right:5px;"></span>${expertName}, ${role}`;
+        } else {
+            label.innerHTML = `⚛️ Quantum Chatbot, Expert's Assistant`;
+        }
         chatBody.appendChild(label);
         chatLabelAdded = true;
     }
 
     function addMessage(text, type, options = {}) {
-        if (type === 'bot' && !chatLabelAdded) {
-            addChatLabel();
+        if (type === 'bot') {
+            if (!chatLabelAdded || options.forceExpertLabel) {
+                addChatLabel(options.forceExpertLabel);
+            }
         }
         lastMessageType = type;
 
@@ -629,11 +637,22 @@
         msgDiv.className = `chat-message ${type}-message`;
 
         if (type === 'bot') {
-            const avatar = document.createElement('img');
-            avatar.src = selectedExpert ? selectedExpert.avatar : 'assets/expert-1.png';
-            avatar.alt = selectedExpert ? selectedExpert.name : 'Specialist';
-            avatar.className = 'pearl-avatar';
-            msgDiv.appendChild(avatar);
+            if (connectedToExpert && selectedExpert) {
+                const wrap = document.createElement('div');
+                wrap.className = 'avatar-container';
+                const avatar = document.createElement('img');
+                avatar.src = selectedExpert.avatar;
+                avatar.alt = selectedExpert.name;
+                avatar.className = 'expert-avatar-face';
+                wrap.appendChild(avatar);
+                msgDiv.appendChild(wrap);
+            } else {
+                const avatar = document.createElement('img');
+                avatar.src = 'assets/chat-avatar-btn.png';
+                avatar.alt = 'Quantum';
+                avatar.className = 'pearl-avatar';
+                msgDiv.appendChild(avatar);
+            }
         }
 
         const bubble = document.createElement('div');
@@ -669,6 +688,68 @@
     }
 
     // ===== Connect Options (Call vs Chat Cards) =====
+    async function triggerSpecialistHandoff(userMessageText, expertRoleTitle) {
+        connectedToExpert = true;
+        activeExpertTitle = expertRoleTitle || activeExpertTitle || 'Support Specialist';
+        const expertName = selectedExpert ? selectedExpert.name : 'Victoria Price';
+
+        lastMessageType = 'user';
+        addMessage(userMessageText || 'Connect via live chat', 'user');
+
+        // Visual handoff notice in chat
+        const transferNotice = document.createElement('div');
+        transferNotice.className = 'chat-system-notice';
+        transferNotice.innerHTML = `<span>🔄</span> Connecting you with <strong>${expertName}</strong> (${activeExpertTitle})...`;
+        chatBody.appendChild(transferNotice);
+        scrollChatToBottom();
+
+        // Show typing indicator as the specialist
+        showTypingIndicator();
+
+        try {
+            const apiRes = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: userMessageText || 'Connect via live chat',
+                    history: geminiHistory,
+                    specialist_handoff: true,
+                    expert_name: expertName,
+                    expert_role: activeExpertTitle
+                })
+            });
+
+            removeTypingIndicator();
+            if (transferNotice.parentNode) transferNotice.remove();
+
+            if (!apiRes.ok) throw new Error('API returned status ' + apiRes.status);
+            const json = await apiRes.json();
+            if (!json.success || !json.data) throw new Error('Invalid API response');
+
+            const aiData = json.data;
+
+            // Show joined notice
+            const joinedNotice = document.createElement('div');
+            joinedNotice.className = 'chat-system-notice chat-system-joined';
+            joinedNotice.innerHTML = `<span class="online-dot-mini"></span> <strong>${expertName}</strong> joined the chat`;
+            chatBody.appendChild(joinedNotice);
+
+            // Store in conversational history
+            geminiHistory.push({ user: userMessageText || 'Connect via live chat', model: aiData.reply_text });
+
+            // Display specialist's real opening response
+            addMessage(aiData.reply_text, 'bot', { forceExpertLabel: true });
+
+        } catch (err) {
+            console.error('Handoff error:', err);
+            removeTypingIndicator();
+            if (transferNotice.parentNode) transferNotice.remove();
+            const fallbackGreeting = `Hi! I'm ${expertName}, your ${activeExpertTitle}. I've reviewed your issue and am ready to help. What other details can you share to get started?`;
+            geminiHistory.push({ user: userMessageText || 'Connect via live chat', model: fallbackGreeting });
+            addMessage(fallbackGreeting, 'bot', { forceExpertLabel: true });
+        }
+    }
+
     function addConnectOptions(options = {}) {
         const optionsDiv = document.createElement('div');
         optionsDiv.className = 'connect-options-pro';
@@ -700,12 +781,7 @@
 
             document.getElementById('inChatContinue').addEventListener('click', () => {
                 optionsDiv.remove();
-                lastMessageType = 'user';
-                addMessage('Connect via live chat', 'user');
-                setTimeout(() => {
-                    labelShownForCurrentGroup = false;
-                    showTypingThenMessage(`Great! Connecting you with ${expertTitle} in chat. Please describe any additional symptoms or details to begin.`);
-                }, 300);
+                triggerSpecialistHandoff('Connect via live chat', expertTitle);
             });
             return;
         }
@@ -756,7 +832,6 @@
                 addMessage('Yes, phone call please', 'user');
 
                 setTimeout(() => {
-                    labelShownForCurrentGroup = false;
                     showTypingThenMessage("Great choice! Connecting you with a specialist over the phone now.").then(() => {
                         showCallDetailsPanel(options.ctaHeadline);
                     });
@@ -765,12 +840,7 @@
 
             document.getElementById('inChatContinue').addEventListener('click', () => {
                 optionsDiv.remove();
-                lastMessageType = 'user';
-                addMessage('I prefer live chat', 'user');
-                setTimeout(() => {
-                    labelShownForCurrentGroup = false;
-                    showTypingThenMessage("Understood! Let's continue in chat. What other details can you share?");
-                }, 300);
+                triggerSpecialistHandoff('Prefer text? Chat with ' + expertTitle, expertTitle);
             });
         }
     }
@@ -781,10 +851,14 @@
         const typingDiv = document.createElement('div');
         typingDiv.className = 'typing-indicator';
         typingDiv.id = 'typingIndicator';
-        const avatarSrc = selectedExpert ? selectedExpert.avatar : 'assets/expert-1.png';
-        const expertName = selectedExpert ? selectedExpert.name : 'Specialist';
+
+        let avatarHtml = `<img src="assets/chat-avatar-btn.png" alt="Quantum" class="pearl-avatar">`;
+        if (connectedToExpert && selectedExpert) {
+            avatarHtml = `<div class="avatar-container"><img src="${selectedExpert.avatar}" alt="${selectedExpert.name}" class="expert-avatar-face"></div>`;
+        }
+
         typingDiv.innerHTML = `
-            <img src="${avatarSrc}" alt="${expertName}" class="pearl-avatar">
+            ${avatarHtml}
             <div class="typing-dots">
                 <span></span><span></span><span></span>
             </div>
@@ -843,7 +917,10 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     message: text,
-                    history: geminiHistory
+                    history: geminiHistory,
+                    connected_to_expert: connectedToExpert,
+                    expert_name: selectedExpert ? selectedExpert.name : 'Victoria Price',
+                    expert_role: activeExpertTitle
                 })
             });
 
@@ -864,13 +941,10 @@
             }
 
             // 3-TIER TRIAGE EXECUTION:
-            // Tier 1 ("low" / basic DIY): recommendation === "none" -> NO buttons shown
-            // Tier 2 ("medium" / software config): recommendation === "chat" -> Live Chat button ONLY (NO CALL BUTTON)
-            // Tier 3 ("critical" / hardware & urgent): recommendation === "call" -> Direct Phone Call with ★ RECOMMENDED
             const isExplicitDirect = /\b(call (me|someone|expert|specialist|tech)|connect (me )?(on|by|via|to|with)? (a )?(call|phone)|phone (connection|call)|give me (the )?number|speak to (someone|expert|specialist|human|agent)|talk on phone)\b/i.test(text);
             const isDecliningOrPivoting = /\b(no\b|nah\b|wait\b|hold on\b|actually\b|i think\b|cancel\b|not now\b|never mind\b|nevermind\b)/i.test(text);
-            const allowConnect = (geminiHistory.length > 1) && !isDecliningOrPivoting || isExplicitDirect;
-            const recommendation = allowConnect ? aiData.recommendation : 'none';
+            const allowConnect = !connectedToExpert && ((geminiHistory.length > 1 && !isDecliningOrPivoting) || isExplicitDirect);
+            const recommendation = allowConnect ? aiData.recommendation : (connectedToExpert && isExplicitDirect ? 'call' : 'none');
             const showConnectOptions = recommendation === 'call' || recommendation === 'chat';
 
             lastMessageType = null;
@@ -1001,7 +1075,7 @@
 
     // Initial Welcome
     setTimeout(() => {
-        showTypingThenMessage("Hi! How can I help you today?");
+        showTypingThenMessage("Welcome! How can I help you today? You can ask me anything or I can connect you to a live expert.");
         renderLeftSuggestions('overall');
     }, 800);
 

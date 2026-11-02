@@ -24,12 +24,6 @@ function cleanHumanText(text) {
     if (!text) return '';
     let s = text;
 
-    // Remove any accidental robotic persona references
-    s = s.replace(/\bI'm Quantum[\s,—\-]*/gi, "Hi! ");
-    s = s.replace(/\bQuantum\b/gi, "our team");
-    s = s.replace(/\bAI triage specialist\b/gi, "support specialist");
-    s = s.replace(/\bAI\b/g, "");
-
     // Replace em-dash / en-dash / double hyphens between clauses with period + capital letter
     // E.g. "total sense—often" -> "total sense. Often"
     s = s.replace(/([a-zA-Z0-9)])\s*(?:[\u2014\u2013\u2015\u2012]|&mdash;|&ndash;|--)\s*([a-z])/g, (m, p1, p2) => {
@@ -180,8 +174,31 @@ module.exports = async function handler(req, res) {
             }
             contents.push({ role: 'user', parts: [{ text: message }] });
 
+            let instructionText = SYSTEM_INSTRUCTION;
+
+            if (parsed.specialist_handoff) {
+                const expertName = parsed.expert_name || 'Victoria Price';
+                const expertRole = parsed.expert_role || 'Support Specialist';
+                instructionText += `\n\nSPECIALIST HANDOFF ACTIVE:
+You are now ${expertName}, a verified human ${expertRole} at AnswerDesk.
+The user has just chosen to connect with you in live chat!
+1. Introduce yourself warmly and naturally: "Hi! I'm ${expertName}, your ${expertRole}."
+2. Acknowledge that you've reviewed the issue they described above in the chat history.
+3. Ask the first targeted diagnostic question to start troubleshooting with them immediately.
+4. Keep it friendly, empathetic, and concise (2-3 sentences max).
+5. NO EM-DASHES.
+6. recommendation MUST be "none" (the user is already in live chat with you!).`;
+            } else if (parsed.connected_to_expert) {
+                const expertName = parsed.expert_name || 'Victoria Price';
+                const expertRole = parsed.expert_role || 'Support Specialist';
+                instructionText += `\n\nCONTINUING LIVE CHAT AS SPECIALIST:
+You are chatting directly as ${expertName}, verified ${expertRole} at AnswerDesk.
+Continue guiding the user step-by-step through their issue with clarity, patience, and warmth.
+NO EM-DASHES. recommendation MUST be "none" unless they explicitly ask for a phone call.`;
+            }
+
             const payload = JSON.stringify({
-                systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+                systemInstruction: { parts: [{ text: instructionText }] },
                 contents,
                 generationConfig: {
                     responseMimeType: 'application/json',
@@ -248,6 +265,11 @@ module.exports = async function handler(req, res) {
 
                         // Safeguard 3: Never spam buttons back-to-back if previous turn already offered one
                         if (hadRecentOffer && !isExplicitCall && !isExplicitChat) {
+                            parsedResult.recommendation = 'none';
+                        }
+
+                        // Safeguard 4: If handoff is active or already connected to specialist, don't show chat buttons
+                        if ((parsed.specialist_handoff || parsed.connected_to_expert) && !isExplicitCall) {
                             parsedResult.recommendation = 'none';
                         }
 
