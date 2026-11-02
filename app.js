@@ -576,27 +576,52 @@
         return Math.min(baseDelay + typingTime, 2400);
     }
 
-    let labelShownForCurrentGroup = false;
+    function cleanHumanText(text) {
+        if (!text) return '';
+        let s = text;
+
+        // Remove any mentions of Quantum or AI chatbot
+        s = s.replace(/\bI'm Quantum[\s,—\-]*/gi, "Hi! ");
+        s = s.replace(/\bQuantum\b/gi, "our team");
+        s = s.replace(/\bAI triage specialist\b/gi, "support specialist");
+        s = s.replace(/\bAI\b/g, "");
+
+        // Replace em-dash / en-dash / double hyphens between clauses with period + capital letter
+        // E.g. "total sense—often" -> "total sense. Often"
+        s = s.replace(/([a-zA-Z0-9)])\s*(?:[\u2014\u2013\u2015\u2012]|&mdash;|&ndash;|--)\s*([a-z])/g, (m, p1, p2) => {
+            return p1 + '. ' + p2.toUpperCase();
+        });
+
+        // Replace any remaining em-dashes / en-dashes / double-hyphens with comma or period
+        s = s.replace(/\s*(?:[\u2014\u2013\u2015\u2012]|&mdash;|&ndash;|--)\s*/g, ', ');
+        s = s.replace(/\s+-\s+/g, ', ');
+
+        s = s.replace(/,\s*\./g, '.');
+        s = s.replace(/\.\s*\./g, '.');
+        s = s.replace(/,\s*,/g, ',');
+        s = s.replace(/,\s*\?/g, '?');
+        s = s.replace(/,\s*!/g, '!');
+        s = s.replace(/\s{2,}/g, ' ');
+
+        return s.trim();
+    }
+
+    let chatLabelAdded = false;
     let lastMessageType = null;
 
     function addChatLabel() {
+        if (chatLabelAdded) return;
         const label = document.createElement('div');
         label.className = 'chat-label';
         const expertName = selectedExpert ? selectedExpert.name : 'Verified Specialist';
         label.innerHTML = `<span style="display:inline-block;width:7px;height:7px;background-color:#10b981;border-radius:50%;margin-right:5px;"></span>${expertName}, Support Specialist`;
         chatBody.appendChild(label);
+        chatLabelAdded = true;
     }
 
     function addMessage(text, type, options = {}) {
-        if (type === 'bot' && lastMessageType !== 'bot') {
-            labelShownForCurrentGroup = false;
-        }
-        if (type === 'bot' && !labelShownForCurrentGroup) {
+        if (type === 'bot' && !chatLabelAdded) {
             addChatLabel();
-            labelShownForCurrentGroup = true;
-        }
-        if (type === 'user') {
-            labelShownForCurrentGroup = false;
         }
         lastMessageType = type;
 
@@ -614,12 +639,8 @@
         const bubble = document.createElement('div');
         bubble.className = `message-bubble ${type}-bubble`;
 
-        // Strip em-dashes / en-dashes to maintain real-human conversation style
-        let cleanText = (text || '')
-            .replace(/\s*[\u2014\u2013]\s*/g, ', ')
-            .replace(/,\s*\./g, '.')
-            .replace(/\s*,\s*,\s*/g, ', ')
-            .replace(/,\s*\?/g, '?');
+        // Clean em-dashes and robotic phrases
+        const cleanText = cleanHumanText(text || '');
 
         // Format basic markdown bold and linebreaks
         if (cleanText.includes('\n') || cleanText.includes('**')) {
@@ -846,8 +867,9 @@
             // Tier 1 ("low" / basic DIY): recommendation === "none" -> NO buttons shown
             // Tier 2 ("medium" / software config): recommendation === "chat" -> Live Chat button ONLY (NO CALL BUTTON)
             // Tier 3 ("critical" / hardware & urgent): recommendation === "call" -> Direct Phone Call with ★ RECOMMENDED
-            const isExplicitDirect = /\b(call|phone|speak to|talk to (an? )?(expert|specialist|human|agent|person)|operator|give me (the )?number)\b/i.test(text);
-            const allowConnect = (geminiHistory.length > 1) || isExplicitDirect;
+            const isExplicitDirect = /\b(call (me|someone|expert|specialist|tech)|connect (me )?(on|by|via|to|with)? (a )?(call|phone)|phone (connection|call)|give me (the )?number|speak to (someone|expert|specialist|human|agent)|talk on phone)\b/i.test(text);
+            const isDecliningOrPivoting = /\b(no\b|nah\b|wait\b|hold on\b|actually\b|i think\b|cancel\b|not now\b|never mind\b|nevermind\b)/i.test(text);
+            const allowConnect = (geminiHistory.length > 1) && !isDecliningOrPivoting || isExplicitDirect;
             const recommendation = allowConnect ? aiData.recommendation : 'none';
             const showConnectOptions = recommendation === 'call' || recommendation === 'chat';
 

@@ -20,6 +20,39 @@ const CATEGORY_DIRECTORY = {
     finance: { label: 'Taxes & Financial Planning', expert: 'Certified Public Accountant', phone: '1-800-555-0220' }
 };
 
+function cleanHumanText(text) {
+    if (!text) return '';
+    let s = text;
+
+    // Remove any accidental robotic persona references
+    s = s.replace(/\bI'm Quantum[\s,—\-]*/gi, "Hi! ");
+    s = s.replace(/\bQuantum\b/gi, "our team");
+    s = s.replace(/\bAI triage specialist\b/gi, "support specialist");
+    s = s.replace(/\bAI\b/g, "");
+
+    // Replace em-dash / en-dash / double hyphens between clauses with period + capital letter
+    // E.g. "total sense—often" -> "total sense. Often"
+    s = s.replace(/([a-zA-Z0-9)])\s*(?:[\u2014\u2013\u2015\u2012]|&mdash;|&ndash;|--)\s*([a-z])/g, (m, p1, p2) => {
+        return p1 + '. ' + p2.toUpperCase();
+    });
+
+    // Replace any remaining em-dashes / en-dashes / double-hyphens with comma or period
+    s = s.replace(/\s*(?:[\u2014\u2013\u2015\u2012]|&mdash;|&ndash;|--)\s*/g, ', ');
+
+    // Clean up spaces around single dash used as punctuation " - "
+    s = s.replace(/\s+-\s+/g, ', ');
+
+    // Clean up punctuation glitches like ", .", "..", ", ,"
+    s = s.replace(/,\s*\./g, '.');
+    s = s.replace(/\.\s*\./g, '.');
+    s = s.replace(/,\s*,/g, ',');
+    s = s.replace(/,\s*\?/g, '?');
+    s = s.replace(/,\s*!/g, '!');
+    s = s.replace(/\s{2,}/g, ' ');
+
+    return s.trim();
+}
+
 const SYSTEM_INSTRUCTION = `You are a real, friendly human Customer Support Specialist at AnswerDesk (NOT an AI, never mention AI, algorithms, or chatbots).
 AnswerDesk is a live support platform connecting users directly with verified human specialists across tech, automotive, veterinary, home plumbing, appliances, and legal fields.
 
@@ -28,10 +61,10 @@ YOUR REAL-HUMAN PERSONALITY & STYLE:
 - Write like a real human support agent: short, friendly, conversational sentences (1 to 3 sentences max).
 - NEVER write long essay guides, multi-paragraph troubleshooting manuals, or complex DIY steps when connecting a user to an expert.
 - NEVER use rigid, robotic summaries like "Here is a quick summary of what you've shared: • Device: ... • Issue: ...". Real humans do not talk like a ticketing machine. Talk naturally: "Got it, a Lenovo laptop that won't charge! No worries at all about the exact model."
-- NO EM-DASHES: NEVER use em-dashes ("—") or en-dashes ("–"). Real people typing in live chat do not use em-dashes. Use a simple comma, period, or space instead.
+- NO EM-DASHES: NEVER use em-dashes ("—"), en-dashes ("–"), or double hyphens ("--"). Real people typing in live chat do not use em-dashes. Use a simple clean period or comma instead. For example, write "That makes total sense. Often it is..." instead of "That makes total sense—often...".
 - Never mention "AI", "algorithm", or "triage". Never call yourself "Quantum".
 
-CONVERSATIONAL FLOW:
+CONVERSATIONAL RULES & TOPIC HANDLING:
 
 1. GREETINGS ("hi", "hello", "hey"):
    - 1st greeting: "Hi! How can I help you today?"
@@ -57,17 +90,34 @@ CONVERSATIONAL FLOW:
      3. recommendation: "chat" (Default for tech, pets, appliances, plumbing, legal, billing).
         Use "call" ONLY if the user is in an active physical emergency (car broke down on highway, active water flood gushing, pet swallowed toxic poison).
 
-3. SIMPLE HOW-TO / FORMULAS (Excel, Screenshots, Shortcuts):
-   - Answer directly in 2–3 friendly, human sentences (no essays!).
-   - E.g. For Excel SUM: "Super easy! Just type =SUM(A1:A10) in the cell where you want your total (replace A1:A10 with your numbers), and press Enter. You can also just press Alt + = for AutoSum. Would you like me to show you a quick example?"
-   - recommendation: "none"
+3. USER PIVOTS / ADDS NEW DETAILS / REVEALS SUSPECTED ROOT CAUSE:
+   - Example: User says "no i am to connect airpods. i think issue with my iphone", "actually I think it's the charger", "wait, my car is also making a clicking sound".
+   - HOW A REAL CUSTOMER CARE STAFF RESPONDS:
+     1. A real human NEVER repeats the call/chat pitch or forces buttons on the user!
+     2. A real human listens, validates the customer's theory warmly, and engages:
+        "Got it! That makes total sense. If it's the iPhone itself, let's take a quick look. Does Bluetooth show as turned on in your iPhone Settings, or does it stay on the spinning wheel?"
+     3. recommendation: "none" (DO NOT SHOW ANY BUTTONS).
 
-4. DIRECT USER REQUEST:
-   - If user explicitly says "can I call someone", "give me phone number", or "connect me to an expert", immediately fulfill with recommendation: "call" or "chat".
+4. USER DECLINES CONNECTION ("no", "not now", "don't want to", "wait", "hold on"):
+   - Respect immediately with polite, helpful human warmth:
+     "No problem at all! You can try putting them back in the case for 15 seconds, or restarting your device. Just let me know if you need any other help!"
+   - recommendation: "none" (DO NOT SHOW ANY BUTTONS).
+
+5. USER SAYS A STEP DID NOT WORK ("that didn't work", "still not connecting", "nothing happened"):
+   - Acknowledge warmly:
+     "Thanks for trying that. Since that didn't resolve it, I can connect you directly with our verified Specialist in live chat to walk through advanced settings step by step. Would you like me to connect you?"
+   - recommendation: "chat" (or "call" if critical).
+
+6. DIRECT USER REQUEST FOR EXPERT:
+   - If user explicitly says "can I call someone", "give me phone number", or "connect me on call" -> recommendation: "call".
+   - If user says "connect in chat", "prefer text" -> recommendation: "chat".
+
+7. NO REPEATED / BACK-TO-BACK BUTTONS:
+   - Never offer buttons twice in a row. If the user continues conversing, drop the buttons and chat naturally with recommendation: "none".
 
 RETURN STRICT JSON ONLY MATCHING THIS SCHEMA:
 {
-  "reply_text": "Your warm, natural, human response (short, polite, 1-3 sentences)",
+  "reply_text": "Your warm, natural, human response (short, polite, 1-3 sentences, NO em-dashes)",
   "category": "automotive" | "ios" | "microsoft" | "android" | "veterinary" | "medical" | "plumbing" | "legal" | "crypto" | "subscription" | "account" | "appliances" | "finance" | "general",
   "complexity_tier": "low" | "medium" | "critical",
   "recommendation": "none" | "chat" | "call",
@@ -175,26 +225,35 @@ module.exports = async function handler(req, res) {
                             if (!parsedResult.expert_role) parsedResult.expert_role = catInfo.expert;
                         }
 
-                        // HARD SAFEGUARD: Turn 1 of problem should NEVER push call/chat buttons
-                        // unless user explicitly asked to call or speak to someone
-                        const isExplicitDirect = /\b(call|phone|speak to|talk to (an? )?(expert|specialist|human|agent|person)|operator|give me (the )?number)\b/i.test(message);
-                        if (history.length === 0 && !isExplicitDirect) {
+                        // INTENT DETECTION SAFEGUARDS
+                        const isExplicitCall = /\b(call (me|someone|expert|specialist|tech)|connect (me )?(on|by|via|to|with)? (a )?(call|phone)|phone (connection|call)|give me (the )?number|speak to (someone|expert|specialist|human|agent)|talk on phone)\b/i.test(message);
+                        const isExplicitChat = /\b(chat (with|to)|text (with|to)|live chat|prefer (text|chat))\b/i.test(message);
+                        const isDecliningOrPivoting = /\b(no\b|nah\b|wait\b|hold on\b|actually\b|i think\b|cancel\b|not now\b|never mind\b|nevermind\b)/i.test(message);
+
+                        // Check if previous assistant message in history already made a connection offer
+                        const lastTurn = history.length > 0 ? history[history.length - 1] : null;
+                        const lastModelText = lastTurn && lastTurn.model ? lastTurn.model.toLowerCase() : '';
+                        const hadRecentOffer = /connect you|direct phone connection|specialist for you|tap below|call the number|live chat/i.test(lastModelText);
+
+                        // Safeguard 1: Turn 1 of intake should never push connection buttons
+                        if (history.length === 0 && !isExplicitCall && !isExplicitChat) {
                             parsedResult.recommendation = 'none';
-                            // Clean any accidental premature call/chat pitches from the text
-                            parsedResult.reply_text = parsedResult.reply_text
-                                .replace(/If the (battery indicator|issue|problem).*?I recommend connecting with.*?step-by-step\.?/gi, '')
-                                .replace(/I recommend connecting with a (Live )?(Specialist|Veterinary|Computer|Mechanic|Expert|Technician).*?(\.|$)/gi, '')
-                                .trim();
                         }
 
-                        // Filter out em-dashes and en-dashes to keep punctuation completely human
+                        // Safeguard 2: When user is declining ("no"), pivoting, or providing diagnostic details
+                        // Real customer care agents NEVER push a button when customer is explaining
+                        if (isDecliningOrPivoting && !isExplicitCall && !isExplicitChat) {
+                            parsedResult.recommendation = 'none';
+                        }
+
+                        // Safeguard 3: Never spam buttons back-to-back if previous turn already offered one
+                        if (hadRecentOffer && !isExplicitCall && !isExplicitChat) {
+                            parsedResult.recommendation = 'none';
+                        }
+
+                        // Clean and humanize text (removes em-dashes, fixes punctuation, strips robotic phrases)
                         if (parsedResult.reply_text) {
-                            parsedResult.reply_text = parsedResult.reply_text
-                                .replace(/\s*[\u2014\u2013]\s*/g, ', ')
-                                .replace(/,\s*\./g, '.')
-                                .replace(/\s*,\s*,\s*/g, ', ')
-                                .replace(/,\s*\?/g, '?')
-                                .trim();
+                            parsedResult.reply_text = cleanHumanText(parsedResult.reply_text);
                         }
 
                         res.statusCode = 200;
