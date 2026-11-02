@@ -1,4 +1,8 @@
-# Dependencies
+# Environment Variables
+.env*
+.env.local
+.env.production
+
 node_modules/
 
 # OS metadata

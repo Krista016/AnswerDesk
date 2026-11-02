@@ -2441,7 +2441,7 @@
         }
 
         if (options.showConnectOptions) {
-            addConnectOptions();
+            addConnectOptions(options);
         }
 
         scrollChatToBottom();
@@ -2455,20 +2455,24 @@
         chatBody.appendChild(label);
     }
 
-    // ===== Connect Options (in-chat)  -  Professional Design =====
-    function addConnectOptions() {
+    // ===== Connect Options (in-chat)  -  Professional Design with Priority Highlighting =====
+    function addConnectOptions(options = {}) {
         const optionsDiv = document.createElement('div');
         optionsDiv.className = 'connect-options-pro';
+
+        const expertTitle = options.expertRole ? `Talk to ${options.expertRole}` : 'Talk to an Expert';
+        const isPriorityCall = options.highlightCall;
+
         optionsDiv.innerHTML = `
-            <button class="connect-option-pro call-option-pro" id="inChatCall">
+            <button class="connect-option-pro call-option-pro ${isPriorityCall ? 'call-option-priority' : ''}" id="inChatCall">
                 <div class="option-pro-icon call-icon-pro">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
                         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
                     </svg>
                 </div>
                 <div class="option-pro-content">
-                    <span class="option-pro-title">Talk to an Expert</span>
-                    <span class="option-pro-desc">Get connected via phone call now</span>
+                    <span class="option-pro-title">${expertTitle} ${isPriorityCall ? '<span class="badge-recommended">★ RECOMMENDED</span>' : ''}</span>
+                    <span class="option-pro-desc">${isPriorityCall ? 'Fastest direct phone connection (Avg. 2 min)' : 'Get connected via phone call now'}</span>
                 </div>
                 <div class="option-pro-arrow">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>
@@ -2483,7 +2487,7 @@
                 </div>
                 <div class="option-pro-content">
                     <span class="option-pro-title">Continue with AI Chat</span>
-                    <span class="option-pro-desc">Keep troubleshooting with me</span>
+                    <span class="option-pro-desc">Keep troubleshooting step-by-step</span>
                 </div>
                 <div class="option-pro-arrow">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>
@@ -2572,8 +2576,11 @@
         }, 50);
     }
 
-    // ===== Handle Send Message =====
-    function handleSendMessage() {
+    // ===== Conversation Memory for Gemini AI =====
+    const geminiHistory = [];
+
+    // ===== Handle Send Message (Gemini API with Local Fallback) =====
+    async function handleSendMessage() {
         const text = chatInput.value.trim();
         if (!text) return;
 
@@ -2584,25 +2591,76 @@
             if (tooltip) tooltip.style.display = 'none';
         }
 
-        // Add user message
+        // Add user message to UI
         lastMessageType = 'user';
         addMessage(text, 'user');
         chatInput.value = '';
         messageCount++;
 
-        // Get response from chat flow state machine
-        const response = getChatFlowResponse(text);
+        // Show typing indicator immediately while waiting for Gemini
+        showTypingIndicator();
 
-        // Reset last message type for bot label
-        lastMessageType = null;
+        try {
+            const apiRes = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: text,
+                    history: geminiHistory
+                })
+            });
 
-        // Send bot messages
-        sendBotMessages(response.messages, {
-            showConnectOptions: response.showConnectOptions || false
-        });
+            if (!apiRes.ok) throw new Error('API returned status ' + apiRes.status);
+            const json = await apiRes.json();
+            if (!json.success || !json.data) throw new Error('Invalid API response');
 
-        // Dynamic Suggestions: Refresh or hide suggestion pills depending on new chat phase
-        renderLeftSuggestions(detectedCategory || 'overall');
+            const aiData = json.data;
+            removeTypingIndicator();
+
+            // Store in conversational memory
+            geminiHistory.push({ user: text, model: aiData.reply_text });
+
+            // Update category and left hero if category identified
+            if (aiData.category && categories[aiData.category]) {
+                updateHeroForCategory({ key: aiData.category, ...categories[aiData.category] });
+                renderLeftSuggestions(aiData.category);
+            }
+
+            // Determine connect options according to Gemini's precision recommendation:
+            // "none": basic DIY query (Excel SUM, screenshot) -> no call or chat options
+            // "chat": moderate troubleshooting -> show options, chat primary
+            // "call": critical hardware/urgent issue -> show options, call strongly prioritized
+            const showConnectOptions = aiData.recommendation === 'call' || aiData.recommendation === 'chat';
+            const highlightCall = aiData.recommendation === 'call';
+
+            lastMessageType = null;
+            addMessage(aiData.reply_text, 'bot', {
+                showConnectOptions,
+                highlightCall,
+                expertRole: aiData.expert_role,
+                expertPhone: aiData.phone_number
+            });
+
+            // Update direct phone dialer panels if phone number returned
+            if (aiData.phone_number) {
+                const callNowBtn = document.getElementById('callNowBtn');
+                if (callNowBtn) callNowBtn.href = 'tel:' + aiData.phone_number.replace(/[^0-9+]/g, '');
+                const phoneDisplay = document.getElementById('callPanelPhoneNumberVisible');
+                if (phoneDisplay) phoneDisplay.textContent = aiData.phone_number;
+            }
+
+        } catch (err) {
+            console.warn('Gemini API offline or unreachable, falling back to local conversational engine:', err);
+            removeTypingIndicator();
+
+            // Fall back cleanly to our local state machine
+            const response = getChatFlowResponse(text);
+            lastMessageType = null;
+            sendBotMessages(response.messages, {
+                showConnectOptions: response.showConnectOptions || false
+            });
+            renderLeftSuggestions(detectedCategory || 'overall');
+        }
     }
 
     // ===== Event Listeners =====
