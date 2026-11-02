@@ -909,7 +909,7 @@
             }
 
             // 3-TIER TRIAGE EXECUTION:
-            const isExplicitDirect = /\b(call (me|someone|expert|specialist|tech)|connect (me )?(on|by|via|to|with)? (a )?(call|phone)|phone (connection|call)|give me (the )?number|speak to (someone|expert|specialist|human|agent)|talk on phone)\b/i.test(text);
+            const isExplicitDirect = /\b(call (you|me|someone|expert|specialist|tech)|connect (me )?(on|by|via|to|with)? (a )?(call|phone)|phone (connection|call)|give me (the )?number|speak to (someone|expert|specialist|human|agent|you)|talk on phone|call directly)\b/i.test(text);
             const isDecliningOrPivoting = /\b(no\b|nah\b|wait\b|hold on\b|actually\b|i think\b|cancel\b|not now\b|never mind\b|nevermind\b)/i.test(text);
             const isRefusingDIY = /\b(not trying|won'?t try|not doing (that|this)|don'?t want to try|too complicated|too hard|can'?t do it|you do it|just fix it|i want (a )?(human|person|expert|specialist)|talk to (a )?(human|person|expert)|connect me|tired of|frustrated|give me (a )?person)\b/i.test(text);
             const allowConnect = isRefusingDIY || (!connectedToExpert && ((geminiHistory.length > 1 && !isDecliningOrPivoting) || isExplicitDirect));
