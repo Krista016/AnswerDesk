@@ -372,7 +372,7 @@
             expertName: 'Dr. Emily Parks', expertRole: 'Board Certified Physician'
         },
         automotive: {
-            keywords: ['car', 'vehicle', 'engine', 'brake', 'transmission', 'mechanic', 'auto', 'tire', 'battery', 'oil change'],
+            keywords: ['car', 'cars', 'vehicle', 'truck', 'suv', 'van', 'automobile', 'engine', 'motor', 'starter', 'alternator', 'battery', 'clicking', 'clicking sound', 'clicking noise', "won't start", 'wont start', 'not starting', 'brake', 'brakes', 'transmission', 'mechanic', 'auto', 'tire', 'tires', 'oil change', 'radiator', 'check engine', 'clutch', 'catalytic', 'exhaust', 'steering'],
             label: 'Automotive', expertType: 'Auto', phone: '1-800-555-0156',
             expertName: 'Tom Garcia', expertRole: 'ASE Certified Mechanic'
         },
@@ -766,20 +766,137 @@
         return lowerText.includes(lowerKw);
     }
 
-    // ===== Detect Category from Text =====
-    function detectCategory(text) {
-        const lower = text.toLowerCase();
-        // Priority order: check vet BEFORE medical (so "my dog is sick" → vet), subscription BEFORE account
-        const priorityOrder = ['veterinary', 'subscription'];
-        const orderedKeys = [...priorityOrder, ...Object.keys(categories).filter(k => !priorityOrder.includes(k) && k !== 'account')];
-        orderedKeys.push('account');
-        for (const key of orderedKeys) {
-            const cat = categories[key];
+    // ===== Platform Inquiries & FAQ Helper =====
+    // Distinguishes general AnswerDesk questions (pricing, guarantee, refund policy, legitimacy)
+    // from actual user tickets, preventing false categorizations (like treating a pricing query as a subscription issue).
+    function isPlatformFAQ(text) {
+        const t = text.toLowerCase().trim();
+
+        // If user explicitly mentions a 3rd-party product they want to cancel or dispute, let it route to ticket intake
+        const isThirdPartyDispute = /\b(netflix|spotify|amazon|gym|planet fitness|adobe|hulu|disney|microsoft 365|game pass)\b/i.test(t) &&
+                                    /\b(cancel|charged me|charge on card|auto renew|membership)\b/i.test(t);
+        if (isThirdPartyDispute) return null;
+
+        const asksAboutCallOrExpertCost = /\b(how much|what (does|is) (it|a|the|this) cost|how much does|what are the rates|pricing|rates?|fees?|charges?|how much (is|are) (an|the)? (expert|call|phone call|specialist)|is (it|this) free)\b/i.test(t);
+        const asksAboutRefundPolicy = /\b(refund policy|money back|get a refund|satisfaction guarantee|what if.*(can'?t fix|doesn'?t work|not satisfied)|guarantee)\b/i.test(t);
+        const asksHowPlatformWorks = /\b(how does this work|how it works|are you (an? )?(ai|bot|robot|real person|human)|can i (speak|talk) to a (real|human) (person|specialist|expert)|speak to a real person)\b/i.test(t);
+
+        if (asksAboutCallOrExpertCost && asksAboutRefundPolicy) return 'pricing_and_refund';
+        if (asksAboutCallOrExpertCost) return 'pricing';
+        if (asksAboutRefundPolicy) return 'refund';
+        if (asksHowPlatformWorks) return 'how_it_works';
+        return null;
+    }
+
+    // ===== Reset Captured Details on Topic Pivot =====
+    function resetCapturedDetails() {
+        capturedDetails = {
+            device: null,
+            issue: null,
+            duration: null,
+            cause: null,
+            triedFix: null,
+            model: null,
+            platform: null,
+            symptoms: null,
+            petType: null,
+            petBreed: null,
+            bodyPart: null,
+            productName: null,
+            vehicleInfo: null,
+            location: null,
+            rawIssuePhrase: null
+        };
+    }
+
+    // ===== Detect Category from Text with Topic-Shift & Negation Awareness =====
+    function detectCategory(text, currentCatKey) {
+        const lower = text.toLowerCase().trim();
+
+        // 1. If this is a general AnswerDesk platform question, do NOT categorize as a ticket category
+        if (isPlatformFAQ(lower)) {
+            return null;
+        }
+
+        // 2. Identify contrastive pivot clauses (e.g. "actually ... but", "nevermind ... my car", "doing better now, but")
+        const contrastSplit = lower.split(/\b(?:but|however|instead|on second thought|scratch that|never\s*mind)\b/i);
+        let previousClause = contrastSplit.length > 1 ? contrastSplit[0] : '';
+        let activeClause = contrastSplit.length > 1 ? contrastSplit.slice(1).join(' ') : lower;
+
+        // Detect if a previous category was resolved or dismissed
+        const resolvedCategories = new Set();
+        const isPetResolved = /\b(dog|cat|puppy|kitten|pet|animal)\b/i.test(previousClause) && 
+                              /\b(better|fine|okay|ok|good|cured|healed|well|recovered|back to normal)\b/i.test(previousClause);
+        if (isPetResolved) resolvedCategories.add('veterinary');
+
+        const isDeviceResolved = /\b(phone|iphone|mac|pc|laptop|windows|android|screen)\b/i.test(previousClause) && 
+                                /\b(working|fixed|fine|okay|ok|good|solved)\b/i.test(previousClause);
+        if (isDeviceResolved) {
+            resolvedCategories.add('ios');
+            resolvedCategories.add('microsoft');
+            resolvedCategories.add('android');
+        }
+
+        const scores = {};
+        for (const key of Object.keys(categories)) {
+            scores[key] = 0;
+        }
+
+        for (const [key, cat] of Object.entries(categories)) {
+            if (resolvedCategories.has(key)) {
+                scores[key] = -100;
+                continue;
+            }
+
+            let catScore = 0;
             for (const kw of cat.keywords) {
-                if (keywordMatches(lower, kw)) {
-                    return { key, ...cat };
+                // Keywords in active clause get 3x weight
+                if (keywordMatches(activeClause, kw)) {
+                    catScore += 3;
+                } else if (keywordMatches(lower, kw)) {
+                    catScore += 1;
                 }
             }
+            scores[key] = catScore;
+        }
+
+        // Contextual bonuses for active clause strong signals
+        if (/\b(car|truck|suv|van|vehicle|automobile)\b/i.test(activeClause)) {
+            scores.automotive = (scores.automotive || 0) + 7;
+        }
+        if (/\b(iphone|ipad|macbook|imac|airpods|apple watch|icloud)\b/i.test(activeClause)) {
+            scores.ios = (scores.ios || 0) + 7;
+        }
+        if (/\b(windows 11|windows 10|bsod|blue screen|microsoft 365|office 365|outlook)\b/i.test(activeClause)) {
+            scores.microsoft = (scores.microsoft || 0) + 7;
+        }
+        if (!resolvedCategories.has('veterinary') && /\b(dog|cat|puppy|kitten|vet|veterinarian)\b/i.test(activeClause)) {
+            scores.veterinary = (scores.veterinary || 0) + 7;
+        }
+        if (/\b(plumb|pipe|leak|drain|toilet|clog|faucet)\b/i.test(activeClause)) {
+            scores.plumbing = (scores.plumbing || 0) + 7;
+        }
+
+        // Find highest scoring category
+        let bestKey = null;
+        let highestScore = 0;
+        for (const [key, score] of Object.entries(scores)) {
+            if (score > highestScore) {
+                highestScore = score;
+                bestKey = key;
+            }
+        }
+
+        if (bestKey && highestScore >= 1) {
+            const isTopicSwitch = !!(currentCatKey && bestKey !== currentCatKey);
+            return {
+                key: bestKey,
+                score: highestScore,
+                isTopicSwitch,
+                activeClause,
+                resolvedPet: isPetResolved,
+                ...categories[bestKey]
+            };
         }
         return null;
     }
@@ -1059,6 +1176,9 @@
             { re: /\b(blue screen|bsod|black screen|white screen|frozen|freezing|stuck|crash|crashing|overheating|slow|lagging|flickering|glitching|error|beeping)\b/i, val: m => m[1] },
             { re: /\b(cracked|shattered|broken|damaged|scratched|dented|bent)\s*(?:screen|display|glass)?/i, val: m => m[0] },
             { re: /\b(battery drain|draining fast|dies quickly|won'?t hold charge)\b/i, val: m => m[0] },
+            // Automotive issues - engine & noise symptoms
+            { re: /(?:won'?t\s+start|not\s+starting)\s+(?:and|,)?\s*(?:makes?\s+a?\s*)?(clicking\s+sound|clicking\s+noise|clicking|strange\s+noise|grinding|squealing|sputtering)/i, val: m => `won't start and makes a ${m[1]}` },
+            { re: /\b(clicking sound|clicking noise|clicking|knocking|grinding noise|squealing brakes|sputtering|won'?t turn over|engine stalling|overheating|flat tire|dead battery)\b/i, val: m => m[1] },
             // Pet/medical symptoms — expanded with natural language
             { re: /\b(throwing up|vomiting|not eating|won'?t eat|limping|lethargic|diarrhea|scratching|itching|coughing|sneezing|wheezing|shaking|trembling|bleeding|swollen|swelling|panting|drooling|not drinking|won'?t drink|acting weird|acting strange|acting funny|acting different|not moving|not playing|not active|hiding|aggressive|restless|losing weight|lost weight|losing hair|losing fur|bald spot|not barking|stopped barking|won'?t bark|barking|not meowing|stopped meowing|won'?t meow|meowing)\b/i, val: m => m[1] },
             { re: /\b(throwing up|vomiting)\s+(?:and|,)\s*(not eating|won'?t eat|lethargic|has diarrhea)/i, val: m => `${m[1]} and ${m[2]}` },
@@ -1134,10 +1254,15 @@
             const m = text.match(p.re);
             if (m) capturedDetails.productName = m[1].trim();
         }
-        // Vehicle extraction
+        // Vehicle extraction - brand and generic vehicle support
         const vehicleMatch = text.match(/\b(\d{4})?\s*(toyota|honda|ford|chevy|chevrolet|bmw|mercedes|audi|nissan|hyundai|kia|subaru|volkswagen|jeep|dodge|tesla|lexus|mazda|volvo)\s*(\w+)?\b/i);
         if (vehicleMatch) {
             capturedDetails.vehicleInfo = [vehicleMatch[1], vehicleMatch[2], vehicleMatch[3]].filter(Boolean).join(' ').trim();
+        } else if (!capturedDetails.vehicleInfo) {
+            const genericVehicleMatch = text.match(/\b(?:my\s+)?(car|truck|suv|van|vehicle|automobile)\b/i);
+            if (genericVehicleMatch) {
+                capturedDetails.vehicleInfo = genericVehicleMatch[1].toLowerCase();
+            }
         }
         // Location extraction (plumbing/medical)
         const locMatch = text.match(/\b(kitchen|bathroom|washroom|restroom|toilet|basement|garage|attic|laundry\s*room|living\s*room|bedroom|upstairs|downstairs)\b/i);
@@ -1459,24 +1584,81 @@
             };
         }
 
-        // Extract details from EVERY message
-        extractDetails(userMessage);
+        // ===== FAQ & SERVICE INQUIRIES INTERCEPTOR =====
+        // Answers pricing, refund policy, and platform questions directly without breaking triage
+        const faqType = isPlatformFAQ(lower);
+        if (faqType) {
+            const expertLabel = getExpertTypeLabel();
+            let faqMessages = [];
+            if (faqType === 'pricing_and_refund' || faqType === 'pricing' || faqType === 'refund') {
+                faqMessages = [
+                    "AnswerDesk operates on a transparent **Pay-Only-After-Solution** standard:",
+                    "• **Initial Chat & Intake:** Always 100% free to explain what is happening and review first-step checks.\n• **Expert Phone & Remote Consult:** A 7-day trial starts at $1–$5. Full sessions are billed only after a verified specialist successfully resolves your issue. No upfront retainers.\n• **100% Satisfaction Guarantee:** If the expert cannot solve your issue, you receive a full, immediate refund.",
+                    detectedCategory 
+                        ? `Would you like me to connect you with an **${expertLabel}** right now, or do you have any more questions about your issue?`
+                        : "Would you like to connect with a verified specialist now?"
+                ];
+            } else if (faqType === 'how_it_works') {
+                faqMessages = [
+                    "AnswerDesk connects you directly with verified specialists across tech, automotive, veterinary, medical, and legal fields:",
+                    "1. **Describe your issue:** We triage symptoms and match you with a certified professional.\n2. **Connect in under 2 minutes:** Talk via direct phone call or secure live chat.\n3. **Pay Only After Solution:** You are never billed upfront — only after your problem is solved.",
+                    detectedCategory 
+                        ? `Would you like to speak directly with an **${expertLabel}** now?`
+                        : "What issue can we help you resolve today?"
+                ];
+            }
+            return {
+                messages: faqMessages,
+                showConnectOptions: true
+            };
+        }
 
-        // ===== CATEGORY DETECTION =====
-        // Detect category. Allow re-detection if user clearly switches topics
-        // (e.g. talks about dog first, then switches to cat — both are veterinary)
-        // But do not let noise override an established category
-        const newCat = detectCategory(userMessage);
-        if (!detectedCategory) {
-            if (newCat) {
+        // ===== CATEGORY DETECTION & TOPIC SWITCHING =====
+        const newCat = detectCategory(userMessage, detectedCategory);
+        if (newCat) {
+            if (newCat.isTopicSwitch) {
+                // Topic Pivot Detected! (e.g. from dog/veterinary to car/automotive)
+                const previousCatKey = detectedCategory;
+
+                // Update left pane hero & suggestion pills to the new category first
+                updateHeroForCategory(newCat);
+                detectedCategory = newCat.key;
+                renderLeftSuggestions(newCat.key);
+
+                // Completely clear stale details to eliminate context bleed
+                resetCapturedDetails();
+
+                // Extract details from the active new clause
+                extractDetails(newCat.activeClause || userMessage);
+
+                // Build clean summary for the new category
+                issueSummary = buildSummary();
+                const expertLabel = getExpertTypeLabel();
+
+                let pivotAck = "Thank you for the update. Let's focus on your new issue.";
+                if (newCat.resolvedPet) {
+                    pivotAck = "Glad to hear your dog is doing better! Let's get your car taken care of.";
+                } else if (previousCatKey === 'veterinary') {
+                    pivotAck = "Understood! Let's focus on this issue right away.";
+                }
+
+                chatPhase = 'summary';
+                return {
+                    messages: [
+                        pivotAck,
+                        `Here's what I'll tell the ${expertLabel}:\n${issueSummary}`,
+                        `Is there anything else the ${expertLabel} should know before I connect you?`
+                    ]
+                };
+            } else if (!detectedCategory) {
+                detectedCategory = newCat.key;
                 updateHeroForCategory(newCat);
                 renderLeftSuggestions(newCat.key);
             }
-        } else if (newCat && newCat.key !== detectedCategory) {
-            // User switched to a genuinely different category — allow it
-            updateHeroForCategory(newCat);
-            renderLeftSuggestions(newCat.key);
         }
+
+        // Extract details for current ongoing category
+        extractDetails(userMessage);
 
         // ===== EDGE CASE: Gibberish Detection =====
         if (isGibberish(lower) && !isGreetingMessage(lower)) {
@@ -1566,20 +1748,19 @@
                 const addMore = ['yes', 'yeah', 'yep', 'actually', 'also', 'and', 'one more'];
                 const noMore = ['no', 'nope', 'that\'s it', 'that\'s all', 'nothing else', 'no that', 'correct', 'right', 'exactly'];
 
-                // Check if the user is mentioning a completely new issue/pet/topic
-                const mentionsNewPet = /\b(my\s+)?(dog|cat|puppy|kitten|bird|hamster|rabbit|fish|parrot|turtle|horse)\b/i.test(lower);
-                const mentionsNewDevice = /\b(iphone|ipad|macbook|samsung|pixel|xbox|surface|laptop|computer|phone)\b/i.test(lower);
-                if (mentionsNewPet || mentionsNewDevice || (lower.length > 15 && hasSubstantiveContent(lower))) {
+                // Check if the user is mentioning more context for the current issue
+                if (lower.length > 15 && hasSubstantiveContent(lower)) {
                     // User added more context — re-extract and rebuild summary
                     chatPhase = 'summary';
                     issueSummary = buildSummary();
                     const expertLabel = getExpertTypeLabel();
-                    const pet = capturedDetails.petType ? getPetDescription() : null;
-                    let ackMsg;
-                    if (pet) {
-                        ackMsg = `Thank you for those details about your ${pet}. I want to make sure our veterinarian has all the right information.`;
-                    } else {
-                        ackMsg = "Thank you for the additional information.";
+                    let ackMsg = "Thank you for those additional details.";
+                    if (detectedCategory === 'veterinary' && capturedDetails.petType) {
+                        ackMsg = `Thank you for those details about your ${getPetDescription()}. I want to make sure our veterinarian has all the right information.`;
+                    } else if (detectedCategory === 'automotive' && capturedDetails.vehicleInfo) {
+                        ackMsg = `Thank you for those details about your ${capturedDetails.vehicleInfo}. I want to make sure our mechanic has all the right information.`;
+                    } else if (capturedDetails.device) {
+                        ackMsg = `Thank you for those details about your ${capturedDetails.device}. I want to make sure our technician has all the right information.`;
                     }
                     return {
                         messages: [
@@ -2111,15 +2292,25 @@
         const categoryLabel = cat ? cat.label : 'General Support';
         let lines = [];
 
-        // Device/Subject
-        if (capturedDetails.device) lines.push(`\u2022 Device: ${capturedDetails.device}`);
-        if (capturedDetails.petType) {
+        // Device/Subject - strictly contextual based on active category
+        if (capturedDetails.device && ['ios', 'microsoft', 'android', 'xbox', 'appliances'].includes(detectedCategory)) {
+            lines.push(`\u2022 Device: ${capturedDetails.device}`);
+        }
+        if (capturedDetails.petType && detectedCategory === 'veterinary') {
             lines.push(`\u2022 Pet: ${getPetDescription()}`);
         }
-        if (capturedDetails.vehicleInfo) lines.push(`\u2022 Vehicle: ${capturedDetails.vehicleInfo}`);
-        if (capturedDetails.productName) lines.push(`\u2022 Product: ${capturedDetails.productName}`);
-        if (capturedDetails.bodyPart) lines.push(`\u2022 Area of concern: ${capturedDetails.bodyPart}`);
-        if (capturedDetails.location) lines.push(`\u2022 Location: ${capturedDetails.location}`);
+        if (capturedDetails.vehicleInfo && detectedCategory === 'automotive') {
+            lines.push(`\u2022 Vehicle: ${capturedDetails.vehicleInfo}`);
+        }
+        if (capturedDetails.productName && ['subscription', 'microsoft', 'crypto'].includes(detectedCategory)) {
+            lines.push(`\u2022 Product: ${capturedDetails.productName}`);
+        }
+        if (capturedDetails.bodyPart && detectedCategory === 'medical') {
+            lines.push(`\u2022 Area of concern: ${capturedDetails.bodyPart}`);
+        }
+        if (capturedDetails.location && ['plumbing', 'medical'].includes(detectedCategory)) {
+            lines.push(`\u2022 Location: ${capturedDetails.location}`);
+        }
 
         // Issue
         if (capturedDetails.issue) lines.push(`\u2022 Issue: ${capturedDetails.issue}`);
