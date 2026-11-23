@@ -5256,14 +5256,14 @@ body.support-page .support-footer-links a:hover {
     }
 
     body.support-page .hero {
-        padding: 10px 0 18px !important;
+        padding: 8px 0 8px !important;
         min-height: calc(100dvh - 50px) !important;
         align-items: flex-start !important;
     }
 
     body.support-page .hero-inner {
         padding: 0 12px !important;
-        gap: 10px !important;
+        gap: 8px !important;
         align-items: stretch !important;
     }
 
@@ -5303,9 +5303,9 @@ body.support-page .support-footer-links a:hover {
     body.support-page .chat-panel {
         width: 100% !important;
         max-width: 100% !important;
-        height: clamp(340px, calc(100dvh - 118px), 630px) !important;
-        min-height: 340px !important;
-        max-height: calc(100dvh - 112px) !important;
+        height: calc(100dvh - 96px) !important;
+        min-height: 260px !important;
+        max-height: calc(100dvh - 96px) !important;
         border-radius: 16px !important;
         margin: 0 auto !important;
         display: flex !important;
@@ -5404,6 +5404,46 @@ body.support-page .support-footer-links a:hover {
 
     body.support-page .support-footer-links {
         gap: 12px 18px;
+    }
+
+    body.support-page.mobile-kb-open {
+        overflow: hidden !important;
+    }
+
+    body.support-page.mobile-kb-open .site-header,
+    body.support-page.mobile-kb-open .hero-left,
+    body.support-page.mobile-kb-open .chat-header {
+        display: none !important;
+    }
+
+    body.support-page.mobile-kb-open .chat-panel {
+        position: fixed !important;
+        top: var(--vvt, 0px) !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: var(--vvh, 100dvh) !important;
+        min-height: 0 !important;
+        max-height: var(--vvh, 100dvh) !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        z-index: 9999 !important;
+        box-shadow: none !important;
+    }
+
+    body.support-page.mobile-kb-open .chat-body {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        padding: 10px 12px 6px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    body.support-page.mobile-kb-open .chat-input-area {
+        padding: 8px 12px 10px !important;
+        gap: 6px !important;
+        background: #ffffff !important;
+        border-top: 1px solid #e2e8f0 !important;
     }
 }
 

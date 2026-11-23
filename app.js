@@ -1244,6 +1244,62 @@
     }
 
     // ===== Event Listeners =====
+    let mobileKbBlurTimer = null;
+
+    function syncMobileViewport() {
+        const vv = window.visualViewport;
+        const heightPx = Math.round(vv ? vv.height : window.innerHeight);
+        const topPx = Math.round(vv ? vv.offsetTop : 0);
+        document.documentElement.style.setProperty('--vvh', heightPx + 'px');
+        document.documentElement.style.setProperty('--vvt', topPx + 'px');
+        if (chatBody) {
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+    }
+
+    function openMobileKeyboardMode() {
+        if (window.innerWidth > 768) return;
+        if (mobileKbBlurTimer) {
+            clearTimeout(mobileKbBlurTimer);
+            mobileKbBlurTimer = null;
+        }
+        document.body.classList.add('mobile-kb-open');
+        syncMobileViewport();
+        setTimeout(syncMobileViewport, 120);
+        setTimeout(syncMobileViewport, 320);
+    }
+
+    function closeMobileKeyboardMode() {
+        if (mobileKbBlurTimer) clearTimeout(mobileKbBlurTimer);
+        mobileKbBlurTimer = setTimeout(() => {
+            if (document.activeElement !== chatInput) {
+                document.body.classList.remove('mobile-kb-open');
+                document.documentElement.style.removeProperty('--vvh');
+                document.documentElement.style.removeProperty('--vvt');
+            }
+        }, 180);
+    }
+
+    chatInput.addEventListener('focus', openMobileKeyboardMode);
+    chatInput.addEventListener('blur', closeMobileKeyboardMode);
+
+    if (window.visualViewport) {
+        const onViewportChange = () => {
+            if (document.body.classList.contains('mobile-kb-open')) {
+                syncMobileViewport();
+            }
+        };
+        window.visualViewport.addEventListener('resize', onViewportChange);
+        window.visualViewport.addEventListener('scroll', onViewportChange);
+    }
+
+    startChatBtn.addEventListener('mousedown', (e) => {
+        if (window.innerWidth <= 768 && document.activeElement === chatInput) {
+            // Keep input focused so tapping SEND keeps the message visible above keyboard
+            e.preventDefault();
+        }
+    });
+
     startChatBtn.addEventListener('click', handleSendMessage);
     chatInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
