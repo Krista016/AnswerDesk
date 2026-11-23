@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How do I fix Avast / AVG Web Shield HTTPS scanning causing ERR_CERT_AUTHORITY_INVALID in… | AnswerDesk</title>
+    <meta name="description" content="Avast/AVG Web Shield installs a local root certificate that breaks when Firefox uses its own cert store or after browser updates. Open Avast/AVG &gt; Menu &gt;…">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <link rel="canonical" href="https://answerdesk-zeta.vercel.app/guides/avast-avg-web-shield-https-scanning-causing-err-cert-authority-invalid-i">
+    <link rel="alternate" type="text/markdown" href="/llms.txt" title="AnswerDesk AI Knowledge Base Index">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><path d='M8 6C8 4.9 8.9 4 10 4H30C31.1 4 32 4.9 32 6V28C32 29.1 31.1 30 30 30H22L16 36V30H10C8.9 30 8 29.1 8 28V6Z' fill='%23278b7d'/><path d='M14 14L19 19L26 12' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg>" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/index.css?v=20261121_v14">
+    <link rel="stylesheet" href="/articles.css?v=20261121_v8">
+    <link rel="stylesheet" href="/mobile-nav.css?v=20261121_v3">
+    <meta name="theme-color" content="#123e35">
+
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="AnswerDesk">
+    <meta property="og:url" content="https://answerdesk-zeta.vercel.app/guides/avast-avg-web-shield-https-scanning-causing-err-cert-authority-invalid-i">
+    <meta property="og:title" content="How do I fix Avast / AVG Web Shield HTTPS scanning causing ERR_CERT_AUTHORITY_INVALID in Chrome/Firefox?">
+    <meta property="og:description" content="Avast/AVG Web Shield installs a local root certificate that breaks when Firefox uses its own cert store or after browser updates. Open Avast/AVG &gt; Menu &gt;…">
+    <meta property="og:image" content="https://answerdesk-zeta.vercel.app/assets/cta-expert-pro.png">
+    <meta property="article:section" content="Antivirus &amp; Security Suites">
+    <meta property="article:published_time" content="2026-11-21">
+    <meta property="article:modified_time" content="2026-11-21">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="How do I fix Avast / AVG Web Shield HTTPS scanning causing ERR_CERT_AUTHORITY_INVALID in Chrome/Firefox?">
+    <meta name="twitter:description" content="Avast/AVG Web Shield installs a local root certificate that breaks when Firefox uses its own cert store or after browser updates. Open Avast/AVG &gt; Menu &gt;…">
+    <meta name="twitter:image" content="https://answerdesk-zeta.vercel.app/assets/cta-expert-pro.png">
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://answerdesk-zeta.vercel.app/guides/avast-avg-web-shield-https-scanning-causing-err-cert-authority-invalid-i#article",
+      "headline": "How do I fix Avast / AVG Web Shield HTTPS scanning causing ERR_CERT_AUTHORITY_INVALID in Chrome/Firefox?",
+      "description": "Avast/AVG Web Shield installs a local root certificate that breaks when Firefox uses its own cert store or after browser updates. Open Avast/AVG > Menu > Settings > Protection > Core Shields > Web Shield, uncheck Enable HTTPS scanning (or export and re-import the Avast Web/Mail Shield Root Certificate into Firefox Authorities), and restart the browser.",
+      "articleSection": "Antivirus & Security Suites — Malwarebytes, Avast & AVG",
+      "inLanguage": "en-US",
+      "datePublished": "2026-11-21",
+      "dateModified": "2026-11-21",
+      "url": "https://answerdesk-zeta.vercel.app/guides/avast-avg-web-shield-https-scanning-causing-err-cert-authority-invalid-i",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://answerdesk-zeta.vercel.app/guides/avast-avg-web-shield-https-scanning-causing-err-cert-authority-invalid-i"
+      },
+      "image": "https://answerdesk-zeta.vercel.app/assets/cta-expert-pro.png",
+      "author": {
+        "@type": "Person",
+        "name": "Brian Crawford",
+        "jobTitle": "Network Firewall & Threat Removal Engineer",
+        "url": "https://answerdesk-zeta.vercel.app/expert-verification"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "AnswerDesk",
+        "url": "https://answerdesk-zeta.vercel.app/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://answerdesk-zeta.vercel.app/assets/guarantees/vetting.png"
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://answerdesk-zeta.vercel.app/guides/avast-avg-web-shield-https-scanning-causing-err-cert-authority-invalid-i#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://answerdesk-zeta.vercel.app/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Troubleshooting Guides",
+          "item": "https://answerdesk-zeta.vercel.app/articles"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Antivirus & Security Suites",
+          "item": "https://answerdesk-zeta.vercel.app/guides/category/antivirus"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "How do I fix Avast / AVG Web Shield HTTPS scanning causing ERR_CERT_AUTHORITY_INVALID in Chrome/Firefox?",
+          "item": "https://answerdesk-zeta.vercel.app/guides/avast-avg-web-shield-https-scanning-causing-err-cert-authority-invalid-i"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://answerdesk-zeta.vercel.app/guides/avast-avg-web-shield-https-scanning-causing-err-cert-authority-invalid-i#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I fix Avast / AVG Web Shield HTTPS scanning causing ERR_CERT_AUTHORITY_INVALID in Chrome/Firefox?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Avast/AVG Web Shield installs a local root certificate that breaks when Firefox uses its own cert store or after browser updates. Open Avast/AVG > Menu > Settings > Protection > Core Shields > Web Shield, uncheck Enable HTTPS scanning (or export and re-import the Avast Web/Mail Shield Root Certificate into Firefox Authorities), and restart the browser."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Will fixing \"Avast / AVG Web Shield HTTPS scanning causing ERR_CERT_AUTHORITY_INVALID in Chrome/Firefox\" delete my personal files, data, or account history?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Uninstalling, repairing, or switching antivirus software does not delete your personal files, photos, or documents. Before removing a suite, restore any mistakenly quarantined safe files from Quarantine if needed."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How long does it normally take to resolve this Antivirus & Endpoint Security issue?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Running an official removal utility, rebooting, and installing a fresh antivirus build typically takes 10–20 minutes. Subscription auto-renewal cancellations take effect immediately in your vendor account portal."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What should I do if the problem returns after following these steps?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "If installation or uninstall loops persist after running the vendor's official removal utility (e.g., NRnR, MCPR, Avast Clear), boot into Windows Safe Mode to run the cleanup tool offline, then reinstall a fresh installer downloaded directly from the vendor's primary domain. You can also connect directly with a certified Antivirus & Endpoint Security expert 24/7 on AnswerDesk for guided 1-on-1 troubleshooting."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "HowTo",
+      "@id": "https://answerdesk-zeta.vercel.app/guides/avast-avg-web-shield-https-scanning-causing-err-cert-authority-invalid-i#howto",
+      "name": "How do I fix Avast / AVG Web Shield HTTPS scanning causing ERR_CERT_AUTHORITY_INVALID in Chrome/Firefox?",
+      "description": "Avast/AVG Web Shield installs a local root certificate that breaks when Firefox uses its own cert store or after browser updates. Open Avast/AVG > Menu > Settings > Protection > Core Shields > Web Shield, uncheck Enable HTTPS scanning (or export and re-import the Avast Web/Mail Shield Root Certificate into Firefox Authorities), and restart the browser.",
+      "totalTime": "PT10M",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Primary Resolution Step",
+          "text": "Open Avast/AVG &gt."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Action Step 2",
+          "text": "Settings &gt."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Action Step 3",
+          "text": "Protection &gt."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "name": "Action Step 4",
+          "text": "Core Shields &gt."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 5,
+          "name": "Action Step 5",
+          "text": "Web Shield, uncheck Enable HTTPS scanning (or export and re-import the Avast Web/Mail Shield Root Certificate into Firefox Authorities)."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 6,
+          "name": "Secondary Recovery & Fallback",
+          "text": "Restart the browser."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 7,
+          "name": "Verify Complete Resolution",
+          "text": "Reboot your PC or Mac and confirm the security suite launches cleanly in the system tray / menu bar with a green \"Protected\" status. Run a manual Virus Definition Update and a Quick Scan to verify the real-time protection engine, firewall, and cloud lookup services connect without errors. Open Windows Security > Virus & Threat Protection > Manage Providers (or macOS System Settings > Privacy & Security) to confirm no conflicting legacy AV driver remains."
+        }
+      ]
+    }
+  ]
+}
+    </script>
+</head>
+<body class="static-guide-page">
+    
+    <header class="site-header" id="siteHeader">
+        <div class="header-inner">
+            <a href="/" class="logo" id="logo">
+                <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 6C8 4.89543 8.89543 4 10 4H30C31.1046 4 32 4.89543 32 6V28C32 29.1046 31.1046 30 30 30H22L16 36V30H10C8.89543 30 8 29.1046 8 28V6Z" fill="#278b7d"/>
+                    <path d="M14 14L19 19L26 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="logo-text">
+                    <span class="logo-name">Answer<span class="logo-name-accent">Desk</span></span>
+                    <span class="logo-sub">Troubleshooting Guide</span>
+                </div>
+            </a>
+            <nav class="header-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/support" class="nav-link">Support</a>
+                <a href="/articles" class="nav-link">All 704 Guides</a>
+                <a href="/about" class="nav-link">About Us</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </nav>
+            <a href="/support" class="header-cta">Get Expert Help</a>
+        </div>
+    </header>
+
+    <main class="standalone-guide-wrap">
+        <div class="standalone-guide-container">
+            <nav class="guide-breadcrumb" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                <span aria-hidden="true">&rsaquo;</span>
+                <a href="/articles">All 704 Guides</a>
+                <span aria-hidden="true">&rsaquo;</span>
+                <a href="/guides/category/antivirus">Antivirus &amp; Security Suites</a>
+                <span aria-hidden="true">&rsaquo;</span><span class="crumb-current">Malwarebytes, Avast &amp; AVG</span>
+            </nav>
+
+            <div class="guide-top-actions">
+                <a href="/articles" class="back-to-articles-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                    Browse All 704 Guides
+                </a>
+                <a href="/guides/category/antivirus" class="back-to-category-link">
+                    More in Antivirus &amp; Security Suites &rarr;
+                </a>
+            </div>
+
+            <article class="full-article-card" itemscope itemtype="https://schema.org/TechArticle">
+                <div class="reader-meta-bar">
+                    <a href="/guides/category/antivirus" class="article-card-tag article-tag-link">Antivirus &amp; Security Suites</a>
+                    <span class="reader-subcat-pill">Malwarebytes, Avast &amp; AVG</span>
+                    <span class="article-card-time">&bull; 4 min read</span>
+                    <span class="guide-verified-pill">&#10003; Verified November 2026</span>
+                </div>
+
+                <h1 class="reader-title" itemprop="headline">How do I fix Avast / AVG Web Shield HTTPS scanning causing ERR_CERT_AUTHORITY_INVALID in Chrome/Firefox?</h1>
+
+                <div class="reader-author-bar">
+                    <img src="/assets/expert-25.png" alt="Brian Crawford" width="48" height="48">
+                    <div class="reader-author-text">
+                        <strong>Written &amp; Audited by <span itemprop="author">Brian Crawford</span></strong>
+                        <span>Network Firewall &amp; Threat Removal Engineer &bull; <a href="/expert-verification" class="author-verify-link">AnswerDesk Vetted Expert</a> &bull; Updated <time datetime="2026-11-21">November 2026</time></span>
+                    </div>
+                </div>
+
+                <div class="reader-content" itemprop="articleBody">
+                    
+            <div class="ai-direct-answer" itemscope itemtype="https://schema.org/Answer">
+                <div class="ai-answer-badge">&#9889; Quick Expert Answer &bull; Malwarebytes, Avast &amp; AVG</div>
+                <p itemprop="text">Avast/AVG Web Shield installs a local root certificate that breaks when Firefox uses its own cert store or after browser updates. Open <strong>Avast/AVG &gt; Menu &gt; Settings &gt; Protection &gt; Core Shields &gt; Web Shield</strong>, uncheck <strong>Enable HTTPS scanning</strong> (or export and re-import the Avast Web/Mail Shield Root Certificate into Firefox Authorities), and restart the browser.</p>
+            </div>
+
+            <section class="guide-checklist-card" aria-label="Before you begin checklist">
+                <h2>Before You Start: Quick Pre-Check</h2>
+                <ul class="guide-checklist-list">
+                    <li><span class="chk-icon" aria-hidden="true">&#10003;</span><span>Confirm only ONE real-time antivirus product is installed on the computer (running two real-time engines simultaneously causes crashes, update errors, and 100% disk/CPU spikes).</span></li>
+                    <li><span class="chk-icon" aria-hidden="true">&#10003;</span><span>Locate your active subscription email or 25-character license key inside your official vendor account portal before running a removal/reinstall tool.</span></li>
+                    <li><span class="chk-icon" aria-hidden="true">&#10003;</span><span>Close open browsers and save work, as official antivirus cleanup utilities require a full system reboot.</span></li>
+                </ul>
+            </section>
+
+            <section class="guide-diagnosis-section">
+                <h2>Why This Issue Happens</h2>
+                <p>Avast/AVG Web Shield installs a local root certificate that breaks when Firefox uses its own cert store or after browser updates.</p>
+                <p class="diagnosis-context">This issue falls under <strong>Malwarebytes, Avast &amp; AVG</strong> (Antivirus &amp; Endpoint Security). Confirming the exact trigger before making changes prevents unnecessary resets and helps preserve your data and account standing.</p>
+            </section>
+
+            <section class="guide-protocol-section">
+                <h2>Step-by-Step Resolution Protocol</h2>
+                
+                <div class="kb-step-box">
+                    <div class="kb-step-num">Step 1</div>
+                    <div class="kb-step-title">Primary Resolution Step</div>
+                    <p>Open <strong>Avast/AVG &gt.</p>
+                    
+                </div>
+
+                <div class="kb-step-box">
+                    <div class="kb-step-num">Step 2</div>
+                    <div class="kb-step-title">Action Step 2</div>
+                    <p>Settings &gt.</p>
+                    
+                </div>
+
+                <div class="kb-step-box">
+                    <div class="kb-step-num">Step 3</div>
+                    <div class="kb-step-title">Action Step 3</div>
+                    <p>Protection &gt.</p>
+                    
+                </div>
+
+                <div class="kb-step-box">
+                    <div class="kb-step-num">Step 4</div>
+                    <div class="kb-step-title">Action Step 4</div>
+                    <p>Core Shields &gt.</p>
+                    
+                </div>
+
+                <div class="kb-step-box">
+                    <div class="kb-step-num">Step 5</div>
+                    <div class="kb-step-title">Action Step 5</div>
+                    <p>Web Shield</strong>, uncheck <strong>Enable HTTPS scanning</strong> (or export and re-import the Avast Web/Mail Shield Root Certificate into Firefox Authorities).</p>
+                    
+                </div>
+
+                <div class="kb-step-box">
+                    <div class="kb-step-num">Step 6</div>
+                    <div class="kb-step-title">Secondary Recovery &amp; Fallback</div>
+                    <p>Restart the browser.</p>
+                    
+                </div>
+            </section>
+
+            <section class="guide-verify-card">
+                <h2>How to Verify the Fix Worked</h2>
+                <ol class="guide-verify-list">
+                    <li>Reboot your PC or Mac and confirm the security suite launches cleanly in the system tray / menu bar with a green &quot;Protected&quot; status.</li>
+                    <li>Run a manual Virus Definition Update and a Quick Scan to verify the real-time protection engine, firewall, and cloud lookup services connect without errors.</li>
+                    <li>Open Windows Security &gt; Virus &amp; Threat Protection &gt; Manage Providers (or macOS System Settings &gt; Privacy &amp; Security) to confirm no conflicting legacy AV driver remains.</li>
+                </ol>
+                <p class="guide-escalation-note"><strong>What if the issue still persists?</strong> If installation or uninstall loops persist after running the vendor&#39;s official removal utility (e.g., NRnR, MCPR, Avast Clear), boot into Windows Safe Mode to run the cleanup tool offline, then reinstall a fresh installer downloaded directly from the vendor&#39;s primary domain.</p>
+            </section>
+
+            <div class="kb-warning-box">
+                <strong>&#9888;&#65039; Expert Safety &amp; Verification Advisory:</strong> Anti-Scam Warning: Ignore fake browser pop-ups claiming &quot;Your PC is infected!&quot; and fraudulent PDF renewal emails claiming &quot;$399.99 was auto-charged for Geek/Norton/McAfee.&quot; Never call phone numbers in unsolicited emails—manage subscriptions only by logging directly into your official vendor account.
+            </div>
+        
+                </div>
+
+                <section class="guide-faq-section" aria-label="Frequently Asked Questions">
+                    <h2>Frequently Asked Questions</h2>
+                    <div class="guide-faq-list">
+                        
+                <details class="guide-faq-item" open>
+                    <summary>Will fixing &quot;Avast / AVG Web Shield HTTPS scanning causing ERR_CERT_AUTHORITY_INVALID in Chrome/Firefox&quot; delete my personal files, data, or account history?</summary>
+                    <p>Uninstalling, repairing, or switching antivirus software does not delete your personal files, photos, or documents. Before removing a suite, restore any mistakenly quarantined safe files from Quarantine if needed.</p>
+                </details>
+
+                <details class="guide-faq-item">
+                    <summary>How long does it normally take to resolve this Antivirus &amp; Endpoint Security issue?</summary>
+                    <p>Running an official removal utility, rebooting, and installing a fresh antivirus build typically takes 10–20 minutes. Subscription auto-renewal cancellations take effect immediately in your vendor account portal.</p>
+                </details>
+
+                <details class="guide-faq-item">
+                    <summary>What should I do if the problem returns after following these steps?</summary>
+                    <p>If installation or uninstall loops persist after running the vendor&#39;s official removal utility (e.g., NRnR, MCPR, Avast Clear), boot into Windows Safe Mode to run the cleanup tool offline, then reinstall a fresh installer downloaded directly from the vendor&#39;s primary domain. You can also connect directly with a certified Antivirus &amp; Endpoint Security expert 24/7 on AnswerDesk for guided 1-on-1 troubleshooting.</p>
+                </details>
+                    </div>
+                </section>
+
+                <div class="article-resolver-widget" id="articleResolverWidget">
+                    <div class="resolver-question">
+                        <h4>Did this diagnostic guide solve your issue?</h4>
+                        <p>Let us know if your issue is resolved, or get connected to an active Antivirus &amp; Security Suites expert in seconds.</p>
+                    </div>
+                    <div class="resolver-action-btns" id="resolverActionBtns">
+                        <button type="button" class="btn-solved" id="btnSolvedIssue">&#10003; Yes, Solved!</button>
+                        <a href="/support?q=How%20do%20I%20fix%20Avast%20%2F%20AVG%20Web%20Shield%20HTTPS%20scanning%20causing%20ERR_CERT_AUTHORITY_INVALID%20in%20Chrome%2FFirefox%3F" class="btn-not-solved" id="btnNotSolvedIssue">
+                            No, Connect with Support Team &rarr;
+                        </a>
+                    </div>
+                    <div class="resolver-feedback-message" id="resolverFeedbackMessage">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>Thank you for your feedback! We're glad this resolved your issue.</span>
+                    </div>
+                </div>
+            </article>
+
+            <section class="related-guides-section" aria-label="Related Troubleshooting Guides">
+                <div class="related-guides-header">
+                    <h2>Related Antivirus &amp; Security Suites Troubleshooting Guides</h2>
+                    <a href="/guides/category/antivirus" class="related-view-all">View all Antivirus &amp; Security Suites guides &rarr;</a>
+                </div>
+                <div class="related-guides-grid">
+                    
+                <a class="related-guide-card" href="/guides/avast-avg-constant-scareware-pop-ups-claiming-your-pc-has-147-broken-reg">
+                    <span class="related-guide-cat">Malwarebytes, Avast &amp; AVG</span>
+                    <h3 class="related-guide-title">How do I stop Avast / AVG constant scareware pop-ups claiming &quot;Your PC has 147 broken registry items / IP exposed&quot;?</h3>
+                    <p class="related-guide-snippet">Avast/AVG Free display aggressive upsell notifications for Cleanup Premium and SecureLine VPN.</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/uninstall-avast-or-avg-when-windows-says-access-denied-or-self-defense-b">
+                    <span class="related-guide-cat">Malwarebytes, Avast &amp; AVG</span>
+                    <h3 class="related-guide-title">How do I completely uninstall Avast or AVG when Windows says &quot;Access Denied&quot; or Self-Defense blocks removal?</h3>
+                    <p class="related-guide-snippet">Avast/AVG&#39;s Self-Defense module blocks standard deletion.</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/avast-avg-mail-shield-breaking-outlook-or-thunderbird-ssl-certificate-er">
+                    <span class="related-guide-cat">Malwarebytes, Avast &amp; AVG</span>
+                    <h3 class="related-guide-title">How do I fix Avast / AVG Mail Shield breaking Outlook or Thunderbird (SSL certificate error)?</h3>
+                    <p class="related-guide-snippet">Mail Shield intercepts IMAP/SMTP SSL connections on ports 993/465/587.</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/avg-avast-blocking-my-usb-drive-game-anti-cheat-or-steam-game-downloads">
+                    <span class="related-guide-cat">Malwarebytes, Avast &amp; AVG</span>
+                    <h3 class="related-guide-title">How do I fix AVG / Avast blocking my USB drive, game anti-cheat, or Steam game downloads?</h3>
+                    <p class="related-guide-snippet">Open AVG/Avast &gt; Quarantine to restore falsely flagged .dll/.exe game files, add the Steam/game install directory…</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/an-unexpected-avast-avg-or-ccleaner-auto-renewal-charge">
+                    <span class="related-guide-cat">Malwarebytes, Avast &amp; AVG</span>
+                    <h3 class="related-guide-title">How do I cancel an unexpected Avast, AVG, or CCleaner auto-renewal charge?</h3>
+                    <p class="related-guide-snippet">Sign into id.avast.com or myaccount.avg.com (same Gen Digital ecosystem) using the purchase email, open My…</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/malwarebytes-or-avast-on-android-iphone-not-scanning-properly-or-drainin">
+                    <span class="related-guide-cat">Malwarebytes, Avast &amp; AVG</span>
+                    <h3 class="related-guide-title">How do I fix Malwarebytes or Avast on Android/iPhone not scanning properly or draining phone battery?</h3>
+                    <p class="related-guide-snippet">On iOS, Apple sandboxes apps so no third-party antivirus can scan iOS system files (mobile apps only offer Safari Web…</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    
+    <footer class="site-footer">
+        <div class="section-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a href="/" class="logo footer-logo">
+                        <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 6C8 4.89543 8.89543 4 10 4H30C31.1046 4 32 4.89543 32 6V28C32 29.1046 31.1046 30 30 30H22L16 36V30H10C8.89543 30 8 29.1046 8 28V6Z" fill="#278b7d"/>
+                            <path d="M14 14L19 19L26 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="logo-text">
+                            <span class="logo-name" style="color: #ffffff;">Answer<span class="logo-name-accent" style="color: #5eead4;">Desk</span></span>
+                        </div>
+                    </a>
+                    <p class="footer-desc">Real help from verified experts, 24/7. Browse 704+ step-by-step troubleshooting guides or chat live with an expert.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Top Guide Hubs</h4>
+                    <ul>
+                        <li><a href="/guides/category/windows">Microsoft &amp; Windows (128)</a></li>
+                        <li><a href="/guides/category/apple">Apple, Mac &amp; iPhone (128)</a></li>
+                        <li><a href="/guides/category/paypal">PayPal &amp; Payments (80)</a></li>
+                        <li><a href="/guides/category/amazon">Amazon &amp; Devices (80)</a></li>
+                        <li><a href="/guides/category/antivirus">Antivirus Suites (75)</a></li>
+                        <li><a href="/guides/category/defender">Windows Defender (75)</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Knowledge &amp; Support</h4>
+                    <ul>
+                        <li><a href="/articles">All 704 Troubleshooting Guides</a></li>
+                        <li><a href="/support">Live 24/7 Expert Support</a></li>
+                        <li><a href="/faq">Frequently Asked Questions</a></li>
+                        <li><a href="/expert-verification">Expert Verification Process</a></li>
+                        <li><a href="/llms.txt">AI Knowledge Index (llms.txt)</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company &amp; Legal</h4>
+                    <ul>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/contact">Contact &amp; Escalations</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-guarantees">
+                <div class="footer-guarantee-item">
+                    <div class="guarantee-icon-wrap">
+                        <img decoding="async" loading="lazy" src="/assets/guarantees/vetting.png" alt="Multi-Stage Vetting" width="40" height="40">
+                    </div>
+                    <div class="guarantee-text">
+                        <strong>Multi-Stage Vetting</strong>
+                        <p>Identity, credentials &amp; practical assessments audited</p>
+                    </div>
+                </div>
+                <div class="footer-guarantee-item">
+                    <div class="guarantee-icon-wrap">
+                        <img decoding="async" loading="lazy" src="/assets/guarantees/pay_solution.png" alt="Pay After Solution" width="40" height="40">
+                    </div>
+                    <div class="guarantee-text">
+                        <strong>Pay After Solution</strong>
+                        <p>No upfront retainers: billed only upon resolution</p>
+                    </div>
+                </div>
+                <div class="footer-guarantee-item">
+                    <div class="guarantee-icon-wrap">
+                        <img decoding="async" loading="lazy" src="/assets/guarantees/rapid_connect.png" alt="24/7 Rapid Connect" width="40" height="40">
+                    </div>
+                    <div class="guarantee-text">
+                        <strong>24/7 Rapid Connect</strong>
+                        <p>Average expert connection under 2 minutes</p>
+                    </div>
+                </div>
+                <div class="footer-guarantee-item">
+                    <div class="guarantee-icon-wrap">
+                        <img decoding="async" loading="lazy" src="/assets/guarantees/zero_data.png" alt="Zero Data Sharing" width="40" height="40">
+                    </div>
+                    <div class="guarantee-text">
+                        <strong>Zero Data Sharing</strong>
+                        <p>Strict privacy standard: issue-focused data only</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="brand-disclaimer">
+                    <p><strong>Disclaimer:</strong> AnswerDesk is an independent online consultation and support platform and is not affiliated with, authorized by, endorsed by, sponsored by, or otherwise associated with Amazon, Apple, Microsoft, Google, Gmail, Facebook (Meta), PayPal, Zelle, Venmo, Cash App, Coinbase, Norton, McAfee, Bitdefender, HP, AT&amp;T, Verizon, Geek Squad, or any bank, financial institution, or cryptocurrency exchange or platform. All product names, logos, brands, trademarks, and service marks referenced on this site are the sole property of their respective owners and do not sponsor, endorse, or maintain any association with AnswerDesk. Any use of third-party names or trademarks is strictly for informational and identification purposes only and does not imply any affiliation, authorization, or endorsement. Official brand support may also be available directly from the respective product manufacturers or service providers. For physical emergencies, please immediately call 911 or your local emergency services.</p>
+                </div>
+                <p>&copy; 2026 AnswerDesk. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    (function(){
+        var btn = document.getElementById('btnSolvedIssue');
+        var actions = document.getElementById('resolverActionBtns');
+        var msg = document.getElementById('resolverFeedbackMessage');
+        if (btn && actions && msg) {
+            btn.addEventListener('click', function(){
+                actions.style.display = 'none';
+                msg.style.display = 'inline-flex';
+            });
+        }
+    })();
+    </script>
+    <script src="/cookie-banner.js?v=20261121_v3"></script>
+    <script src="/mobile-nav.js?v=20261121_v3"></script>
+</body>
+</html>

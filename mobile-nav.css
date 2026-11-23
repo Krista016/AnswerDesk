@@ -1,11 +1,53 @@
 /* ===== UNIVERSAL MOBILE NAVIGATION & TOP-BAR RESPONSIVENESS ===== */
 
-/* 1. Hide top disclaimer bar on mobile, tablet, and narrow screens (visible only on full desktop view > 1024px) */
+html,
+body {
+    overflow-x: clip;
+    max-width: 100%;
+}
+
+/* 1. Keep top disclaimer bar cleanly visible and responsive on ALL viewports (never hide data on mobile/tablet) */
+.top-bar-centered .top-bar-inner,
+.top-bar-inner:has(> :only-child) {
+    justify-content: center !important;
+    text-align: center !important;
+}
+
 @media (max-width: 1024px) {
     .top-bar,
     #topBar,
     div.top-bar {
-        display: none !important;
+        display: block !important;
+        padding: 7px 0 !important;
+        font-size: 11px !important;
+        line-height: 1.4 !important;
+    }
+
+    .top-bar-inner {
+        padding: 0 14px !important;
+        flex-direction: column !important;
+        gap: 2px !important;
+        text-align: center !important;
+    }
+
+    .top-bar-inner span {
+        display: block;
+        max-width: 100%;
+        word-break: break-word;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-bar,
+    #topBar,
+    div.top-bar {
+        font-size: 10.5px !important;
+        padding: 6px 0 !important;
+    }
+
+    .top-bar-inner {
+        padding: 0 10px !important;
+        gap: 1px !important;
     }
 }
 
@@ -106,26 +148,43 @@
 /* Mobile Header Constraints (<= 768px) */
 @media (max-width: 768px) {
     .header-inner {
-        padding: 0 14px !important;
+        min-height: 60px !important;
+        height: auto !important;
+        padding: 10px 14px !important;
         gap: 8px !important;
     }
 
     .logo {
         gap: 8px !important;
-        flex-shrink: 0 !important;
+        flex-shrink: 1 !important;
+        min-width: 0 !important;
     }
 
     .logo-icon {
-        width: 28px !important;
-        height: 28px !important;
+        width: 30px !important;
+        height: 30px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .logo-text {
+        min-width: 0 !important;
     }
 
     .logo-name {
         font-size: 18px !important;
+        line-height: 1.1 !important;
     }
 
     .logo-sub {
-        display: none !important;
+        display: block !important;
+        font-size: 8.5px !important;
+        letter-spacing: 1px !important;
+        line-height: 1.15 !important;
+        margin-top: 1px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 150px !important;
     }
 
     .header-right-actions {
@@ -146,7 +205,8 @@
 /* Extra-narrow screens (<= 440px) */
 @media (max-width: 440px) {
     .header-inner {
-        padding: 0 10px !important;
+        min-height: 56px !important;
+        padding: 8px 12px !important;
         gap: 6px !important;
     }
 
@@ -160,6 +220,12 @@
 
     .logo-name {
         font-size: 17px !important;
+    }
+
+    .logo-sub {
+        font-size: 8px !important;
+        letter-spacing: 0.6px !important;
+        max-width: 135px !important;
     }
 
     .header-cta {
@@ -229,13 +295,17 @@
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
-    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.32s ease;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
 
 .mobile-nav-drawer.active {
     transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
 }
 
 /* Drawer Header */
@@ -369,4 +439,132 @@
     height: 7px;
     background: #22c55e;
     border-radius: 50%;
+}
+
+
+/* ===== COOKIE CONSENT BANNER ===== */
+.cookie-banner {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 850px;
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 18px 22px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 1px solid #334155;
+    z-index: 10050 !important;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    box-sizing: border-box;
+}
+
+.cookie-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #cbd5e1;
+}
+
+.cookie-text a {
+    color: #38bdf8;
+    text-decoration: underline;
+}
+
+.cookie-actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.btn-cookie-accept {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.btn-cookie-accept:hover {
+    background: #1d4ed8;
+}
+
+.btn-cookie-essential {
+    background: transparent;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-cookie-essential:hover {
+    background: #1e293b;
+    color: white;
+}
+
+@media (max-width: 1080px) {
+    body.has-cookie-banner {
+        padding-bottom: var(--cookie-banner-offset, 140px);
+    }
+
+    body.has-cookie-banner .floating-chat-btn {
+        bottom: var(--cookie-banner-offset, 150px) !important;
+    }
+
+    body.has-cookie-banner .floating-chat-panel {
+        bottom: calc(var(--cookie-banner-offset, 150px) + 72px) !important;
+        max-height: calc(100dvh - var(--cookie-banner-offset, 150px) - 88px) !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .cookie-banner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 14px 16px;
+        bottom: 12px;
+        width: calc(100% - 24px);
+    }
+
+    .cookie-text {
+        font-size: 12px;
+        line-height: 1.45;
+    }
+
+    .cookie-actions {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .cookie-actions .btn-cookie-essential,
+    .cookie-actions .btn-cookie-accept {
+        flex: 1 1 0;
+        text-align: center;
+        padding: 10px 12px;
+        font-size: 12.5px;
+    }
+}
+
+@media (max-width: 360px) {
+    .cookie-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
 }

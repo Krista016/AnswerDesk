@@ -1,0 +1,26 @@
+# Environment & VCS
+.env*
+.git*
+node_modules/
+.agents/
+
+# Non-production test, benchmark & scratch files
+tests/
+scripts/
+docs/
+processed_guarantees/
+test-*.js
+test_*.js
+benchmark_*.js
+benchmark_results_*.json
+TEST_*.md
+test-results.md
+AUDIT.md
+chat_body_dump.html
+expert-overview.html
+expert-overview.png
+assets/render-piston.html
+assets/answerdesk.webm
+server.js
+build-seo-pages.js
+*.log

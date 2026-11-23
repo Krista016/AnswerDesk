@@ -4,6 +4,8 @@
         const statNumbers = document.querySelectorAll('.stat-number[data-target]');
         if (statNumbers.length) {
             let statsAnimated = false;
+            const statsCard = document.getElementById('statsBar') || document.querySelector('.stats-rounded-card, .stats-bar');
+            const statsTarget = statsCard || document.querySelector('.stats-section-wrap');
 
             // Ease-out cubic: silky smooth, gradual, visually satisfying deceleration
             function easeOutCubic(t) {
@@ -13,7 +15,11 @@
             function runFluidCounters() {
                 if (statsAnimated) return;
                 statsAnimated = true;
-                const duration = 2800; // 2.8s: fluid, slow, readable progression
+                requestAnimationFrame(() => {
+                    if (statsCard) statsCard.classList.add('stats-revealed');
+                    if (statsTarget) statsTarget.classList.add('stats-revealed');
+                });
+                const duration = 1350; // 1.35s: smooth, crisp progression
                 const startTime = performance.now();
 
                 function updateCounter(now) {
@@ -23,6 +29,7 @@
 
                     statNumbers.forEach(el => {
                         const target = parseFloat(el.getAttribute('data-target'));
+                        const prefix = el.getAttribute('data-prefix') || '';
                         const suffix = el.getAttribute('data-suffix') || '';
                         const decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
                         const formatComma = el.getAttribute('data-format') === 'comma';
@@ -34,7 +41,7 @@
                             displayVal = Math.round(currentVal).toLocaleString();
                         }
 
-                        el.textContent = displayVal + suffix;
+                        el.textContent = prefix + displayVal + suffix;
                     });
 
                     if (progress < 1) {
@@ -42,6 +49,7 @@
                     } else {
                         statNumbers.forEach(el => {
                             const target = parseFloat(el.getAttribute('data-target'));
+                            const prefix = el.getAttribute('data-prefix') || '';
                             const suffix = el.getAttribute('data-suffix') || '';
                             const decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
                             const formatComma = el.getAttribute('data-format') === 'comma';
@@ -49,7 +57,7 @@
                             if (formatComma) {
                                 finalVal = Math.round(target).toLocaleString();
                             }
-                            el.textContent = finalVal + suffix;
+                            el.textContent = prefix + finalVal + suffix;
                             el.classList.add('counter-completed');
                         });
                     }
@@ -58,17 +66,21 @@
                 requestAnimationFrame(updateCounter);
             }
 
-            const statsTarget = document.querySelector('.stats-rounded-card, .stats-section-wrap, .stats-bar, #statsBar');
             if (statsTarget && 'IntersectionObserver' in window) {
-                const statsObserver = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            runFluidCounters();
-                            statsObserver.unobserve(entry.target);
-                        }
-                    });
-                }, { threshold: 0.15 });
-                statsObserver.observe(statsTarget);
+                const statsRect = statsTarget.getBoundingClientRect();
+                if (statsRect.top < window.innerHeight + 60) {
+                    runFluidCounters();
+                } else {
+                    const statsObserver = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                runFluidCounters();
+                                statsObserver.unobserve(entry.target);
+                            }
+                        });
+                    }, { threshold: 0.01, rootMargin: '0px 0px 80px 0px' });
+                    statsObserver.observe(statsTarget);
+                }
             } else {
                 runFluidCounters();
             }
@@ -77,18 +89,25 @@
         // Two-way CTA glide scroll animation (Left text glide in + Right curvy image glide in)
         const ctaSection = document.querySelector('.cta-section');
         if (ctaSection && 'IntersectionObserver' in window) {
-            const ctaObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const ctaContent = entry.target.querySelector('.cta-content');
-                        const ctaImageWrap = entry.target.querySelector('.cta-image-wrap');
-                        if (ctaContent) ctaContent.classList.add('animated');
-                        if (ctaImageWrap) ctaImageWrap.classList.add('animated', 'visible');
-                        ctaObserver.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.15 });
-            ctaObserver.observe(ctaSection);
+            const revealCta = () => {
+                const ctaContent = ctaSection.querySelector('.cta-content');
+                const ctaImageWrap = ctaSection.querySelector('.cta-image-wrap');
+                if (ctaContent) ctaContent.classList.add('animated');
+                if (ctaImageWrap) ctaImageWrap.classList.add('animated', 'visible');
+            };
+            if (ctaSection.getBoundingClientRect().top < window.innerHeight) {
+                revealCta();
+            } else {
+                const ctaObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            revealCta();
+                            ctaObserver.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.01, rootMargin: '0px 0px 80px 0px' });
+                ctaObserver.observe(ctaSection);
+            }
         }
     }
 
@@ -122,15 +141,37 @@
     const continueChatBtn = document.getElementById('continueChatBtn');
     const phoneReveal = document.getElementById('phoneReveal');
     const onlineCount = document.getElementById('onlineCount');
+    const headerExpertsStatus = document.getElementById('headerExpertsStatus');
+    const headerExpertsCount = document.getElementById('headerExpertsCount');
     const callDetailsPanel = document.getElementById('callDetailsPanel');
+
+    function getSessionExpertCount() {
+        const storageKey = 'answerdesk_session_experts';
+        try {
+            const saved = parseInt(sessionStorage.getItem(storageKey) || '', 10);
+            if (!isNaN(saved) && saved >= 28 && saved <= 58) return saved;
+        } catch (e) {}
+        const generated = Math.floor(Math.random() * 31) + 28; // 28..58 (always <= 60)
+        try { sessionStorage.setItem(storageKey, String(generated)); } catch (e) {}
+        return generated;
+    }
+
+    const sessionExpertCount = getSessionExpertCount();
+    if (headerExpertsCount) {
+        headerExpertsCount.textContent = `${sessionExpertCount}+ Experts`;
+    }
 
     // ===== Session State =====
     let chatStarted = false;
+    let welcomeTimer = null;
+    let expertPopupTimer = null;
+    let isSendingMessage = false;
     let messageCount = 0;
     let detectedCategory = null;
     let unreadCount = 0;
     let pageTitle = document.title;
     let isPageVisible = true;
+    let intakeState = null;
     const geminiHistory = [];
 
     // ===== 35 Verified Expert Profiles =====
@@ -174,20 +215,20 @@
 
     // ===== Category Directory & Roles =====
     const categories = {
-        crypto: { label: 'Digital Payments & Fintech', expertType: 'Finance', phone: '1-800-555-0188', expertRole: 'Crypto Finance Specialist' },
-        microsoft: { label: 'Microsoft & Windows', expertType: 'Tech', phone: '1-800-936-5700', expertRole: 'Windows & Microsoft Systems Engineer' },
-        ios: { label: 'iPhone & Apple Devices', expertType: 'Apple', phone: '1-800-275-2273', expertRole: 'Apple & iOS Specialist' },
-        xbox: { label: 'Xbox & Gaming Systems', expertType: 'Tech', phone: '1-800-469-9269', expertRole: 'Gaming Support Specialist' },
-        android: { label: 'Android & Mobile', expertType: 'Tech', phone: '1-800-726-7864', expertRole: 'Android Tech Expert' },
-        plumbing: { label: 'Plumbing & Home Systems', expertType: 'Home', phone: '1-800-555-0199', expertRole: 'Licensed Plumber' },
-        legal: { label: 'Legal & Consumer Rights', expertType: 'Legal', phone: '1-800-555-0177', expertRole: 'Licensed Attorney' },
-        veterinary: { label: 'Veterinary & Pet Care', expertType: 'Vet', phone: '1-800-555-0145', expertRole: 'Licensed Veterinarian' },
-        medical: { label: 'Health & Medical Guidance', expertType: 'Health', phone: '1-800-555-0134', expertRole: 'Board Certified Physician' },
-        automotive: { label: 'Automotive & Mechanical', expertType: 'Auto', phone: '1-800-555-0156', expertRole: 'ASE Certified Mechanic' },
-        subscription: { label: 'Billing & Subscriptions', expertType: 'Billing', phone: '1-800-555-0122', expertRole: 'Billing Specialist' },
-        account: { label: 'Account & Security', expertType: 'Tech', phone: '1-800-555-0111', expertRole: 'Account Security Specialist' },
-        appliances: { label: 'Appliances & Electronics', expertType: 'Appliance', phone: '1-800-555-0210', expertRole: 'Appliance Specialist' },
-        finance: { label: 'Taxes & Financial Planning', expertType: 'Finance', phone: '1-800-555-0220', expertRole: 'Certified Public Accountant' }
+        crypto: { label: 'Digital Payments & Fintech', expertType: 'Finance', specialistGroup: 'Payments & Finance Experts', phone: '1-800-555-0188', expertRole: 'Digital Payments & Crypto Expert' },
+        microsoft: { label: 'Microsoft & Windows', expertType: 'Tech', specialistGroup: 'Tech Support Experts', phone: '1-800-936-5700', expertRole: 'Windows & Microsoft Systems Engineer' },
+        ios: { label: 'iPhone & Apple Devices', expertType: 'Apple', specialistGroup: 'Apple Support Experts', phone: '1-800-275-2273', expertRole: 'Apple & iOS Expert' },
+        xbox: { label: 'Xbox & Gaming Systems', expertType: 'Tech', specialistGroup: 'Gaming Support Experts', phone: '1-800-469-9269', expertRole: 'Gaming Support Expert' },
+        android: { label: 'Android & Mobile', expertType: 'Tech', specialistGroup: 'Android Support Experts', phone: '1-800-726-7864', expertRole: 'Android Tech Expert' },
+        plumbing: { label: 'Plumbing & Home Systems', expertType: 'Home', specialistGroup: 'Plumbing Experts', phone: '1-800-555-0199', expertRole: 'Licensed Plumber' },
+        legal: { label: 'Legal & Consumer Rights', expertType: 'Legal', specialistGroup: 'Legal Experts', phone: '1-800-555-0177', expertRole: 'Licensed Attorney' },
+        veterinary: { label: 'Veterinary & Pet Care', expertType: 'Vet', specialistGroup: 'Veterinary Experts', phone: '1-800-555-0145', expertRole: 'Licensed Veterinarian' },
+        medical: { label: 'Health & Medical Guidance', expertType: 'Health', specialistGroup: 'Medical Experts', phone: '1-800-555-0134', expertRole: 'Board Certified Physician' },
+        automotive: { label: 'Automotive & Mechanical', expertType: 'Auto', specialistGroup: 'Automotive Experts', phone: '1-800-555-0156', expertRole: 'ASE Certified Mechanic' },
+        subscription: { label: 'Billing & Subscriptions', expertType: 'Billing', specialistGroup: 'Billing Support Experts', phone: '1-800-555-0122', expertRole: 'Billing Expert' },
+        account: { label: 'Account & Security', expertType: 'Tech', specialistGroup: 'Account & Security Experts', phone: '1-800-555-0111', expertRole: 'Account Security Expert' },
+        appliances: { label: 'Appliances & Electronics', expertType: 'Appliance', specialistGroup: 'Appliance Experts', phone: '1-800-555-0210', expertRole: 'Appliance Expert' },
+        finance: { label: 'Taxes & Financial Planning', expertType: 'Finance', specialistGroup: 'Tax & Finance Experts', phone: '1-800-555-0220', expertRole: 'Certified Public Accountant' }
     };
 
     // ===== Dynamic Suggestion Chips for Left Pane =====
@@ -254,10 +295,10 @@
             { text: "Games keep crashing", query: "My games keep freezing and crashing on my Xbox console", icon: "💥" }
         ],
         crypto: [
-            { text: "PayPal account restricted", query: "My PayPal account was temporarily restricted", icon: "💳" },
-            { text: "Google Pay declining", query: "Google Pay transaction keeps getting declined at checkout", icon: "📱" },
-            { text: "Apple Pay card verification", query: "Apple Pay card verification failing on my device", icon: "📲" },
-            { text: "Venmo transfer pending", query: "My Venmo transfer is delayed and pending review", icon: "⏳" }
+            { text: "Zelle transfer pending", query: "My Zelle transfer through Chase has been pending for days", icon: "💸" },
+            { text: "Coinbase / 2FA locked", query: "My Coinbase account is locked out of 2FA authenticator and withdrawal frozen", icon: "🔐" },
+            { text: "PayPal account restricted", query: "My PayPal account has a 180-day limitation and 21-day hold", icon: "💳" },
+            { text: "Bank app login locked", query: "My Bank of America app login is locked and 2FA code never arrives", icon: "🏦" }
         ],
         account: [
             { text: "Social media hacked", query: "My Facebook and Instagram accounts were hacked and password changed", icon: "👥" },
@@ -401,15 +442,17 @@
         heroSubtext.style.opacity = '0';
 
         setTimeout(() => {
-            heroHeadline.innerHTML = `Facing <span class="highlight-word">${cat.label}</span> issues? Get help from Business ${cat.expertType} Experts`;
+            heroHeadline.innerHTML = `Facing <span class="highlight-word">${cat.label}</span> issues? Get help from Verified ${cat.expertType} Experts`;
             heroHeadline.classList.add('category-detected');
             heroSubtext.textContent = `Unlimited chats with verified, top-rated ${cat.expertType} Experts.`;
 
-            const specialistCount = Math.floor(Math.random() * 8) + 2;
-            onlineCount.textContent = `${specialistCount} ${cat.expertType} Support Specialists are online now`;
-
-            suggestionPills.style.opacity = '0';
-            setTimeout(() => { suggestionPills.classList.add('hidden'); }, 300);
+            const groupName = cat.specialistGroup || `${cat.expertType} Experts`;
+            if (headerExpertsStatus) {
+                headerExpertsStatus.innerHTML = `<strong>${escapeHtmlSafe(groupName)}</strong> online now ready to help!`;
+            }
+            if (onlineCount) {
+                onlineCount.textContent = `${groupName} are online now`;
+            }
 
             heroHeadline.style.opacity = '1';
             heroSubtext.style.opacity = '1';
@@ -432,13 +475,56 @@
         }, 400);
     }
 
+    // ===== Position Call Details Panel Cleanly Across Desktop, Tablet & Mobile =====
+    function positionCallDetailsPanel() {
+        const panel = callDetailsPanel;
+        if (!panel || panel.style.display === 'none') return;
+
+        if (window.innerWidth > 1100) {
+            const chatPanelEl = document.getElementById('chatPanel');
+            const panelWidth = Math.min(360, window.innerWidth - 48);
+            panel.style.width = panelWidth + 'px';
+            panel.style.right = 'auto';
+            panel.style.bottom = 'auto';
+
+            if (chatPanelEl) {
+                const chatRect = chatPanelEl.getBoundingClientRect();
+                const gap = 20;
+                const desiredLeft = Math.max(16, chatRect.left - panelWidth - gap);
+                panel.style.left = desiredLeft + 'px';
+
+                // Vertically align smoothly with chatPanel while staying completely inside viewport
+                const panelHeight = panel.offsetHeight || 520;
+                const idealTop = Math.max(16, Math.min(chatRect.top, window.innerHeight - panelHeight - 16));
+                panel.style.top = idealTop + 'px';
+            } else {
+                panel.style.left = Math.max(16, (window.innerWidth - panelWidth) / 2) + 'px';
+                panel.style.top = '96px';
+            }
+        } else {
+            // Let @media (max-width: 1100px) center the modal cleanly
+            panel.style.left = '';
+            panel.style.right = '';
+            panel.style.top = '';
+            panel.style.bottom = '';
+            panel.style.width = '';
+        }
+    }
+
+    window.addEventListener('resize', positionCallDetailsPanel);
+
     // ===== Show Call Details Panel =====
     function showCallDetailsPanel(customTitle) {
         const cat = detectedCategory ? categories[detectedCategory] : null;
         const phone = cat ? cat.phone : '1-800-555-0100';
         const label = cat ? cat.label : 'General';
-        const expert = selectedExpert;
-        const expertRole = cat ? cat.expertRole : 'Tech Support Expert';
+        const hasSpecificActiveRole = activeExpertTitle && activeExpertTitle !== 'Support Expert' && activeExpertTitle !== 'Verified Expert' && activeExpertTitle !== 'Support Specialist' && activeExpertTitle !== 'Verified Specialist';
+        const expertRole = hasSpecificActiveRole ? activeExpertTitle : (cat ? cat.expertRole : 'Verified Expert');
+        const expert = selectedExpert || {
+            name: 'Victoria Price',
+            avatar: 'assets/expert-1.png',
+            customers: 4820
+        };
 
         const panel = callDetailsPanel;
         if (!panel) return;
@@ -477,46 +563,97 @@
         if (avatarEl) avatarEl.src = expert.avatar;
 
         const backdrop = document.getElementById('callPanelBackdrop');
-        if (backdrop && window.innerWidth <= 1100) {
+        if (backdrop) {
             backdrop.style.display = 'block';
             setTimeout(() => { backdrop.classList.add('visible'); }, 10);
             backdrop.onclick = closeCallPanel;
         }
 
-        panel.style.display = 'block';
-        setTimeout(() => { panel.classList.add('visible'); }, 10);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.body.classList.add('call-panel-open');
+        document.body.style.overflow = 'hidden';
 
-        setTimeout(() => {
+        panel.style.display = 'block';
+        positionCallDetailsPanel();
+        requestAnimationFrame(() => {
+            positionCallDetailsPanel();
+            panel.classList.add('visible');
+        });
+
+        if (expertPopupTimer) {
+            clearTimeout(expertPopupTimer);
+            expertPopupTimer = null;
+        }
+        expertPopupTimer = setTimeout(() => {
             showExpertPopup(label, phone);
         }, 60000);
     }
 
     // ===== Close Call Details Panel =====
     function closeCallPanel() {
+        if (expertPopupTimer) {
+            clearTimeout(expertPopupTimer);
+            expertPopupTimer = null;
+        }
         if (callDetailsPanel) {
             callDetailsPanel.classList.remove('visible');
-            setTimeout(() => { callDetailsPanel.style.display = 'none'; }, 400);
+            setTimeout(() => {
+                if (!callDetailsPanel.classList.contains('visible')) {
+                    callDetailsPanel.style.display = 'none';
+                }
+            }, 320);
         }
         const backdrop = document.getElementById('callPanelBackdrop');
         if (backdrop) {
             backdrop.classList.remove('visible');
-            setTimeout(() => { backdrop.style.display = 'none'; }, 400);
+            setTimeout(() => {
+                if (!backdrop.classList.contains('visible')) {
+                    backdrop.style.display = 'none';
+                }
+            }, 320);
+        }
+        document.body.classList.remove('call-panel-open');
+        if (!document.getElementById('expertPopupOverlay')) {
+            document.body.style.overflow = '';
         }
     }
 
     const callPanelCloseBtn = document.getElementById('callPanelClose');
     if (callPanelCloseBtn) callPanelCloseBtn.addEventListener('click', closeCallPanel);
 
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const expertOverlay = document.getElementById('expertPopupOverlay');
+            if (expertOverlay) {
+                expertOverlay.classList.add('closing');
+                setTimeout(() => {
+                    expertOverlay.remove();
+                    if (!document.body.classList.contains('call-panel-open')) {
+                        document.body.style.overflow = '';
+                    }
+                }, 280);
+                return;
+            }
+            if (callDetailsPanel && callDetailsPanel.classList.contains('visible')) {
+                closeCallPanel();
+            }
+        }
+    });
+
     // ===== 1-Minute Expert Popup =====
     function showExpertPopup(label, phone) {
         if (document.getElementById('expertPopupOverlay')) return;
 
-        const expert = selectedExpert;
+        const expert = selectedExpert || {
+            name: 'Victoria Price',
+            avatar: 'assets/expert-1.png',
+            customers: 4820
+        };
         const cat = detectedCategory ? categories[detectedCategory] : null;
-        const expertRole = cat ? cat.expertRole : 'Tech Support Expert';
+        const effectiveLabel = (cat && cat.label) || label || 'Support';
+        const hasSpecificActiveRole = activeExpertTitle && activeExpertTitle !== 'Support Expert' && activeExpertTitle !== 'Verified Expert' && activeExpertTitle !== 'Support Specialist' && activeExpertTitle !== 'Verified Specialist';
+        const expertRole = hasSpecificActiveRole ? activeExpertTitle : (cat ? cat.expertRole : 'Verified Expert');
         const onlineExperts = Math.floor(Math.random() * 8) + 10;
-        const telNumber = phone.replace(/[^0-9]/g, '');
+        const telNumber = (phone || (cat ? cat.phone : '1-800-555-0100')).replace(/[^0-9]/g, '');
 
         const allAvatars = [];
         for (let i = 1; i <= 35; i++) { allAvatars.push('assets/expert-' + i + '.png'); }
@@ -530,8 +667,8 @@
         overlay.className = 'expert-popup-overlay';
         overlay.innerHTML = `
             <div class="expert-popup-card">
-                <button class="expert-popup-close" id="expertPopupClose">&times;</button>
-                <div class="expert-popup-badge">${onlineExperts} ${label} Experts are online now</div>
+                <button class="expert-popup-close" id="expertPopupClose" aria-label="Close popup">&times;</button>
+                <div class="expert-popup-badge">${onlineExperts} ${effectiveLabel} Experts are online now</div>
                 <div class="expert-popup-avatars">
                     <img src="${bgAvatars[0]}" alt="" class="popup-avatar-bg">
                     <img src="${bgAvatars[1]}" alt="" class="popup-avatar-bg">
@@ -543,8 +680,8 @@
                 <p class="expert-popup-role">${expertRole}</p>
                 <p class="expert-popup-customers">${expert.customers.toLocaleString()} satisfied customers</p>
                 <div class="expert-popup-divider"></div>
-                <p class="expert-popup-msg">Hi, we're online right now and<br>ready to answer your question</p>
-                <p class="expert-popup-sub">Get the answer you need in minutes.<br>Cancel anytime if not satisfied</p>
+                <p class="expert-popup-msg">Hi, we're online right now and <br>ready to answer your question</p>
+                <p class="expert-popup-sub">Get the answer you need in minutes. <br>Cancel anytime if not satisfied</p>
                 <a href="tel:+${telNumber}" class="expert-popup-cta">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
                         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
@@ -555,16 +692,21 @@
         `;
 
         document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
 
-        document.getElementById('expertPopupClose').addEventListener('click', () => {
+        function closePopup() {
             overlay.classList.add('closing');
-            setTimeout(() => overlay.remove(), 300);
-        });
+            setTimeout(() => {
+                overlay.remove();
+                if (!document.body.classList.contains('call-panel-open')) {
+                    document.body.style.overflow = '';
+                }
+            }, 280);
+        }
+
+        document.getElementById('expertPopupClose').addEventListener('click', closePopup);
         overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                overlay.classList.add('closing');
-                setTimeout(() => overlay.remove(), 300);
-            }
+            if (e.target === overlay) closePopup();
         });
     }
 
@@ -580,14 +722,12 @@
         if (!text) return '';
         let s = text;
 
-        // Remove any mentions of Quantum or AI chatbot
-        s = s.replace(/\b(?:Hi there!?\s*)?I'm Quantum[\s,\u2014\u2013\u2015\u2012\u2212\uFE58-]*/gi, "Hi! ");
-        s = s.replace(/\bQuantum\b/gi, "our team");
-        s = s.replace(/\bAI triage specialist\b/gi, "support specialist");
+        // Clean internal AI jargon while preserving Quantum Chatbot persona
+        s = s.replace(/\bAI triage (?:specialist|expert)\b/gi, "support expert");
         s = s.replace(/\bAI\b/g, "");
 
         // Replace em-dash / en-dash / double hyphens between clauses with period + capital letter
-        // E.g. "total sense—often" -> "total sense. Often"
+        // E.g. "total sense\u2014often" -> "total sense. Often"
         s = s.replace(/([a-zA-Z0-9)])\s*(?:[\u2014\u2013\u2015\u2012\u2212\uFE58]|&mdash;|&ndash;|--)\s*([a-zA-Z])/g, (m, p1, p2) => {
             return p1 + '. ' + p2.toUpperCase();
         });
@@ -596,9 +736,12 @@
         s = s.replace(/\s*(?:[\u2014\u2013\u2015\u2012\u2212\uFE58]|&mdash;|&ndash;|--)\s*/g, ', ');
         s = s.replace(/\s+-\s+/g, ', ');
 
+        // Strict terminal catch-all ensuring no em-dash or en-dash character escapes
+        s = s.replace(/[\u2014\u2013\u2015\u2012\u2212\uFE58]|&mdash;|&ndash;|--/g, ', ');
+
         s = s.replace(/,\s*\./g, '.');
         s = s.replace(/\.\s*\./g, '.');
-        s = s.replace(/,\s*,/g, ',');
+        s = s.replace(/,\s*,+/g, ',');
         s = s.replace(/,\s*\?/g, '?');
         s = s.replace(/,\s*!/g, '!');
         s = s.replace(/\s{2,}/g, ' ');
@@ -607,27 +750,74 @@
     }
 
     let connectedToExpert = false;
-    let activeExpertTitle = 'Support Specialist';
+    let activeExpertTitle = 'Support Expert';
     let chatLabelAdded = false;
+    let lastLabelWasExpert = false;
     let lastMessageType = null;
+
+    function escapeHtmlSafe(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
 
     function addChatLabel(forceExpert = false) {
         const label = document.createElement('div');
         label.className = 'chat-label';
-        if (connectedToExpert || forceExpert) {
+        const isExpert = Boolean(connectedToExpert || forceExpert);
+        if (isExpert) {
             const expertName = selectedExpert ? selectedExpert.name : 'Victoria Price';
-            const role = activeExpertTitle || 'Support Specialist';
-            label.innerHTML = `<span style="display:inline-block;width:7px;height:7px;background-color:#10b981;border-radius:50%;margin-right:5px;"></span>${expertName}, ${role}`;
+            const role = activeExpertTitle || 'Support Expert';
+            label.innerHTML = `<span style="display:inline-block;width:7px;height:7px;background-color:#10b981;border-radius:50%;margin-right:5px;"></span>${escapeHtmlSafe(expertName)}, ${escapeHtmlSafe(role)}`;
         } else {
             label.innerHTML = `⚛️ Quantum Chatbot, Expert's Assistant`;
         }
         chatBody.appendChild(label);
         chatLabelAdded = true;
+        lastLabelWasExpert = isExpert;
+    }
+
+    function clearTransientChatActions() {
+        chatBody.querySelectorAll('.chat-quick-replies, .connect-options-pro').forEach(el => el.remove());
+    }
+
+    function addQuickReplies(replies) {
+        if (!Array.isArray(replies) || replies.length === 0) return;
+        chatBody.querySelectorAll('.chat-quick-replies').forEach(el => el.remove());
+
+        const wrap = document.createElement('div');
+        wrap.className = 'chat-quick-replies';
+
+        replies.forEach(label => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'quick-reply-chip';
+            btn.textContent = label;
+            btn.addEventListener('click', () => {
+                wrap.remove();
+                if (/add a detail|another detail/i.test(label)) {
+                    chatInput.placeholder = 'Type the extra detail you want to add...';
+                    chatInput.focus();
+                } else {
+                    chatInput.value = label;
+                    handleSendMessage();
+                }
+            });
+            wrap.appendChild(btn);
+        });
+
+        chatBody.appendChild(wrap);
+        scrollChatToBottom();
     }
 
     function addMessage(text, type, options = {}) {
-        if (type === 'bot') {
-            if (!chatLabelAdded || options.forceExpertLabel) {
+        if (type === 'user') {
+            chatLabelAdded = false;
+            lastLabelWasExpert = false;
+        } else if (type === 'bot') {
+            if (!chatLabelAdded || (options.forceExpertLabel && !lastLabelWasExpert)) {
                 addChatLabel(options.forceExpertLabel);
             }
         }
@@ -647,37 +837,47 @@
                 wrap.appendChild(avatar);
                 msgDiv.appendChild(wrap);
             } else {
+                const avatarWrap = document.createElement('div');
+                avatarWrap.className = 'pearl-avatar-wrap';
                 const avatar = document.createElement('img');
                 avatar.src = 'assets/chat-avatar-btn.png';
-                avatar.alt = 'Quantum';
+                avatar.alt = "Quantum Chatbot, Expert's Assistant";
                 avatar.className = 'pearl-avatar';
-                msgDiv.appendChild(avatar);
+                const beacon = document.createElement('span');
+                beacon.className = 'pearl-online-beacon';
+                beacon.setAttribute('aria-hidden', 'true');
+                avatarWrap.appendChild(avatar);
+                avatarWrap.appendChild(beacon);
+                msgDiv.appendChild(avatarWrap);
             }
         }
 
         const bubble = document.createElement('div');
         bubble.className = `message-bubble ${type}-bubble`;
 
-        // Clean em-dashes and robotic phrases
-        const cleanText = cleanHumanText(text || '');
+        // Clean em-dashes and robotic phrases (preserve newlines for bulleted summaries)
+        const cleanText = type === 'bot' ? cleanHumanTextPreserveLines(text || '') : (text || '');
 
-        // Format basic markdown bold and linebreaks
         if (cleanText.includes('\n') || cleanText.includes('**')) {
-            bubble.innerHTML = cleanText
-                .replace(/\n/g, '<br>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            bubble.innerHTML = escapeHtmlSafe(cleanText)
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
         } else {
             bubble.textContent = cleanText;
         }
         msgDiv.appendChild(bubble);
         chatBody.appendChild(msgDiv);
 
-        if (type === 'bot') {
+        if (type === 'bot' && !options.silent) {
             playNotificationSound();
             if (!isPageVisible || document.hidden) {
                 unreadCount++;
                 updateTabTitle();
             }
+        }
+
+        if (Array.isArray(options.quickReplies) && options.quickReplies.length > 0) {
+            addQuickReplies(options.quickReplies);
         }
 
         if (options.showConnectOptions) {
@@ -687,86 +887,106 @@
         scrollChatToBottom();
     }
 
+    function cleanHumanTextPreserveLines(text) {
+        if (!text) return '';
+        return String(text)
+            .split('\n')
+            .map(line => cleanHumanText(line))
+            .join('\n')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+    }
+
     // ===== Connect Options (Call vs Chat Cards) =====
-    async function triggerSpecialistHandoff(userMessageText, expertRoleTitle) {
+    async function triggerSpecialistHandoff(userMessageText, expertRoleTitle, skipUserBubble = false) {
+        if (expertPopupTimer) {
+            clearTimeout(expertPopupTimer);
+            expertPopupTimer = null;
+        }
         connectedToExpert = true;
-        activeExpertTitle = expertRoleTitle || activeExpertTitle || 'Support Specialist';
+        activeExpertTitle = expertRoleTitle || activeExpertTitle || 'Support Expert';
         const expertName = selectedExpert ? selectedExpert.name : 'Victoria Price';
 
-        lastMessageType = 'user';
-        addMessage(userMessageText || 'Connect via live chat', 'user');
+        if (!skipUserBubble) {
+            lastMessageType = 'user';
+            addMessage(userMessageText || 'Online chat, please.', 'user');
+        }
 
         // Visual handoff notice in chat
-        const transferNotice = document.createElement('div');
-        transferNotice.className = 'chat-system-notice';
-        transferNotice.innerHTML = `<span>🔄</span> Connecting you with <strong>${expertName}</strong> (${activeExpertTitle})...`;
-        chatBody.appendChild(transferNotice);
+        const joinedNotice = document.createElement('div');
+        joinedNotice.className = 'chat-system-notice chat-system-joined';
+        joinedNotice.innerHTML = `<span class="online-dot-mini"></span> <strong>${escapeHtmlSafe(expertName)}</strong> joined the chat`;
+        chatBody.appendChild(joinedNotice);
         scrollChatToBottom();
 
         // Show typing indicator as the specialist
         showTypingIndicator();
+        const startedAt = Date.now();
 
         try {
             const apiRes = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: userMessageText || 'Connect via live chat',
+                    message: userMessageText || 'Online chat, please.',
                     history: geminiHistory,
+                    intake_state: intakeState,
                     specialist_handoff: true,
                     expert_name: expertName,
                     expert_role: activeExpertTitle
                 })
             });
 
-            removeTypingIndicator();
-            if (transferNotice.parentNode) transferNotice.remove();
-
             if (!apiRes.ok) throw new Error('API returned status ' + apiRes.status);
             const json = await apiRes.json();
             if (!json.success || !json.data) throw new Error('Invalid API response');
 
             const aiData = json.data;
+            const targetHandoffDelay = Math.min(2400, Math.max(1600, 1500 + (aiData.reply_text || '').length * 5));
+            const elapsed = Date.now() - startedAt;
+            if (elapsed < targetHandoffDelay) {
+                await new Promise(r => setTimeout(r, targetHandoffDelay - elapsed));
+            }
+            removeTypingIndicator();
 
-            // Show joined notice
-            const joinedNotice = document.createElement('div');
-            joinedNotice.className = 'chat-system-notice chat-system-joined';
-            joinedNotice.innerHTML = `<span class="online-dot-mini"></span> <strong>${expertName}</strong> joined the chat`;
-            chatBody.appendChild(joinedNotice);
+            if (aiData.intake_state) intakeState = aiData.intake_state;
 
-            // Store in conversational history
-            geminiHistory.push({ user: userMessageText || 'Connect via live chat', model: aiData.reply_text });
-
-            // Display specialist's real opening response
+            geminiHistory.push({
+                user: userMessageText || 'Online chat, please.',
+                model: aiData.reply_text,
+                stage: aiData.stage || 'connected',
+                category: aiData.category || detectedCategory || 'general'
+            });
             addMessage(aiData.reply_text, 'bot', { forceExpertLabel: true });
 
         } catch (err) {
             console.error('Handoff error:', err);
             removeTypingIndicator();
-            if (transferNotice.parentNode) transferNotice.remove();
-            const fallbackGreeting = `Hi! I'm ${expertName}, your ${activeExpertTitle}. I've reviewed your issue and am ready to help. What other details can you share to get started?`;
-            geminiHistory.push({ user: userMessageText || 'Connect via live chat', model: fallbackGreeting });
+            const fallbackGreeting = `Hi! I'm **${expertName}**, your verified **${activeExpertTitle}**. I've reviewed your summary and I'm ready to help resolve this step by step. Are you in front of your device right now?`;
+            geminiHistory.push({ user: userMessageText || 'Online chat, please.', model: fallbackGreeting });
             addMessage(fallbackGreeting, 'bot', { forceExpertLabel: true });
         }
     }
 
     function addConnectOptions(options = {}) {
+        // Prevent duplicate #inChatCall / #inChatContinue IDs in DOM
+        chatBody.querySelectorAll('.connect-options-pro').forEach(el => el.remove());
+
         const optionsDiv = document.createElement('div');
         optionsDiv.className = 'connect-options-pro';
 
-        const expertTitle = options.expertRole ? options.expertRole : 'Specialist';
+        const expertTitle = options.expertRole ? options.expertRole : 'Expert';
 
-        // Always show BOTH options: Direct Phone Call (★ RECOMMENDED) and Live Text Chat
         optionsDiv.innerHTML = `
-            <button class="connect-option-pro call-option-pro call-option-priority" id="inChatCall">
+            <button type="button" class="connect-option-pro call-option-pro call-option-priority" id="inChatCall">
                 <div class="option-pro-icon call-icon-pro">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
                         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
                     </svg>
                 </div>
                 <div class="option-pro-content">
-                    <span class="option-pro-title">Call ${expertTitle}</span>
-                    <span class="option-pro-desc">Direct phone connection with a verified specialist</span>
+                    <span class="option-pro-title">Call ${escapeHtmlSafe(expertTitle)}</span>
+                    <span class="option-pro-desc">Direct phone connection with a verified expert</span>
                 </div>
                 <div class="option-pro-right">
                     <span class="badge-recommended">★ RECOMMENDED</span>
@@ -775,7 +995,7 @@
                     </div>
                 </div>
             </button>
-            <button class="connect-option-pro chat-option-pro" id="inChatContinue">
+            <button type="button" class="connect-option-pro chat-option-pro" id="inChatContinue">
                 <div class="option-pro-icon chat-icon-pro">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
                         <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
@@ -783,8 +1003,8 @@
                     </svg>
                 </div>
                 <div class="option-pro-content">
-                    <span class="option-pro-title">Prefer text? Chat with ${expertTitle}</span>
-                    <span class="option-pro-desc">Continue troubleshooting in text chat</span>
+                    <span class="option-pro-title">Prefer text? Chat with ${escapeHtmlSafe(expertTitle)}</span>
+                    <span class="option-pro-desc">Continue troubleshooting live right here</span>
                 </div>
                 <div class="option-pro-arrow">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>
@@ -795,39 +1015,48 @@
         chatBody.appendChild(optionsDiv);
         scrollChatToBottom();
 
-        document.getElementById('inChatCall').addEventListener('click', () => {
-            optionsDiv.remove();
-            lastMessageType = 'user';
-            addMessage('Yes, phone call please', 'user');
+        const callBtn = optionsDiv.querySelector('.call-option-pro');
+        const chatBtn = optionsDiv.querySelector('.chat-option-pro');
 
-            setTimeout(() => {
-                showTypingThenMessage("Great choice! Connecting you with a specialist over the phone now.").then(() => {
-                    showCallDetailsPanel(options.ctaHeadline);
-                });
-            }, 300);
-        });
+        if (callBtn) {
+            callBtn.addEventListener('click', async () => {
+                optionsDiv.remove();
+                lastMessageType = 'user';
+                addMessage('Yes, phone call please', 'user');
+                showTypingIndicator();
+                await new Promise(r => setTimeout(r, 1200));
+                removeTypingIndicator();
+                addMessage("Great choice! Connecting you with an expert over the phone now, and I've attached your full summary.", 'bot');
+                showCallDetailsPanel(options.ctaHeadline);
+            });
+        }
 
-        document.getElementById('inChatContinue').addEventListener('click', () => {
-            optionsDiv.remove();
-            triggerSpecialistHandoff('Prefer text? Chat with ' + expertTitle, expertTitle);
-        });
+        if (chatBtn) {
+            chatBtn.addEventListener('click', () => {
+                optionsDiv.remove();
+                triggerSpecialistHandoff('Online chat, please.', expertTitle, false);
+            });
+        }
     }
 
     // ===== Typing Indicator =====
     function showTypingIndicator() {
         if (document.getElementById('typingIndicator')) return;
+        if (!chatLabelAdded) {
+            addChatLabel(connectedToExpert);
+        }
         const typingDiv = document.createElement('div');
         typingDiv.className = 'typing-indicator';
         typingDiv.id = 'typingIndicator';
 
-        let avatarHtml = `<img src="assets/chat-avatar-btn.png" alt="Quantum" class="pearl-avatar">`;
+        let avatarHtml = `<div class="pearl-avatar-wrap"><img src="assets/chat-avatar-btn.png" alt="Quantum Chatbot, Expert's Assistant" class="pearl-avatar"><span class="pearl-online-beacon" aria-hidden="true"></span></div>`;
         if (connectedToExpert && selectedExpert) {
-            avatarHtml = `<div class="avatar-container"><img src="${selectedExpert.avatar}" alt="${selectedExpert.name}" class="expert-avatar-face"></div>`;
+            avatarHtml = `<div class="avatar-container"><img src="${selectedExpert.avatar}" alt="${escapeHtmlSafe(selectedExpert.name)}" class="expert-avatar-face"></div>`;
         }
 
         typingDiv.innerHTML = `
             ${avatarHtml}
-            <div class="typing-dots">
+            <div class="typing-dots" aria-label="Assistant is typing">
                 <span></span><span></span><span></span>
             </div>
         `;
@@ -858,17 +1087,31 @@
         }, 50);
     }
 
-    // ===== Handle Send Message (3-Tier Gemini AI Engine) =====
+    function clampMs(val, min, max) {
+        return Math.min(max, Math.max(min, val));
+    }
+
+    // ===== Handle Send Message (AskTech / Pearl Paced Consultative AI Engine) =====
     async function handleSendMessage() {
         const text = chatInput.value.trim();
-        if (!text) return;
+        if (!text || isSendingMessage) return;
+        isSendingMessage = true;
 
         if (!chatStarted) {
             chatStarted = true;
+            if (welcomeTimer) {
+                clearTimeout(welcomeTimer);
+                welcomeTimer = null;
+            }
+            removeTypingIndicator();
             startChatBtn.textContent = 'SEND';
+            chatInput.placeholder = 'Type your message...';
             const tooltip = document.querySelector('.input-tooltip');
             if (tooltip) tooltip.style.display = 'none';
         }
+
+        // Clear any previous quick replies or stale channel cards
+        clearTransientChatActions();
 
         // Render user bubble
         lastMessageType = 'user';
@@ -876,8 +1119,12 @@
         chatInput.value = '';
         messageCount++;
 
-        // Show typing indicator immediately while Gemini processes
-        showTypingIndicator();
+        const requestStartedAt = Date.now();
+        const READING_PAUSE_MS = 400;
+        // Brief human reading pause before typing indicator appears, matching Pearl UX
+        const readingTimer = setTimeout(() => {
+            showTypingIndicator();
+        }, READING_PAUSE_MS);
 
         try {
             const apiRes = await fetch('/api/chat', {
@@ -886,6 +1133,7 @@
                 body: JSON.stringify({
                     message: text,
                     history: geminiHistory,
+                    intake_state: intakeState,
                     connected_to_expert: connectedToExpert,
                     expert_name: selectedExpert ? selectedExpert.name : 'Victoria Price',
                     expert_role: activeExpertTitle
@@ -897,33 +1145,51 @@
             if (!json.success || !json.data) throw new Error('Invalid API response');
 
             const aiData = json.data;
+            const replyLen = (aiData.reply_text || '').length;
+
+            // Balanced AskTech-style human typing pacing (never instant/robotic, never sluggish)
+            let targetTotalMs;
+            if (aiData.stage === 'greeting') {
+                targetTotalMs = clampMs(2100 + replyLen * 7, 2200, 2600);
+            } else if (aiData.stage === 'summary_confirm') {
+                targetTotalMs = clampMs(3400 + replyLen * 8, 3800, 4800);
+            } else {
+                targetTotalMs = clampMs(2400 + replyLen * 11, 2800, 4200);
+            }
+
+            // Ensure typing indicator renders visibly before delivering reply
+            const elapsedSoFar = Date.now() - requestStartedAt;
+            if (elapsedSoFar < READING_PAUSE_MS) {
+                await new Promise(r => setTimeout(r, READING_PAUSE_MS - elapsedSoFar));
+            }
+            clearTimeout(readingTimer);
+            showTypingIndicator();
+
+            const remainingMs = targetTotalMs - (Date.now() - requestStartedAt);
+            if (remainingMs > 0) {
+                await new Promise(r => setTimeout(r, remainingMs));
+            }
             removeTypingIndicator();
 
-            // Store in conversational history
-            geminiHistory.push({ user: text, model: aiData.reply_text });
+            // Persist server-tracked consultative state & history
+            if (aiData.intake_state) {
+                intakeState = aiData.intake_state;
+            }
+            if (aiData.expert_role) {
+                activeExpertTitle = aiData.expert_role;
+            }
+            geminiHistory.push({
+                user: text,
+                model: aiData.reply_text,
+                stage: aiData.stage || 'intake',
+                category: aiData.category || detectedCategory || 'general'
+            });
 
-            // Dynamically update category and left hero
+            // Dynamically update category hero & left suggestions
             if (aiData.category && categories[aiData.category]) {
                 updateHeroForCategory({ key: aiData.category, ...categories[aiData.category] });
                 renderLeftSuggestions(aiData.category);
             }
-
-            // 3-TIER TRIAGE EXECUTION:
-            const isExplicitDirect = /\b(call (you|me|someone|expert|specialist|tech)|connect (me )?(on|by|via|to|with)? (a )?(call|phone)|phone (connection|call)|give me (the )?number|speak to (someone|expert|specialist|human|agent|you)|talk on phone|call directly)\b/i.test(text);
-            const isDecliningOrPivoting = /\b(no\b|nah\b|wait\b|hold on\b|actually\b|i think\b|cancel\b|not now\b|never mind\b|nevermind\b)/i.test(text);
-            const isRefusingDIY = /\b(not trying|won'?t try|not doing (that|this)|don'?t want to try|too complicated|too hard|can'?t do it|you do it|just fix it|i want (a )?(human|person|expert|specialist)|talk to (a )?(human|person|expert)|connect me|tired of|frustrated|give me (a )?person)\b/i.test(text);
-            const allowConnect = isRefusingDIY || (!connectedToExpert && ((geminiHistory.length > 1 && !isDecliningOrPivoting) || isExplicitDirect));
-            const recommendation = isRefusingDIY ? 'call' : (allowConnect ? aiData.recommendation : (connectedToExpert && isExplicitDirect ? 'call' : 'none'));
-            const showConnectOptions = recommendation === 'call' || recommendation === 'chat';
-
-            lastMessageType = null;
-            addMessage(aiData.reply_text, 'bot', {
-                showConnectOptions,
-                recommendation,
-                expertRole: aiData.expert_role,
-                expertPhone: aiData.phone_number,
-                ctaHeadline: aiData.cta_headline
-            });
 
             // Update phone dialer if available
             if (aiData.phone_number) {
@@ -933,16 +1199,47 @@
                 if (phoneDisplay) phoneDisplay.textContent = aiData.phone_number;
             }
 
+            // Strictly respect server FSM stage for Call/Chat cards and quick replies
+            const showConnectOptions = Boolean(aiData.show_channel_cards);
+            lastMessageType = null;
+            addMessage(aiData.reply_text || '', 'bot', {
+                showConnectOptions,
+                recommendation: aiData.recommendation || 'none',
+                expertRole: aiData.expert_role || activeExpertTitle,
+                expertPhone: aiData.phone_number,
+                ctaHeadline: aiData.cta_headline,
+                quickReplies: Array.isArray(aiData.quick_replies) ? aiData.quick_replies : []
+            });
+
+            // Handle direct typed channel choices ("Phone call please" / "Online chat please")
+            if (aiData.auto_open_call) {
+                setTimeout(() => {
+                    showCallDetailsPanel(aiData.cta_headline);
+                }, 450);
+            } else if (aiData.auto_open_chat) {
+                setTimeout(() => {
+                    triggerSpecialistHandoff(text, aiData.expert_role || activeExpertTitle, true);
+                }, 450);
+            }
+
         } catch (err) {
-            console.error('Chat error:', err);
+            console.error('Chat network error:', err);
+            clearTimeout(readingTimer);
             removeTypingIndicator();
             lastMessageType = null;
-            addMessage("I'm having a slight trouble connecting to our live triage network. You can also reach our 24/7 support line directly at 1-800-555-0100.", 'bot', {
-                showConnectOptions: true,
-                highlightCall: true,
-                expertRole: 'Support Specialist',
-                expertPhone: '1-800-555-0100'
-            });
+
+            // Resilient client-side greeting-aware fallback if server itself is unreachable
+            if (isPureGreetingText(text) && geminiHistory.length === 0) {
+                const greetReply = "Hi there! What's going on today? Tell me a little about the issue you're running into in your own words.";
+                geminiHistory.push({ user: text, model: greetReply });
+                addMessage(greetReply, 'bot');
+            } else {
+                const safeReply = "Thanks for sharing that. Could you tell me a bit more about what's happening and when it started so I can put together a complete summary for our expert?";
+                geminiHistory.push({ user: text, model: safeReply });
+                addMessage(safeReply, 'bot');
+            }
+        } finally {
+            isSendingMessage = false;
         }
     }
 
@@ -970,32 +1267,25 @@
 
     // Category cards (below hero)
     document.querySelectorAll('.category-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const catKey = card.getAttribute('data-cat');
+        card.addEventListener('click', (e) => {
+            const rawCat = card.getAttribute('data-cat');
+            const catKey = rawCat === 'payments' ? 'crypto' : rawCat;
             if (categories[catKey]) {
+                e.preventDefault();
                 updateHeroForCategory({ key: catKey, ...categories[catKey] });
                 renderLeftSuggestions(catKey);
 
                 if (!chatStarted) {
+                    if (welcomeTimer) { clearTimeout(welcomeTimer); welcomeTimer = null; }
                     chatBody.innerHTML = '';
+                    chatLabelAdded = false;
                     addChatLabel();
                     const cat = categories[catKey];
-                    const avatarSrc = selectedExpert ? selectedExpert.avatar : 'assets/expert-1.png';
-                    const expertName = selectedExpert ? selectedExpert.name : 'Specialist';
-                    const greetingDiv = document.createElement('div');
-                    greetingDiv.className = 'chat-message';
-                    greetingDiv.innerHTML = `
-                        <img src="${avatarSrc}" alt="${expertName}" class="pearl-avatar">
-                        <div class="message-bubble bot-bubble">
-                            Hi! I see you are looking for help with <strong>${cat.label}</strong>. How can I help you with this today?
-                        </div>
-                    `;
-                    chatBody.appendChild(greetingDiv);
-                    scrollChatToBottom();
+                    addMessage(`Hi! I see you're looking for help with **${cat.label}**. Tell me what's going on and I'll make sure we connect you with the right expert.`, 'bot', { silent: true });
                 }
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                setTimeout(() => { chatInput.focus(); }, 800);
+                setTimeout(() => { chatInput.focus(); }, 600);
             }
         });
     });
@@ -1037,29 +1327,75 @@
                 dynamicCategory.textContent = rotatingWords[rotateIndex];
                 dynamicCategory.style.opacity = '1';
                 dynamicCategory.style.transform = 'translateY(0)';
-            }, 400);
+            }, 220);
         }
     }
     setInterval(rotateHeadline, 3000);
 
-    // Initial Welcome
-    setTimeout(() => {
-        showTypingThenMessage("Welcome! How can I help you today? You can ask me anything or I can connect you to a live expert.");
-        renderLeftSuggestions('overall');
-    }, 800);
+    function isPureGreetingText(str) {
+        const s = (str || '').toLowerCase().replace(/[^a-z0-9\s']/g, ' ').replace(/\s+/g, ' ').trim();
+        if (!s) return true;
+        if (/^(hi+|hello+|hey+|heyy+|yo|hola|namaste|greetings|good morning|good afternoon|good evening|hi there|hello there|hey there|how are you|anyone there|are you there|need help|i need help|help me|can you help)$/.test(s)) {
+            return true;
+        }
+        const words = s.split(' ');
+        const greetWords = new Set(['hi', 'hii', 'hiii', 'hello', 'helloo', 'hey', 'heyy', 'yo', 'hola', 'there', 'again']);
+        return words.length > 0 && words.every(w => greetWords.has(w) || /^h+i+$/.test(w));
+    }
 
-    setTimeout(() => {
-        chatInput.focus();
-    }, 3000);
-
-    // Handle URL Query Parameter (?q=...) from Homepage
+    // Parse & immediately strip ?q= from URL so reload/back never auto-sends stale messages
     const urlParams = new URLSearchParams(window.location.search);
-    const queryFromHome = urlParams.get('q');
-    if (queryFromHome) {
+    const rawQueryFromUrl = (urlParams.get('q') || '').trim();
+    if (urlParams.has('q')) {
+        urlParams.delete('q');
+        const cleanQueryStr = urlParams.toString();
+        const cleanUrl = window.location.pathname + (cleanQueryStr ? '?' + cleanQueryStr : '') + window.location.hash;
+        window.history.replaceState(null, '', cleanUrl);
+    }
+    const hasSubstantiveQuery = Boolean(rawQueryFromUrl) && !isPureGreetingText(rawQueryFromUrl);
+
+    // One-time handoff from the homepage floating chat (any message, including "hi").
+    // Consumed and deleted immediately so reload/back can never re-send it.
+    let fcHandoffText = '';
+    try {
+        const rawHandoff = sessionStorage.getItem('answerdesk_fc_handoff');
+        if (rawHandoff) {
+            sessionStorage.removeItem('answerdesk_fc_handoff');
+            const parsed = JSON.parse(rawHandoff);
+            if (parsed && typeof parsed.text === 'string' && Date.now() - Number(parsed.ts || 0) < 60000) {
+                fcHandoffText = parsed.text.trim().slice(0, 1000);
+            }
+        }
+    } catch (e) {}
+
+    // Initial Welcome or Substantive Query Handoff (chat NEVER auto-sends "hi" or initiates unprompted)
+    renderLeftSuggestions('overall');
+    if (fcHandoffText) {
+        addChatLabel();
+        addMessage("Welcome! How can I help you today?", 'bot', { silent: true });
         setTimeout(() => {
-            chatInput.value = queryFromHome;
-            handleSendMessage();
-        }, 3500);
+            if (!chatStarted && !isSendingMessage && !chatInput.value.trim()) {
+                chatInput.value = fcHandoffText;
+                handleSendMessage();
+            }
+        }, 150);
+    } else if (hasSubstantiveQuery) {
+        addChatLabel();
+        setTimeout(() => {
+            if (!chatStarted && !isSendingMessage && !chatInput.value.trim()) {
+                chatInput.value = rawQueryFromUrl;
+                handleSendMessage();
+            }
+        }, 350);
+    } else if (!chatStarted) {
+        addChatLabel();
+        showTypingIndicator();
+        welcomeTimer = setTimeout(() => {
+            if (!chatStarted) {
+                removeTypingIndicator();
+                addMessage("Welcome! How can I help you today?", 'bot', { silent: true });
+            }
+        }, 1600);
     }
 
     // Sticky Header Scroll Effect
@@ -1074,8 +1410,9 @@
         });
     }
 
-    // Scrollspy for Support Page Nav
+    // Scrollspy for Support Page Nav (only activate when legacy section anchors exist)
     const navLinks = document.querySelectorAll('.header-nav .nav-link');
+    const hasLegacySections = Boolean(document.getElementById('categories') || document.getElementById('meetExperts'));
     const scrollSections = [
         { id: 'hero', linkIndex: 1 },
         { id: 'categories', linkIndex: 2 },
@@ -1083,6 +1420,7 @@
     ];
 
     function updateSupportActiveNav() {
+        if (!hasLegacySections || navLinks.length < 4) return;
         const scrollY = window.scrollY + 150;
         let activeIndex = 1;
         scrollSections.forEach(({ id, linkIndex }) => {
@@ -1097,16 +1435,18 @@
         });
     }
 
-    navLinks.forEach((link, i) => {
-        link.addEventListener('click', function() {
-            const href = this.getAttribute('href');
-            if (href.startsWith('#')) {
-                navLinks.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-            }
+    if (hasLegacySections && navLinks.length >= 4) {
+        navLinks.forEach((link) => {
+            link.addEventListener('click', function() {
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
         });
-    });
-    window.addEventListener('scroll', updateSupportActiveNav);
+        window.addEventListener('scroll', updateSupportActiveNav);
+    }
 
     // CTA Image Reveal on Scroll
     const ctaImage = document.querySelector('.cta-image-wrap');
@@ -1117,7 +1457,7 @@
                     entry.target.classList.add('visible');
                 }
             });
-        }, { threshold: 0.15 });
+        }, { threshold: 0.01, rootMargin: '0px 0px 80px 0px' });
         ctaObserver.observe(ctaImage);
     }
 

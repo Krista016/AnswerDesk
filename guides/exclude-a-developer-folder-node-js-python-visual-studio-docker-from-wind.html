@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How do I properly exclude a developer folder (Node.js, Python, Visual Studio, Docker) from… | AnswerDesk</title>
+    <meta name="description" content="Real-time Defender scanning of thousands of tiny node_modules or compiler .obj files slows builds dramatically. On Windows 11, either create a Dev Drive…">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <link rel="canonical" href="https://answerdesk-zeta.vercel.app/guides/exclude-a-developer-folder-node-js-python-visual-studio-docker-from-wind">
+    <link rel="alternate" type="text/markdown" href="/llms.txt" title="AnswerDesk AI Knowledge Base Index">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><path d='M8 6C8 4.9 8.9 4 10 4H30C31.1 4 32 4.9 32 6V28C32 29.1 31.1 30 30 30H22L16 36V30H10C8.9 30 8 29.1 8 28V6Z' fill='%23278b7d'/><path d='M14 14L19 19L26 12' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg>" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/index.css?v=20261121_v14">
+    <link rel="stylesheet" href="/articles.css?v=20261121_v8">
+    <link rel="stylesheet" href="/mobile-nav.css?v=20261121_v3">
+    <meta name="theme-color" content="#123e35">
+
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="AnswerDesk">
+    <meta property="og:url" content="https://answerdesk-zeta.vercel.app/guides/exclude-a-developer-folder-node-js-python-visual-studio-docker-from-wind">
+    <meta property="og:title" content="How do I properly exclude a developer folder (Node.js, Python, Visual Studio, Docker) from Windows Defender to stop build slowdowns?">
+    <meta property="og:description" content="Real-time Defender scanning of thousands of tiny node_modules or compiler .obj files slows builds dramatically. On Windows 11, either create a Dev Drive…">
+    <meta property="og:image" content="https://answerdesk-zeta.vercel.app/assets/cta-expert-pro.png">
+    <meta property="article:section" content="Windows Defender">
+    <meta property="article:published_time" content="2026-11-21">
+    <meta property="article:modified_time" content="2026-11-21">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="How do I properly exclude a developer folder (Node.js, Python, Visual Studio, Docker) from Windows Defender to stop build slowdowns?">
+    <meta name="twitter:description" content="Real-time Defender scanning of thousands of tiny node_modules or compiler .obj files slows builds dramatically. On Windows 11, either create a Dev Drive…">
+    <meta name="twitter:image" content="https://answerdesk-zeta.vercel.app/assets/cta-expert-pro.png">
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://answerdesk-zeta.vercel.app/guides/exclude-a-developer-folder-node-js-python-visual-studio-docker-from-wind#article",
+      "headline": "How do I properly exclude a developer folder (Node.js, Python, Visual Studio, Docker) from Windows Defender to stop build slowdowns?",
+      "description": "Real-time Defender scanning of thousands of tiny node_modules or compiler .obj files slows builds dramatically. On Windows 11, either create a Dev Drive (ReFS) which uses Defender's fast asynchronous Performance Mode automatically, OR add narrow folder exclusions (e.g., C:\\Projects\\my-app\\node_modules) under Virus & threat protection > Manage settings > Exclusions—never exclude your entire C:\\ or Downloads folder!",
+      "articleSection": "Windows Defender — Controlled Folder Access (Ransomware Protection), SmartScreen, PUA & Exclusions",
+      "inLanguage": "en-US",
+      "datePublished": "2026-11-21",
+      "dateModified": "2026-11-21",
+      "url": "https://answerdesk-zeta.vercel.app/guides/exclude-a-developer-folder-node-js-python-visual-studio-docker-from-wind",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://answerdesk-zeta.vercel.app/guides/exclude-a-developer-folder-node-js-python-visual-studio-docker-from-wind"
+      },
+      "image": "https://answerdesk-zeta.vercel.app/assets/cta-expert-pro.png",
+      "author": {
+        "@type": "Person",
+        "name": "Thomas Bennett",
+        "jobTitle": "Microsoft Windows Security & Defender Architect",
+        "url": "https://answerdesk-zeta.vercel.app/expert-verification"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "AnswerDesk",
+        "url": "https://answerdesk-zeta.vercel.app/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://answerdesk-zeta.vercel.app/assets/guarantees/vetting.png"
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://answerdesk-zeta.vercel.app/guides/exclude-a-developer-folder-node-js-python-visual-studio-docker-from-wind#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://answerdesk-zeta.vercel.app/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Troubleshooting Guides",
+          "item": "https://answerdesk-zeta.vercel.app/articles"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Windows Defender",
+          "item": "https://answerdesk-zeta.vercel.app/guides/category/defender"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "How do I properly exclude a developer folder (Node.js, Python, Visual Studio, Docker) from Windows Defender to stop build slowdowns?",
+          "item": "https://answerdesk-zeta.vercel.app/guides/exclude-a-developer-folder-node-js-python-visual-studio-docker-from-wind"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://answerdesk-zeta.vercel.app/guides/exclude-a-developer-folder-node-js-python-visual-studio-docker-from-wind#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I properly exclude a developer folder (Node.js, Python, Visual Studio, Docker) from Windows Defender to stop build slowdowns?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Real-time Defender scanning of thousands of tiny node_modules or compiler .obj files slows builds dramatically. On Windows 11, either create a Dev Drive (ReFS) which uses Defender's fast asynchronous Performance Mode automatically, OR add narrow folder exclusions (e.g., C:\\Projects\\my-app\\node_modules) under Virus & threat protection > Manage settings > Exclusions—never exclude your entire C:\\ or Downloads folder!"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Will fixing \"properly exclude a developer folder (Node.js, Python, Visual Studio, Docker) from…\" delete my personal files, data, or account history?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Resetting Windows Security, updating Defender signatures, running Microsoft Defender Offline Scan, or re-enabling WinDefend/MpsSvc services will not delete your personal files. Legitimate files flagged as false positives can be restored safely from Protection History."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How long does it normally take to resolve this Windows Defender & Security issue?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Service restarts, signature updates, and PowerShell resets take 2–5 minutes. A Microsoft Defender Offline Scan takes 10–15 minutes during reboot, while a full disk scan takes 30–90 minutes depending on drive size."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What should I do if the problem returns after following these steps?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "If WinDefend or SecurityHealthService still fails to start with error 577, 0x80070422, or blank UI screens after removing legacy AV drivers and running DISM/SFC, perform an in-place Windows 11/10 Repair Upgrade (keeping all files and apps) to restore signed Defender binaries. You can also connect directly with a certified Windows Defender & Security expert 24/7 on AnswerDesk for guided 1-on-1 troubleshooting."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "HowTo",
+      "@id": "https://answerdesk-zeta.vercel.app/guides/exclude-a-developer-folder-node-js-python-visual-studio-docker-from-wind#howto",
+      "name": "How do I properly exclude a developer folder (Node.js, Python, Visual Studio, Docker) from Windows Defender to stop build slowdowns?",
+      "description": "Real-time Defender scanning of thousands of tiny node_modules or compiler .obj files slows builds dramatically. On Windows 11, either create a Dev Drive (ReFS) which uses Defender's fast asynchronous Performance Mode automatically, OR add narrow folder exclusions (e.g., C:\\Projects\\my-app\\node_modules) under Virus & threat protection > Manage settings > Exclusions—never exclude your entire C:\\ or Downloads folder!",
+      "totalTime": "PT10M",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Primary Resolution Step",
+          "text": "On Windows 11, either create a Dev Drive (ReFS) which uses Defender's fast asynchronous Performance Mode automatically, OR add narrow folder exclusions (e.g., C:\\Projects\\my-app\\node_modules) under Virus &amp."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Action Step 2",
+          "text": "Threat protection &gt."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Action Step 3",
+          "text": "Manage settings &gt."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "name": "Secondary Recovery & Fallback",
+          "text": "Exclusions—never exclude your entire C:\\ or Downloads folder!"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 5,
+          "name": "Verify Complete Resolution",
+          "text": "Open PowerShell as Administrator and run Get-MpComputerStatus to verify AMServiceEnabled, AntivirusEnabled, RealTimeProtectionEnabled, and BehaviorMonitorEnabled all return True. Open Windows Security (windowsdefender:) and confirm Virus & Threat Protection, Firewall & Network Protection, and Device Security all show green checkmarks with current definition dates. Run a Quick Scan or verify Protection History to confirm the prior error code or repeated alert has cleared."
+        }
+      ]
+    }
+  ]
+}
+    </script>
+</head>
+<body class="static-guide-page">
+    
+    <header class="site-header" id="siteHeader">
+        <div class="header-inner">
+            <a href="/" class="logo" id="logo">
+                <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 6C8 4.89543 8.89543 4 10 4H30C31.1046 4 32 4.89543 32 6V28C32 29.1046 31.1046 30 30 30H22L16 36V30H10C8.89543 30 8 29.1046 8 28V6Z" fill="#278b7d"/>
+                    <path d="M14 14L19 19L26 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="logo-text">
+                    <span class="logo-name">Answer<span class="logo-name-accent">Desk</span></span>
+                    <span class="logo-sub">Troubleshooting Guide</span>
+                </div>
+            </a>
+            <nav class="header-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/support" class="nav-link">Support</a>
+                <a href="/articles" class="nav-link">All 704 Guides</a>
+                <a href="/about" class="nav-link">About Us</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </nav>
+            <a href="/support" class="header-cta">Get Expert Help</a>
+        </div>
+    </header>
+
+    <main class="standalone-guide-wrap">
+        <div class="standalone-guide-container">
+            <nav class="guide-breadcrumb" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                <span aria-hidden="true">&rsaquo;</span>
+                <a href="/articles">All 704 Guides</a>
+                <span aria-hidden="true">&rsaquo;</span>
+                <a href="/guides/category/defender">Windows Defender</a>
+                <span aria-hidden="true">&rsaquo;</span><span class="crumb-current">Controlled Folder Access (Ransomware Protection), SmartScreen, PUA &amp; Exclusions</span>
+            </nav>
+
+            <div class="guide-top-actions">
+                <a href="/articles" class="back-to-articles-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                    Browse All 704 Guides
+                </a>
+                <a href="/guides/category/defender" class="back-to-category-link">
+                    More in Windows Defender &rarr;
+                </a>
+            </div>
+
+            <article class="full-article-card" itemscope itemtype="https://schema.org/TechArticle">
+                <div class="reader-meta-bar">
+                    <a href="/guides/category/defender" class="article-card-tag article-tag-link">Windows Defender</a>
+                    <span class="reader-subcat-pill">Controlled Folder Access (Ransomware Protection), SmartScreen, PUA &amp; Exclusions</span>
+                    <span class="article-card-time">&bull; 4 min read</span>
+                    <span class="guide-verified-pill">&#10003; Verified November 2026</span>
+                </div>
+
+                <h1 class="reader-title" itemprop="headline">How do I properly exclude a developer folder (Node.js, Python, Visual Studio, Docker) from Windows Defender to stop build slowdowns?</h1>
+
+                <div class="reader-author-bar">
+                    <img src="/assets/expert-7.png" alt="Thomas Bennett" width="48" height="48">
+                    <div class="reader-author-text">
+                        <strong>Written &amp; Audited by <span itemprop="author">Thomas Bennett</span></strong>
+                        <span>Microsoft Windows Security &amp; Defender Architect &bull; <a href="/expert-verification" class="author-verify-link">AnswerDesk Vetted Expert</a> &bull; Updated <time datetime="2026-11-21">November 2026</time></span>
+                    </div>
+                </div>
+
+                <div class="reader-content" itemprop="articleBody">
+                    
+            <div class="ai-direct-answer" itemscope itemtype="https://schema.org/Answer">
+                <div class="ai-answer-badge">&#9889; Quick Expert Answer &bull; Controlled Folder Access (Ransomware Protection), SmartScreen, PUA &amp; Exclusions</div>
+                <p itemprop="text">Real-time Defender scanning of thousands of tiny <code class="kb-inline-code">node_modules</code> or compiler <code class="kb-inline-code">.obj</code> files slows builds dramatically. On Windows 11, either create a <strong>Dev Drive (ReFS)</strong> which uses Defender's fast asynchronous Performance Mode automatically, OR add narrow folder exclusions (e.g., <code class="kb-inline-code">C:\Projects\my-app\node_modules</code>) under <strong>Virus &amp; threat protection &gt; Manage settings &gt; Exclusions</strong>—never exclude your entire <code class="kb-inline-code">C:\</code> or <code class="kb-inline-code">Downloads</code> folder!</p>
+            </div>
+
+            <section class="guide-checklist-card" aria-label="Before you begin checklist">
+                <h2>Before You Start: Quick Pre-Check</h2>
+                <ul class="guide-checklist-list">
+                    <li><span class="chk-icon" aria-hidden="true">&#10003;</span><span>Verify whether a third-party antivirus (Norton, McAfee, Avast, Bitdefender, etc.) is installed, because Windows automatically puts Microsoft Defender into passive/off mode when another AV registers.</span></li>
+                    <li><span class="chk-icon" aria-hidden="true">&#10003;</span><span>Open PowerShell or Command Prompt using &quot;Run as Administrator&quot; before executing Defender service or MpCmdRun commands.</span></li>
+                    <li><span class="chk-icon" aria-hidden="true">&#10003;</span><span>Check Windows Settings &gt; Accounts &gt; Access work or school to verify whether a school/company Intune or Group Policy profile is managing security settings.</span></li>
+                </ul>
+            </section>
+
+            <section class="guide-diagnosis-section">
+                <h2>Why This Issue Happens</h2>
+                <p>Real-time Defender scanning of thousands of tiny <code class="kb-inline-code">node_modules</code> or compiler <code class="kb-inline-code">.obj</code> files slows builds dramatically.</p>
+                <p class="diagnosis-context">This issue falls under <strong>Controlled Folder Access (Ransomware Protection), SmartScreen, PUA &amp; Exclusions</strong> (Windows Defender &amp; Security). Confirming the exact trigger before making changes prevents unnecessary resets and helps preserve your data and account standing.</p>
+            </section>
+
+            <section class="guide-protocol-section">
+                <h2>Step-by-Step Resolution Protocol</h2>
+                
+                <div class="kb-step-box">
+                    <div class="kb-step-num">Step 1</div>
+                    <div class="kb-step-title">Primary Resolution Step</div>
+                    <p>On Windows 11, either create a <strong>Dev Drive (ReFS)</strong> which uses Defender's fast asynchronous Performance Mode automatically, OR add narrow folder exclusions (e.g., <code class="kb-inline-code">C:\Projects\my-app\node_modules</code>) under <strong>Virus &amp.</p>
+                    <div class="kb-code-box" aria-label="Diagnostic commands">C:\Projects\my-app\node_modules</div>
+                </div>
+
+                <div class="kb-step-box">
+                    <div class="kb-step-num">Step 2</div>
+                    <div class="kb-step-title">Action Step 2</div>
+                    <p>Threat protection &gt.</p>
+                    
+                </div>
+
+                <div class="kb-step-box">
+                    <div class="kb-step-num">Step 3</div>
+                    <div class="kb-step-title">Action Step 3</div>
+                    <p>Manage settings &gt.</p>
+                    
+                </div>
+
+                <div class="kb-step-box">
+                    <div class="kb-step-num">Step 4</div>
+                    <div class="kb-step-title">Secondary Recovery &amp; Fallback</div>
+                    <p>Exclusions</strong>—never exclude your entire <code class="kb-inline-code">C:\</code> or <code class="kb-inline-code">Downloads</code> folder!</p>
+                    
+                </div>
+            </section>
+
+            <section class="guide-verify-card">
+                <h2>How to Verify the Fix Worked</h2>
+                <ol class="guide-verify-list">
+                    <li>Open PowerShell as Administrator and run Get-MpComputerStatus to verify AMServiceEnabled, AntivirusEnabled, RealTimeProtectionEnabled, and BehaviorMonitorEnabled all return True.</li>
+                    <li>Open Windows Security (windowsdefender:) and confirm Virus &amp; Threat Protection, Firewall &amp; Network Protection, and Device Security all show green checkmarks with current definition dates.</li>
+                    <li>Run a Quick Scan or verify Protection History to confirm the prior error code or repeated alert has cleared.</li>
+                </ol>
+                <p class="guide-escalation-note"><strong>What if the issue still persists?</strong> If WinDefend or SecurityHealthService still fails to start with error 577, 0x80070422, or blank UI screens after removing legacy AV drivers and running DISM/SFC, perform an in-place Windows 11/10 Repair Upgrade (keeping all files and apps) to restore signed Defender binaries.</p>
+            </section>
+
+            <div class="kb-warning-box">
+                <strong>&#9888;&#65039; Expert Safety &amp; Verification Advisory:</strong> Never permanently disable Real-Time Protection, Tamper Protection, or exclude the entire C:\ drive to silence alerts—doing so leaves your PC exposed to ransomware and infostealers. Verify your BitLocker Recovery Key is backed up before changing TPM or Core Isolation settings.
+            </div>
+        
+                </div>
+
+                <section class="guide-faq-section" aria-label="Frequently Asked Questions">
+                    <h2>Frequently Asked Questions</h2>
+                    <div class="guide-faq-list">
+                        
+                <details class="guide-faq-item" open>
+                    <summary>Will fixing &quot;properly exclude a developer folder (Node.js, Python, Visual Studio, Docker) from…&quot; delete my personal files, data, or account history?</summary>
+                    <p>Resetting Windows Security, updating Defender signatures, running Microsoft Defender Offline Scan, or re-enabling WinDefend/MpsSvc services will not delete your personal files. Legitimate files flagged as false positives can be restored safely from Protection History.</p>
+                </details>
+
+                <details class="guide-faq-item">
+                    <summary>How long does it normally take to resolve this Windows Defender &amp; Security issue?</summary>
+                    <p>Service restarts, signature updates, and PowerShell resets take 2–5 minutes. A Microsoft Defender Offline Scan takes 10–15 minutes during reboot, while a full disk scan takes 30–90 minutes depending on drive size.</p>
+                </details>
+
+                <details class="guide-faq-item">
+                    <summary>What should I do if the problem returns after following these steps?</summary>
+                    <p>If WinDefend or SecurityHealthService still fails to start with error 577, 0x80070422, or blank UI screens after removing legacy AV drivers and running DISM/SFC, perform an in-place Windows 11/10 Repair Upgrade (keeping all files and apps) to restore signed Defender binaries. You can also connect directly with a certified Windows Defender &amp; Security expert 24/7 on AnswerDesk for guided 1-on-1 troubleshooting.</p>
+                </details>
+                    </div>
+                </section>
+
+                <div class="article-resolver-widget" id="articleResolverWidget">
+                    <div class="resolver-question">
+                        <h4>Did this diagnostic guide solve your issue?</h4>
+                        <p>Let us know if your issue is resolved, or get connected to an active Windows Defender expert in seconds.</p>
+                    </div>
+                    <div class="resolver-action-btns" id="resolverActionBtns">
+                        <button type="button" class="btn-solved" id="btnSolvedIssue">&#10003; Yes, Solved!</button>
+                        <a href="/support?q=How%20do%20I%20properly%20exclude%20a%20developer%20folder%20(Node.js%2C%20Python%2C%20Visual%20Studio%2C%20Docker)%20from%20Windows%20Defender%20to%20stop%20build%20slowdowns%3F" class="btn-not-solved" id="btnNotSolvedIssue">
+                            No, Connect with Support Team &rarr;
+                        </a>
+                    </div>
+                    <div class="resolver-feedback-message" id="resolverFeedbackMessage">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>Thank you for your feedback! We're glad this resolved your issue.</span>
+                    </div>
+                </div>
+            </article>
+
+            <section class="related-guides-section" aria-label="Related Troubleshooting Guides">
+                <div class="related-guides-header">
+                    <h2>Related Windows Defender Troubleshooting Guides</h2>
+                    <a href="/guides/category/defender" class="related-view-all">View all Windows Defender guides &rarr;</a>
+                </div>
+                <div class="related-guides-grid">
+                    
+                <a class="related-guide-card" href="/guides/windows-defender-quarantine-failing-to-delete-or-restore-a-stuck-threat">
+                    <span class="related-guide-cat">Controlled Folder Access (Ransomware Protection), SmartScreen, PUA &amp; Exclusions</span>
+                    <h3 class="related-guide-title">How do I fix Windows Defender Quarantine failing to delete or restore a stuck threat (&quot;Remediation incomplete&quot;)?</h3>
+                    <p class="related-guide-snippet">&quot;Remediation incomplete&quot; occurs when the file lives inside a locked archive, mounted ISO, Shadow Copy, or external…</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/edge-smartscreen-falsely-blocking-my-own-website-or-a-legitimate-downloa">
+                    <span class="related-guide-cat">Controlled Folder Access (Ransomware Protection), SmartScreen, PUA &amp; Exclusions</span>
+                    <h3 class="related-guide-title">How do I fix Edge SmartScreen falsely blocking my own website or a legitimate download (&quot;Unsafe site reported by Microsoft&quot;)?</h3>
+                    <p class="related-guide-snippet">Site owners can check exact reputation status and submit a false-positive dispute directly via the official Microsoft…</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/windows-defender-flagging-windows-activation-cracks-kms-tools-hacktool-w">
+                    <span class="related-guide-cat">Controlled Folder Access (Ransomware Protection), SmartScreen, PUA &amp; Exclusions</span>
+                    <h3 class="related-guide-title">How do I fix Windows Defender flagging Windows activation cracks/KMS tools (HackTool:Win32/AutoKMS) that keep reappearing?</h3>
+                    <p class="related-guide-snippet">HackTool:Win32/AutoKMS indicates an unauthorized pirated Windows/Office activator (which frequently bundles hidden…</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/windows-security-phishing-protection-warning-constantly-popping-up-when">
+                    <span class="related-guide-cat">Controlled Folder Access (Ransomware Protection), SmartScreen, PUA &amp; Exclusions</span>
+                    <h3 class="related-guide-title">How do I fix Windows Security &quot;Phishing protection&quot; warning constantly popping up when typing my password in local apps?</h3>
+                    <p class="related-guide-snippet">Enhanced Phishing Protection (under App &amp; browser control &gt; Reputation-based protection) monitors whenever you type…</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/windows-defender-blocking-powershell-scripts-or-attack-surface-reduction">
+                    <span class="related-guide-cat">Controlled Folder Access (Ransomware Protection), SmartScreen, PUA &amp; Exclusions</span>
+                    <h3 class="related-guide-title">How do I fix Windows Defender blocking PowerShell scripts or Attack Surface Reduction (ASR) rules blocking Office macros?</h3>
+                    <p class="related-guide-snippet">Enterprise/Hardened PCs running Attack Surface Reduction (ASR) rules block Office apps from spawning child processes…</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/windows-defender-failing-to-scan-usb-flash-drives-automatically-when-plu">
+                    <span class="related-guide-cat">Controlled Folder Access (Ransomware Protection), SmartScreen, PUA &amp; Exclusions</span>
+                    <h3 class="related-guide-title">How do I fix Windows Defender failing to scan USB flash drives automatically when plugged in?</h3>
+                    <p class="related-guide-snippet">By default, Windows Defender does not run a full automatic scan on newly inserted USB sticks until files are accessed…</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    
+    <footer class="site-footer">
+        <div class="section-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a href="/" class="logo footer-logo">
+                        <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 6C8 4.89543 8.89543 4 10 4H30C31.1046 4 32 4.89543 32 6V28C32 29.1046 31.1046 30 30 30H22L16 36V30H10C8.89543 30 8 29.1046 8 28V6Z" fill="#278b7d"/>
+                            <path d="M14 14L19 19L26 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="logo-text">
+                            <span class="logo-name" style="color: #ffffff;">Answer<span class="logo-name-accent" style="color: #5eead4;">Desk</span></span>
+                        </div>
+                    </a>
+                    <p class="footer-desc">Real help from verified experts, 24/7. Browse 704+ step-by-step troubleshooting guides or chat live with an expert.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Top Guide Hubs</h4>
+                    <ul>
+                        <li><a href="/guides/category/windows">Microsoft &amp; Windows (128)</a></li>
+                        <li><a href="/guides/category/apple">Apple, Mac &amp; iPhone (128)</a></li>
+                        <li><a href="/guides/category/paypal">PayPal &amp; Payments (80)</a></li>
+                        <li><a href="/guides/category/amazon">Amazon &amp; Devices (80)</a></li>
+                        <li><a href="/guides/category/antivirus">Antivirus Suites (75)</a></li>
+                        <li><a href="/guides/category/defender">Windows Defender (75)</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Knowledge &amp; Support</h4>
+                    <ul>
+                        <li><a href="/articles">All 704 Troubleshooting Guides</a></li>
+                        <li><a href="/support">Live 24/7 Expert Support</a></li>
+                        <li><a href="/faq">Frequently Asked Questions</a></li>
+                        <li><a href="/expert-verification">Expert Verification Process</a></li>
+                        <li><a href="/llms.txt">AI Knowledge Index (llms.txt)</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company &amp; Legal</h4>
+                    <ul>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/contact">Contact &amp; Escalations</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-guarantees">
+                <div class="footer-guarantee-item">
+                    <div class="guarantee-icon-wrap">
+                        <img decoding="async" loading="lazy" src="/assets/guarantees/vetting.png" alt="Multi-Stage Vetting" width="40" height="40">
+                    </div>
+                    <div class="guarantee-text">
+                        <strong>Multi-Stage Vetting</strong>
+                        <p>Identity, credentials &amp; practical assessments audited</p>
+                    </div>
+                </div>
+                <div class="footer-guarantee-item">
+                    <div class="guarantee-icon-wrap">
+                        <img decoding="async" loading="lazy" src="/assets/guarantees/pay_solution.png" alt="Pay After Solution" width="40" height="40">
+                    </div>
+                    <div class="guarantee-text">
+                        <strong>Pay After Solution</strong>
+                        <p>No upfront retainers: billed only upon resolution</p>
+                    </div>
+                </div>
+                <div class="footer-guarantee-item">
+                    <div class="guarantee-icon-wrap">
+                        <img decoding="async" loading="lazy" src="/assets/guarantees/rapid_connect.png" alt="24/7 Rapid Connect" width="40" height="40">
+                    </div>
+                    <div class="guarantee-text">
+                        <strong>24/7 Rapid Connect</strong>
+                        <p>Average expert connection under 2 minutes</p>
+                    </div>
+                </div>
+                <div class="footer-guarantee-item">
+                    <div class="guarantee-icon-wrap">
+                        <img decoding="async" loading="lazy" src="/assets/guarantees/zero_data.png" alt="Zero Data Sharing" width="40" height="40">
+                    </div>
+                    <div class="guarantee-text">
+                        <strong>Zero Data Sharing</strong>
+                        <p>Strict privacy standard: issue-focused data only</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="brand-disclaimer">
+                    <p><strong>Disclaimer:</strong> AnswerDesk is an independent online consultation and support platform and is not affiliated with, authorized by, endorsed by, sponsored by, or otherwise associated with Amazon, Apple, Microsoft, Google, Gmail, Facebook (Meta), PayPal, Zelle, Venmo, Cash App, Coinbase, Norton, McAfee, Bitdefender, HP, AT&amp;T, Verizon, Geek Squad, or any bank, financial institution, or cryptocurrency exchange or platform. All product names, logos, brands, trademarks, and service marks referenced on this site are the sole property of their respective owners and do not sponsor, endorse, or maintain any association with AnswerDesk. Any use of third-party names or trademarks is strictly for informational and identification purposes only and does not imply any affiliation, authorization, or endorsement. Official brand support may also be available directly from the respective product manufacturers or service providers. For physical emergencies, please immediately call 911 or your local emergency services.</p>
+                </div>
+                <p>&copy; 2026 AnswerDesk. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    (function(){
+        var btn = document.getElementById('btnSolvedIssue');
+        var actions = document.getElementById('resolverActionBtns');
+        var msg = document.getElementById('resolverFeedbackMessage');
+        if (btn && actions && msg) {
+            btn.addEventListener('click', function(){
+                actions.style.display = 'none';
+                msg.style.display = 'inline-flex';
+            });
+        }
+    })();
+    </script>
+    <script src="/cookie-banner.js?v=20261121_v3"></script>
+    <script src="/mobile-nav.js?v=20261121_v3"></script>
+</body>
+</html>

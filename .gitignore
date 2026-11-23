@@ -28,6 +28,14 @@ yarn-error.log*
 # Audits & temp dumps
 seo_audit*/
 chat_body_dump.html
+AUDIT.md
+.agents/
+processed_guarantees/
+TEST_*.md
+test-results.md
+benchmark_results_*.json
+expert-overview.html
+expert-overview.png
 
 # Scratch scripts
 compare_all_pages.js

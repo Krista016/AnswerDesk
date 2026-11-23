@@ -46,8 +46,18 @@
         // Check if drawer already exists
         if (document.getElementById('mobileNavDrawer')) return;
 
-        // Current page pathname
-        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+        // Current page pathname (works cleanly at root and nested /guides/* paths)
+        const pathname = window.location.pathname || '/';
+        const currentPath = pathname.split('/').pop() || 'index.html';
+        const isHome = pathname === '/' || currentPath === 'index.html' || currentPath === 'home.html' || currentPath === 'home';
+        const isSupport = pathname === '/support' || currentPath === 'support.html';
+        const isArticles = pathname === '/articles' || currentPath === 'articles.html' || pathname.startsWith('/guides');
+        const isAbout = pathname === '/about' || currentPath === 'about.html';
+        const isFaq = pathname === '/faq' || currentPath === 'faq.html';
+        const isContact = pathname === '/contact' || currentPath === 'contact.html';
+        const isVerify = pathname === '/expert-verification' || currentPath === 'expert-verification.html';
+        const isTerms = pathname === '/terms' || currentPath === 'terms.html';
+        const isPrivacy = pathname === '/privacy' || currentPath === 'privacy.html';
 
         // Create Backdrop
         const backdrop = document.createElement('div');
@@ -60,11 +70,13 @@
         drawer.className = 'mobile-nav-drawer';
         drawer.setAttribute('role', 'dialog');
         drawer.setAttribute('aria-modal', 'true');
+        drawer.setAttribute('aria-hidden', 'true');
         drawer.setAttribute('aria-label', 'Mobile navigation menu');
+        drawer.inert = true;
 
         drawer.innerHTML = `
             <div class="drawer-header">
-                <a href="index.html" class="logo" style="text-decoration:none; display:flex; align-items:center; gap:8px;">
+                <a href="/" class="logo" style="text-decoration:none; display:flex; align-items:center; gap:8px;">
                     <svg class="logo-icon" viewBox="0 0 40 40" fill="none" width="28" height="28">
                         <path d="M8 6C8 4.89543 8.89543 4 10 4H30C31.1046 4 32 4.89543 32 6V28C32 29.1046 31.1046 30 30 30H22L16 36V30H10C8.89543 30 8 29.1046 8 28V6Z" fill="#278b7d"/>
                         <path d="M14 14L19 19L26 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -74,40 +86,40 @@
                 <button class="drawer-close-btn" id="drawerCloseBtn" aria-label="Close menu">&times;</button>
             </div>
             <nav class="drawer-nav-list">
-                <a href="index.html" class="drawer-nav-item ${currentPath === 'index.html' || currentPath === '' || currentPath === 'home.html' ? 'active' : ''}">
+                <a href="/" class="drawer-nav-item ${isHome ? 'active' : ''}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                     Home
                 </a>
-                <a href="support.html" class="drawer-nav-item ${currentPath === 'support.html' ? 'active' : ''}">
+                <a href="/support" class="drawer-nav-item ${isSupport ? 'active' : ''}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     Support &amp; Live Chat
                 </a>
-                <a href="articles.html" class="drawer-nav-item ${currentPath === 'articles.html' ? 'active' : ''}">
+                <a href="/articles" class="drawer-nav-item ${isArticles ? 'active' : ''}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                     Troubleshooting Articles
                 </a>
-                <a href="about.html" class="drawer-nav-item ${currentPath === 'about.html' ? 'active' : ''}">
+                <a href="/about" class="drawer-nav-item ${isAbout ? 'active' : ''}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                     About Us
                 </a>
-                <a href="faq.html" class="drawer-nav-item ${currentPath === 'faq.html' ? 'active' : ''}">
+                <a href="/faq" class="drawer-nav-item ${isFaq ? 'active' : ''}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                     Frequently Asked Questions
                 </a>
-                <a href="contact.html" class="drawer-nav-item ${currentPath === 'contact.html' ? 'active' : ''}">
+                <a href="/contact" class="drawer-nav-item ${isContact ? 'active' : ''}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                     Contact &amp; Escalations
                 </a>
-                <a href="expert-verification.html" class="drawer-nav-item ${currentPath === 'expert-verification.html' ? 'active' : ''}">
+                <a href="/expert-verification" class="drawer-nav-item ${isVerify ? 'active' : ''}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     Expert Verification
                 </a>
                 <div class="drawer-divider"></div>
-                <a href="terms.html" class="drawer-nav-item drawer-sublink ${currentPath === 'terms.html' ? 'active' : ''}">Terms of Service</a>
-                <a href="privacy.html" class="drawer-nav-item drawer-sublink ${currentPath === 'privacy.html' ? 'active' : ''}">Privacy Policy</a>
+                <a href="/terms" class="drawer-nav-item drawer-sublink ${isTerms ? 'active' : ''}">Terms of Service</a>
+                <a href="/privacy" class="drawer-nav-item drawer-sublink ${isPrivacy ? 'active' : ''}">Privacy Policy</a>
             </nav>
             <div class="drawer-footer">
-                <a href="support.html" class="drawer-cta-btn">
+                <a href="/support" class="drawer-cta-btn">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     Get Live Expert Help
                 </a>
@@ -126,6 +138,8 @@
             menuBtn.setAttribute('aria-expanded', 'true');
             backdrop.classList.add('active');
             drawer.classList.add('active');
+            drawer.setAttribute('aria-hidden', 'false');
+            drawer.inert = false;
             document.body.style.overflow = 'hidden';
         }
 
@@ -134,6 +148,8 @@
             menuBtn.setAttribute('aria-expanded', 'false');
             backdrop.classList.remove('active');
             drawer.classList.remove('active');
+            drawer.setAttribute('aria-hidden', 'true');
+            drawer.inert = true;
             document.body.style.overflow = '';
         }
 

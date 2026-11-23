@@ -15,7 +15,7 @@
             banner.className = 'cookie-banner';
             banner.innerHTML = `
                 <div class="cookie-text">
-                    <strong>🍪 We respect your privacy:</strong> We only use essential cookies strictly necessary for chat operation and anonymous analytics to improve resolution time. We never sell, track, or share your personal data with third-party advertisers. Learn more in our <a href="privacy.html">Privacy Policy</a>.
+                    <strong>🍪 We respect your privacy:</strong> We only use essential cookies strictly necessary for chat operation and anonymous analytics to improve resolution time. We never sell, track, or share your personal data with third-party advertisers. Learn more in our <a href="/privacy">Privacy Policy</a>.
                 </div>
                 <div class="cookie-actions">
                     <button type="button" class="btn-cookie-essential" id="cookieEssentialBtn">Essential Only</button>
@@ -26,21 +26,37 @@
         }
 
         banner.style.display = 'flex';
+        document.body.classList.add('has-cookie-banner');
+
+        function updateBannerOffset() {
+            if (banner.style.display === 'none') return;
+            const h = banner.offsetHeight || 120;
+            document.documentElement.style.setProperty('--cookie-banner-offset', (h + 24) + 'px');
+        }
+
+        requestAnimationFrame(updateBannerOffset);
+        window.addEventListener('resize', updateBannerOffset);
+
+        function dismissBanner(choice) {
+            localStorage.setItem(STORAGE_KEY, choice);
+            banner.style.display = 'none';
+            document.body.classList.remove('has-cookie-banner');
+            document.documentElement.style.removeProperty('--cookie-banner-offset');
+            window.removeEventListener('resize', updateBannerOffset);
+        }
 
         const acceptBtn = document.getElementById('cookieAcceptBtn');
         const essentialBtn = document.getElementById('cookieEssentialBtn');
 
         if (acceptBtn) {
             acceptBtn.addEventListener('click', function () {
-                localStorage.setItem(STORAGE_KEY, 'all');
-                banner.style.display = 'none';
+                dismissBanner('all');
             });
         }
 
         if (essentialBtn) {
             essentialBtn.addEventListener('click', function () {
-                localStorage.setItem(STORAGE_KEY, 'essential');
-                banner.style.display = 'none';
+                dismissBanner('essential');
             });
         }
     }

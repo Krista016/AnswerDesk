@@ -24,6 +24,9 @@ const MIME_TYPES = {
     '.css': 'text/css; charset=UTF-8',
     '.js': 'application/javascript; charset=UTF-8',
     '.json': 'application/json; charset=UTF-8',
+    '.txt': 'text/plain; charset=UTF-8',
+    '.xml': 'application/xml; charset=UTF-8',
+    '.md': 'text/markdown; charset=UTF-8',
     '.png': 'image/png',
     '.jpg': 'image/jpeg',
     '.jpeg': 'image/jpeg',
@@ -38,8 +41,9 @@ const server = http.createServer((req, res) => {
     const urlObj = new URL(req.url, `http://localhost:${PORT}`);
     const pathname = urlObj.pathname;
 
-    // Route /api/chat to our Gemini API handler
+    // Route /api/chat to our API handler (hot-reload both pearl-rules and chat in dev)
     if (pathname === '/api/chat') {
+        try { delete require.cache[require.resolve('./api/pearl-rules.js')]; } catch (_) {}
         delete require.cache[require.resolve('./api/chat.js')];
         const freshHandler = require('./api/chat.js');
         freshHandler(req, res);

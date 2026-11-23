@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android Phone Stuck in Fastboot Mode / &#39;No Command&#39; Screen Recovery | AnswerDesk</title>
+    <meta name="description" content="Navigate Android Recovery menu, wipe cache partition without data loss, and execute fastboot reboot commands.">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <link rel="canonical" href="https://answerdesk-zeta.vercel.app/guides/android-stuck-fastboot-no-command">
+    <link rel="alternate" type="text/markdown" href="/llms.txt" title="AnswerDesk AI Knowledge Base Index">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><path d='M8 6C8 4.9 8.9 4 10 4H30C31.1 4 32 4.9 32 6V28C32 29.1 31.1 30 30 30H22L16 36V30H10C8.9 30 8 29.1 8 28V6Z' fill='%23278b7d'/><path d='M14 14L19 19L26 12' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg>" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/index.css?v=20261121_v14">
+    <link rel="stylesheet" href="/articles.css?v=20261121_v8">
+    <link rel="stylesheet" href="/mobile-nav.css?v=20261121_v3">
+    <meta name="theme-color" content="#123e35">
+
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="AnswerDesk">
+    <meta property="og:url" content="https://answerdesk-zeta.vercel.app/guides/android-stuck-fastboot-no-command">
+    <meta property="og:title" content="Android Phone Stuck in Fastboot Mode / &#39;No Command&#39; Screen Recovery">
+    <meta property="og:description" content="Navigate Android Recovery menu, wipe cache partition without data loss, and execute fastboot reboot commands.">
+    <meta property="og:image" content="https://answerdesk-zeta.vercel.app/assets/cta-expert-pro.png">
+    <meta property="article:section" content="Mobile &amp; Android">
+    <meta property="article:published_time" content="2026-11-21">
+    <meta property="article:modified_time" content="2026-11-21">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Android Phone Stuck in Fastboot Mode / &#39;No Command&#39; Screen Recovery">
+    <meta name="twitter:description" content="Navigate Android Recovery menu, wipe cache partition without data loss, and execute fastboot reboot commands.">
+    <meta name="twitter:image" content="https://answerdesk-zeta.vercel.app/assets/cta-expert-pro.png">
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://answerdesk-zeta.vercel.app/guides/android-stuck-fastboot-no-command#article",
+      "headline": "Android Phone Stuck in Fastboot Mode / 'No Command' Screen Recovery",
+      "description": "Navigate Android Recovery menu, wipe cache partition without data loss, and execute fastboot reboot commands.",
+      "articleSection": "Mobile & Android",
+      "inLanguage": "en-US",
+      "datePublished": "2026-11-21",
+      "dateModified": "2026-11-21",
+      "url": "https://answerdesk-zeta.vercel.app/guides/android-stuck-fastboot-no-command",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://answerdesk-zeta.vercel.app/guides/android-stuck-fastboot-no-command"
+      },
+      "image": "https://answerdesk-zeta.vercel.app/assets/cta-expert-pro.png",
+      "author": {
+        "@type": "Person",
+        "name": "Elena Rostova",
+        "jobTitle": "Mobile OS & Telecommunications Expert",
+        "url": "https://answerdesk-zeta.vercel.app/expert-verification"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "AnswerDesk",
+        "url": "https://answerdesk-zeta.vercel.app/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://answerdesk-zeta.vercel.app/assets/guarantees/vetting.png"
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://answerdesk-zeta.vercel.app/guides/android-stuck-fastboot-no-command#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://answerdesk-zeta.vercel.app/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Troubleshooting Guides",
+          "item": "https://answerdesk-zeta.vercel.app/articles"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Mobile & Android",
+          "item": "https://answerdesk-zeta.vercel.app/guides/category/mobile"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Android Phone Stuck in Fastboot Mode / 'No Command' Screen Recovery",
+          "item": "https://answerdesk-zeta.vercel.app/guides/android-stuck-fastboot-no-command"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://answerdesk-zeta.vercel.app/guides/android-stuck-fastboot-no-command#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Android Phone Stuck in Fastboot Mode / 'No Command' Screen Recovery",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Navigate Android Recovery menu, wipe cache partition without data loss, and execute fastboot reboot commands."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Will fixing \"Android Phone Stuck in Fastboot Mode / 'No Command' Screen Recovery\" delete my personal files, data, or account history?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Basic diagnostic checks, power cycles, cache clears, and connection resets preserve your saved settings and personal data. Only full factory resets erase device configuration."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How long does it normally take to resolve this Mobile & Android Devices issue?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most diagnostic checks and software/connection resets take 5–20 minutes. Deeper firmware updates or hardware inspections may take 30–60 minutes."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What should I do if the problem returns after following these steps?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "If the same fault code or hardware symptom returns immediately after completing these steps, stop repeated reset attempts to prevent component damage and connect with a category expert for targeted diagnostics. You can also connect directly with a certified Mobile & Android Devices expert 24/7 on AnswerDesk for guided 1-on-1 troubleshooting."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "HowTo",
+      "@id": "https://answerdesk-zeta.vercel.app/guides/android-stuck-fastboot-no-command#howto",
+      "name": "Android Phone Stuck in Fastboot Mode / 'No Command' Screen Recovery",
+      "description": "Navigate Android Recovery menu, wipe cache partition without data loss, and execute fastboot reboot commands.",
+      "totalTime": "PT10M",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Force Hardware Restart Out of Fastboot",
+          "text": "Forces the PMIC to drop power rails and exit the Qualcomm/MediaTek fastboot bootloader mode. Hold Power AND Volume Down buttons simultaneously for 15 full seconds"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Reveal the Hidden Recovery Menu",
+          "text": "Immediately exposes the Android Recovery menu options. When the fallen Android robot with 'No Command' appears: Press and hold the Power button, tap Volume Up ONCE, then release both buttons"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Wipe Cache Partition (Safe for Personal Data)",
+          "text": "Deletes corrupted temporary system update patches without erasing your photos, contacts, or apps. Use Volume Down to highlight 'Wipe cache partition' > Press Power to select > Confirm 'Yes'"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+</head>
+<body class="static-guide-page">
+    
+    <header class="site-header" id="siteHeader">
+        <div class="header-inner">
+            <a href="/" class="logo" id="logo">
+                <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 6C8 4.89543 8.89543 4 10 4H30C31.1046 4 32 4.89543 32 6V28C32 29.1046 31.1046 30 30 30H22L16 36V30H10C8.89543 30 8 29.1046 8 28V6Z" fill="#278b7d"/>
+                    <path d="M14 14L19 19L26 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="logo-text">
+                    <span class="logo-name">Answer<span class="logo-name-accent">Desk</span></span>
+                    <span class="logo-sub">Troubleshooting Guide</span>
+                </div>
+            </a>
+            <nav class="header-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/support" class="nav-link">Support</a>
+                <a href="/articles" class="nav-link">All 704 Guides</a>
+                <a href="/about" class="nav-link">About Us</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </nav>
+            <a href="/support" class="header-cta">Get Expert Help</a>
+        </div>
+    </header>
+
+    <main class="standalone-guide-wrap">
+        <div class="standalone-guide-container">
+            <nav class="guide-breadcrumb" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                <span aria-hidden="true">&rsaquo;</span>
+                <a href="/articles">All 704 Guides</a>
+                <span aria-hidden="true">&rsaquo;</span>
+                <a href="/guides/category/mobile">Mobile &amp; Android</a>
+                
+            </nav>
+
+            <div class="guide-top-actions">
+                <a href="/articles" class="back-to-articles-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                    Browse All 704 Guides
+                </a>
+                <a href="/guides/category/mobile" class="back-to-category-link">
+                    More in Mobile &amp; Android &rarr;
+                </a>
+            </div>
+
+            <article class="full-article-card" itemscope itemtype="https://schema.org/TechArticle">
+                <div class="reader-meta-bar">
+                    <a href="/guides/category/mobile" class="article-card-tag article-tag-link">Mobile &amp; Android</a>
+                    
+                    <span class="article-card-time">&bull; 5 min read</span>
+                    <span class="guide-verified-pill">&#10003; Verified November 2026</span>
+                </div>
+
+                <h1 class="reader-title" itemprop="headline">Android Phone Stuck in Fastboot Mode / &#39;No Command&#39; Screen Recovery</h1>
+
+                <div class="reader-author-bar">
+                    <img src="/assets/expert-4.png" alt="Elena Rostova" width="48" height="48">
+                    <div class="reader-author-text">
+                        <strong>Written &amp; Audited by <span itemprop="author">Elena Rostova</span></strong>
+                        <span>Mobile OS &amp; Telecommunications Expert &bull; <a href="/expert-verification" class="author-verify-link">AnswerDesk Vetted Expert</a> &bull; Updated <time datetime="2026-11-21">November 2026</time></span>
+                    </div>
+                </div>
+
+                <div class="reader-content" itemprop="articleBody">
+                    
+            <div class="ai-direct-answer" itemscope itemtype="https://schema.org/Answer">
+                <div class="ai-answer-badge">&#9889; Quick Expert Answer &bull; Mobile &amp; Android Devices</div>
+                <p itemprop="text">Navigate Android Recovery menu, wipe cache partition without data loss, and execute fastboot reboot commands.</p>
+            </div>
+
+            <section class="guide-checklist-card" aria-label="Pre-fix diagnostic checklist">
+                <h2>Pre-Fix Diagnostic Checklist</h2>
+                <ul class="guide-checklist-list">
+                    <li><span class="chk-icon" aria-hidden="true">&#10003;</span><span>Hold Power + Volume Down for 10-15 seconds to force restart</span></li>
+                    <li><span class="chk-icon" aria-hidden="true">&#10003;</span><span>At &#39;No Command&#39; screen: Hold Power and tap Volume Up once</span></li>
+                    <li><span class="chk-icon" aria-hidden="true">&#10003;</span><span>Select &#39;Wipe Cache Partition&#39; using volume keys and power button</span></li>
+                    <li><span class="chk-icon" aria-hidden="true">&#10003;</span><span>Write down the exact error message, flashing LED pattern, or fault code displayed before restarting the device.</span></li>
+                </ul>
+            </section>
+
+            <section class="guide-protocol-section">
+                <h4>Diagnostic & Troubleshooting Protocol</h4>
+<p>Navigate Android Recovery menu, wipe cache partition without data loss, and execute fastboot reboot commands.</p>
+
+<div class="kb-step-box">
+    <div class="kb-step-num">Step 1</div>
+    <div class="kb-step-title">Force Hardware Restart Out of Fastboot</div>
+    <p>Forces the PMIC to drop power rails and exit the Qualcomm/MediaTek fastboot bootloader mode.</p>
+    <div class="kb-code-box"><code>Hold Power AND Volume Down buttons simultaneously for 15 full seconds</code></div>
+</div>
+<div class="kb-step-box">
+    <div class="kb-step-num">Step 2</div>
+    <div class="kb-step-title">Reveal the Hidden Recovery Menu</div>
+    <p>Immediately exposes the Android Recovery menu options.</p>
+    <div class="kb-code-box"><code>When the fallen Android robot with 'No Command' appears: Press and hold the Power button, tap Volume Up ONCE, then release both buttons</code></div>
+</div>
+<div class="kb-step-box">
+    <div class="kb-step-num">Step 3</div>
+    <div class="kb-step-title">Wipe Cache Partition (Safe for Personal Data)</div>
+    <p>Deletes corrupted temporary system update patches without erasing your photos, contacts, or apps.</p>
+    <div class="kb-code-box"><code>Use Volume Down to highlight 'Wipe cache partition' > Press Power to select > Confirm 'Yes'</code></div>
+</div>
+<div class="kb-warning-box">
+    <strong>Expert Caution / Safety Note:</strong> Do NOT select 'Wipe data / factory reset' unless you intend to erase all personal files on the device.
+</div>
+
+            </section>
+
+            <section class="guide-verify-card">
+                <h2>How to Verify the Fix Worked</h2>
+                <ol class="guide-verify-list">
+                    <li>Restart the affected system or device completely and confirm normal startup without returning warnings.</li>
+                    <li>Test the specific function that previously failed under normal everyday operating conditions.</li>
+                    <li>Monitor for 24 hours to verify the fault code or symptom does not recur.</li>
+                </ol>
+                <p class="guide-escalation-note"><strong>Still seeing the issue?</strong> If the same fault code or hardware symptom returns immediately after completing these steps, stop repeated reset attempts to prevent component damage and connect with a category expert for targeted diagnostics.</p>
+            </section>
+        
+                </div>
+
+                <section class="guide-faq-section" aria-label="Frequently Asked Questions">
+                    <h2>Frequently Asked Questions</h2>
+                    <div class="guide-faq-list">
+                        
+                <details class="guide-faq-item" open>
+                    <summary>Will fixing &quot;Android Phone Stuck in Fastboot Mode / &#39;No Command&#39; Screen Recovery&quot; delete my personal files, data, or account history?</summary>
+                    <p>Basic diagnostic checks, power cycles, cache clears, and connection resets preserve your saved settings and personal data. Only full factory resets erase device configuration.</p>
+                </details>
+
+                <details class="guide-faq-item">
+                    <summary>How long does it normally take to resolve this Mobile &amp; Android Devices issue?</summary>
+                    <p>Most diagnostic checks and software/connection resets take 5–20 minutes. Deeper firmware updates or hardware inspections may take 30–60 minutes.</p>
+                </details>
+
+                <details class="guide-faq-item">
+                    <summary>What should I do if the problem returns after following these steps?</summary>
+                    <p>If the same fault code or hardware symptom returns immediately after completing these steps, stop repeated reset attempts to prevent component damage and connect with a category expert for targeted diagnostics. You can also connect directly with a certified Mobile &amp; Android Devices expert 24/7 on AnswerDesk for guided 1-on-1 troubleshooting.</p>
+                </details>
+                    </div>
+                </section>
+
+                <div class="article-resolver-widget" id="articleResolverWidget">
+                    <div class="resolver-question">
+                        <h4>Did this diagnostic guide solve your issue?</h4>
+                        <p>Let us know if your issue is resolved, or get connected to an active Mobile &amp; Android expert in seconds.</p>
+                    </div>
+                    <div class="resolver-action-btns" id="resolverActionBtns">
+                        <button type="button" class="btn-solved" id="btnSolvedIssue">&#10003; Yes, Solved!</button>
+                        <a href="/support?q=Android%20Phone%20Stuck%20in%20Fastboot%20Mode%20%2F%20'No%20Command'%20Screen%20Recovery" class="btn-not-solved" id="btnNotSolvedIssue">
+                            No, Connect with Support Team &rarr;
+                        </a>
+                    </div>
+                    <div class="resolver-feedback-message" id="resolverFeedbackMessage">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>Thank you for your feedback! We're glad this resolved your issue.</span>
+                    </div>
+                </div>
+            </article>
+
+            <section class="related-guides-section" aria-label="Related Troubleshooting Guides">
+                <div class="related-guides-header">
+                    <h2>Related Mobile &amp; Android Troubleshooting Guides</h2>
+                    <a href="/guides/category/mobile" class="related-view-all">View all Mobile &amp; Android guides &rarr;</a>
+                </div>
+                <div class="related-guides-grid">
+                    
+                <a class="related-guide-card" href="/guides/smartphone-battery-draining-overnight">
+                    <span class="related-guide-cat">Mobile &amp; Android Devices</span>
+                    <h3 class="related-guide-title">Smartphone Battery Drains 20-30% Overnight on Standby: Background Wakelock Fix</h3>
+                    <p class="related-guide-snippet">Identify partial wakelock battery hogs, disable background location polling, and calibrate battery fuel gauge IC.</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/mobile-network-not-available-sim-error">
+                    <span class="related-guide-cat">Mobile &amp; Android Devices</span>
+                    <h3 class="related-guide-title">&#39;Mobile Network Not Available&#39; / &#39;No SIM Card&#39; Error on Android Fix</h3>
+                    <p class="related-guide-snippet">Re-seat physical SIM card tray, toggle Airplane Mode network stack, and reset Access Point Names (APN).</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/android-bootloop-after-system-update">
+                    <span class="related-guide-cat">Mobile &amp; Android Devices</span>
+                    <h3 class="related-guide-title">Android Bootloop After System Update: Safe Mode &amp; Cache Wipe Protocol</h3>
+                    <p class="related-guide-snippet">Recover from bootloops caused by incompatible third-party overlays, Substratum themes, or interrupted OTA updates.</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/phone-screen-unresponsive-touch-freeze">
+                    <span class="related-guide-cat">Mobile &amp; Android Devices</span>
+                    <h3 class="related-guide-title">Phone Touchscreen Completely Unresponsive / Frozen: Force Restart Guide</h3>
+                    <p class="related-guide-snippet">Execute hardware key force restarts across Samsung, Google Pixel, Motorola, and OnePlus devices.</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/microphone-not-working-phone-calls-speaker">
+                    <span class="related-guide-cat">Mobile &amp; Android Devices</span>
+                    <h3 class="related-guide-title">Microphone Doesn&#39;t Work on Normal Phone Calls But Works on Speakerphone Fix</h3>
+                    <p class="related-guide-snippet">Clean compacted lint from bottom primary microphone pinhole and configure noise suppression permissions.</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+
+                <a class="related-guide-card" href="/guides/google-pixel-screen-flickering-green-tint">
+                    <span class="related-guide-cat">Mobile &amp; Android Devices</span>
+                    <h3 class="related-guide-title">Google Pixel Screen Flickering Green / White Tint: Display Driver Fix</h3>
+                    <p class="related-guide-snippet">Disable &#39;Smooth Display&#39; 120Hz refresh rate, turn off Always-On Display, and test display driver IC connection.</p>
+                    <span class="article-read-link">Read Guide &rarr;</span>
+                </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    
+    <footer class="site-footer">
+        <div class="section-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a href="/" class="logo footer-logo">
+                        <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 6C8 4.89543 8.89543 4 10 4H30C31.1046 4 32 4.89543 32 6V28C32 29.1046 31.1046 30 30 30H22L16 36V30H10C8.89543 30 8 29.1046 8 28V6Z" fill="#278b7d"/>
+                            <path d="M14 14L19 19L26 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="logo-text">
+                            <span class="logo-name" style="color: #ffffff;">Answer<span class="logo-name-accent" style="color: #5eead4;">Desk</span></span>
+                        </div>
+                    </a>
+                    <p class="footer-desc">Real help from verified experts, 24/7. Browse 704+ step-by-step troubleshooting guides or chat live with an expert.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Top Guide Hubs</h4>
+                    <ul>
+                        <li><a href="/guides/category/windows">Microsoft &amp; Windows (128)</a></li>
+                        <li><a href="/guides/category/apple">Apple, Mac &amp; iPhone (128)</a></li>
+                        <li><a href="/guides/category/paypal">PayPal &amp; Payments (80)</a></li>
+                        <li><a href="/guides/category/amazon">Amazon &amp; Devices (80)</a></li>
+                        <li><a href="/guides/category/antivirus">Antivirus Suites (75)</a></li>
+                        <li><a href="/guides/category/defender">Windows Defender (75)</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Knowledge &amp; Support</h4>
+                    <ul>
+                        <li><a href="/articles">All 704 Troubleshooting Guides</a></li>
+                        <li><a href="/support">Live 24/7 Expert Support</a></li>
+                        <li><a href="/faq">Frequently Asked Questions</a></li>
+                        <li><a href="/expert-verification">Expert Verification Process</a></li>
+                        <li><a href="/llms.txt">AI Knowledge Index (llms.txt)</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company &amp; Legal</h4>
+                    <ul>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/contact">Contact &amp; Escalations</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-guarantees">
+                <div class="footer-guarantee-item">
+                    <div class="guarantee-icon-wrap">
+                        <img decoding="async" loading="lazy" src="/assets/guarantees/vetting.png" alt="Multi-Stage Vetting" width="40" height="40">
+                    </div>
+                    <div class="guarantee-text">
+                        <strong>Multi-Stage Vetting</strong>
+                        <p>Identity, credentials &amp; practical assessments audited</p>
+                    </div>
+                </div>
+                <div class="footer-guarantee-item">
+                    <div class="guarantee-icon-wrap">
+                        <img decoding="async" loading="lazy" src="/assets/guarantees/pay_solution.png" alt="Pay After Solution" width="40" height="40">
+                    </div>
+                    <div class="guarantee-text">
+                        <strong>Pay After Solution</strong>
+                        <p>No upfront retainers: billed only upon resolution</p>
+                    </div>
+                </div>
+                <div class="footer-guarantee-item">
+                    <div class="guarantee-icon-wrap">
+                        <img decoding="async" loading="lazy" src="/assets/guarantees/rapid_connect.png" alt="24/7 Rapid Connect" width="40" height="40">
+                    </div>
+                    <div class="guarantee-text">
+                        <strong>24/7 Rapid Connect</strong>
+                        <p>Average expert connection under 2 minutes</p>
+                    </div>
+                </div>
+                <div class="footer-guarantee-item">
+                    <div class="guarantee-icon-wrap">
+                        <img decoding="async" loading="lazy" src="/assets/guarantees/zero_data.png" alt="Zero Data Sharing" width="40" height="40">
+                    </div>
+                    <div class="guarantee-text">
+                        <strong>Zero Data Sharing</strong>
+                        <p>Strict privacy standard: issue-focused data only</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="brand-disclaimer">
+                    <p><strong>Disclaimer:</strong> AnswerDesk is an independent online consultation and support platform and is not affiliated with, authorized by, endorsed by, sponsored by, or otherwise associated with Amazon, Apple, Microsoft, Google, Gmail, Facebook (Meta), PayPal, Zelle, Venmo, Cash App, Coinbase, Norton, McAfee, Bitdefender, HP, AT&amp;T, Verizon, Geek Squad, or any bank, financial institution, or cryptocurrency exchange or platform. All product names, logos, brands, trademarks, and service marks referenced on this site are the sole property of their respective owners and do not sponsor, endorse, or maintain any association with AnswerDesk. Any use of third-party names or trademarks is strictly for informational and identification purposes only and does not imply any affiliation, authorization, or endorsement. Official brand support may also be available directly from the respective product manufacturers or service providers. For physical emergencies, please immediately call 911 or your local emergency services.</p>
+                </div>
+                <p>&copy; 2026 AnswerDesk. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    (function(){
+        var btn = document.getElementById('btnSolvedIssue');
+        var actions = document.getElementById('resolverActionBtns');
+        var msg = document.getElementById('resolverFeedbackMessage');
+        if (btn && actions && msg) {
+            btn.addEventListener('click', function(){
+                actions.style.display = 'none';
+                msg.style.display = 'inline-flex';
+            });
+        }
+    })();
+    </script>
+    <script src="/cookie-banner.js?v=20261121_v3"></script>
+    <script src="/mobile-nav.js?v=20261121_v3"></script>
+</body>
+</html>

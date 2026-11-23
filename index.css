@@ -1,4 +1,3 @@
-@import url('mobile-nav.css');
 /* ===== ILLYVOIP DESIGN TOKENS ===== */
 :root {
     --iv-bg-base: #f4f7f0;       /* Base canvas (warm sage-cream replacing stark white) */
@@ -246,10 +245,10 @@ body {
 }
 
 .hero-headline .highlight-word {
-    color: #34d399;
+    color: #5eead4;
     position: relative;
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85);
     font-weight: 900;
 }
 
@@ -343,15 +342,15 @@ body {
     box-shadow:
         0 20px 50px rgba(0,0,0,0.25),
         0 8px 20px rgba(0,0,0,0.12);
-    animation: slideInRight 0.8s ease;
+    animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     border: 1px solid rgba(255,255,255,0.2);
     background: #fff;
     z-index: 10;
 }
 
 @keyframes slideInRight {
-    from { opacity: 0; transform: translateX(40px); }
-    to { opacity: 1; transform: translateX(0); }
+    from { opacity: 1; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .chat-header {
@@ -375,7 +374,20 @@ body {
 
 .expert-avatars {
     display: flex;
+    align-items: center;
+    gap: 0;
     position: relative;
+}
+
+.expert-avatar-wrap {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    margin-left: -10px;
+}
+
+.expert-avatar-wrap:first-child {
+    margin-left: 0;
 }
 
 .expert-avatar {
@@ -383,30 +395,22 @@ body {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2.5px solid #1e3a5f;
-    margin-left: -10px;
+    border: 2.5px solid #123e35;
+    display: block;
 }
 
-.expert-avatar:first-child {
-    margin-left: 0;
-}
-
-.expert-avatars::after {
-    content: '✓';
+.expert-avatar-beacon {
     position: absolute;
     bottom: 0;
-    right: 2px;
-    width: 16px;
-    height: 16px;
+    right: 0;
+    width: 12px;
+    height: 12px;
     background: #22c55e;
+    border: 2px solid #123e35;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    color: #fff;
-    font-weight: 700;
-    border: 2px solid #1e3a5f;
+    animation: pulse 2s ease infinite;
+    z-index: 3;
+    pointer-events: none;
 }
 
 .experts-count {
@@ -453,6 +457,13 @@ body {
     flex-direction: row-reverse;
 }
 
+.pearl-avatar-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
 .pearl-avatar {
     width: 34px;
     height: 34px;
@@ -460,6 +471,21 @@ body {
     object-fit: cover;
     object-position: center top;
     flex-shrink: 0;
+    display: block;
+}
+
+.pearl-online-beacon {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 10px;
+    height: 10px;
+    background: #22c55e;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+    z-index: 2;
+    pointer-events: none;
 }
 
 .message-bubble {
@@ -487,24 +513,27 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 0;
+    padding: 4px 0;
+    animation: fadeInUp 0.2s ease;
 }
 
 .typing-dots {
-    display: flex;
-    gap: 4px;
-    background: #e9ecf1;
-    padding: 10px 16px;
-    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #e6f3ef;
+    border: 1px solid #cce6de;
+    padding: 12px 16px;
+    border-radius: 14px;
     border-bottom-left-radius: 4px;
 }
 
 .typing-dots span {
     width: 8px;
     height: 8px;
-    background: #94a3b8;
+    background: #3b7a6e;
     border-radius: 50%;
-    animation: typingBounce 1.4s ease infinite;
+    animation: typingBounce 1.25s ease-in-out infinite;
 }
 
 .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
@@ -1159,8 +1188,6 @@ body.support-page .site-footer .section-container {
         border-radius: 2px;
     }
 }
-    line-height: 1.6;
-}
 
 /* Categories */
 .categories-section {
@@ -1662,24 +1689,25 @@ body.support-page .site-footer .section-container {
     font-style: italic;
 }
 
-/* ===== CALL DETAILS PANEL (Adjacent to Chat) ===== */
+/* ===== CALL DETAILS PANEL (Adjacent to Chat on Desktop, Centered Modal on Mobile/Tablet) ===== */
 .call-details-panel,
 .call-panel {
     display: none;
     position: fixed;
-    top: 100px;
+    top: 110px;
     right: 430px;
-    width: 340px;
+    width: 360px;
+    max-width: calc(100vw - 32px);
     background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-radius: 18px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.30), 0 8px 24px rgba(0, 0, 0, 0.14);
     padding: 24px;
-    z-index: 1000;
+    z-index: 10102 !important;
     opacity: 0;
-    transform: translateX(20px);
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    max-height: calc(100vh - 120px);
+    transform: translateY(12px) scale(0.98);
+    transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid rgba(18, 62, 53, 0.12);
+    max-height: calc(100dvh - 32px);
     overflow-y: auto;
     overflow-x: hidden;
     box-sizing: border-box;
@@ -1689,16 +1717,34 @@ body.support-page .site-footer .section-container {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.65);
-    backdrop-filter: blur(4px);
-    z-index: 999;
+    background: rgba(15, 23, 42, 0.68);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 10090 !important;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.28s ease;
 }
 
 .call-panel-backdrop.visible {
-    display: block;
-    opacity: 1;
+    display: block !important;
+    opacity: 1 !important;
+}
+
+/* Keep chat panel crisp alongside call panel on desktop (> 1100px), while softly dimming hero-left */
+@media (min-width: 1101px) {
+    body.call-panel-open .hero-inner {
+        z-index: 10100 !important;
+    }
+    body.call-panel-open .hero-left {
+        opacity: 0.18;
+        filter: blur(3px);
+        pointer-events: none;
+        transition: opacity 0.25s ease, filter 0.25s ease;
+    }
+    body.call-panel-open .chat-panel {
+        position: relative;
+        z-index: 10101 !important;
+    }
 }
 
 /* Custom scrollbar for call panel */
@@ -1712,7 +1758,7 @@ body.support-page .site-footer .section-container {
 .call-details-panel.visible,
 .call-panel.visible {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0) scale(1);
 }
 
 .call-panel-badge {
@@ -1912,9 +1958,13 @@ body.support-page .site-footer .section-container {
 }
 
 .call-panel-number span,
-.call-panel-number .phone-number {
+.call-panel-number .phone-number,
+#callPanelPhoneNumberVisible {
     text-decoration: none !important;
-    color: inherit !important;
+    color: #16655a !important;
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
 }
 
 .call-number-label {
@@ -2052,12 +2102,15 @@ body.support-page .site-footer .section-container {
 .expert-popup-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(15, 23, 42, 0.65);
     backdrop-filter: blur(6px);
-    z-index: 200;
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 10200 !important;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
     animation: fadeIn 0.3s ease;
 }
 
@@ -2073,13 +2126,16 @@ body.support-page .site-footer .section-container {
 .expert-popup-card {
     background: #fff;
     border-radius: 20px;
-    padding: 36px 40px 32px;
+    padding: 32px 32px 28px;
     max-width: 420px;
-    width: 90%;
+    width: 100%;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
     text-align: center;
     position: relative;
-    animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 25px 80px rgba(0,0,0,0.2);
+    animation: scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+    box-sizing: border-box;
 }
 
 .expert-popup-close {
@@ -2512,9 +2568,10 @@ body.support-page .site-footer .section-container {
         inset: 0;
         background: rgba(15, 23, 42, 0.75) !important;
         backdrop-filter: blur(5px) !important;
-        z-index: 9999 !important;
+        -webkit-backdrop-filter: blur(5px) !important;
+        z-index: 10090 !important;
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: opacity 0.28s ease;
     }
 
     .call-panel-backdrop.visible {
@@ -2529,15 +2586,15 @@ body.support-page .site-footer .section-container {
         left: 50% !important;
         right: auto !important;
         bottom: auto !important;
-        width: calc(100% - 32px) !important;
+        width: calc(100% - 28px) !important;
         max-width: 420px !important;
-        max-height: 90vh !important;
-        border-radius: 24px !important;
-        padding: 28px 24px 32px 24px !important;
-        z-index: 10000 !important;
+        max-height: 90dvh !important;
+        border-radius: 22px !important;
+        padding: 26px 22px 26px 22px !important;
+        z-index: 10102 !important;
         box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45) !important;
         background: #ffffff !important;
-        transform: translate(-50%, -45%) scale(0.96) !important;
+        transform: translate(-50%, -46%) scale(0.96) !important;
         transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
         overflow-y: auto !important;
         box-sizing: border-box !important;
@@ -3573,15 +3630,15 @@ body.support-page .site-footer .section-container {
 
 @media (max-width: 1100px) {
     .cta-banner-card-s .cta-content-pocket {
-        width: 50% !important;
-        padding: 30px 24px 30px 36px !important;
+        width: 52% !important;
+        padding: 28px 24px 28px 34px !important;
     }
     .cta-banner-card-s .cta-content-pocket h2 {
         font-size: 28px !important;
     }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 960px) {
     .cta-banner-card-s {
         flex-direction: column !important;
         min-height: auto !important;
@@ -3601,7 +3658,7 @@ body.support-page .site-footer .section-container {
         bottom: auto !important;
         width: 100% !important;
         max-width: 100% !important;
-        padding: 32px 24px 38px !important;
+        padding: 32px 24px 36px !important;
         text-align: center !important;
         align-items: center !important;
         background: #f4f7f0 !important;
@@ -3618,11 +3675,15 @@ body.support-page .site-footer .section-container {
         align-self: center !important;
     }
     .cta-top-badge {
-        top: 16px !important;
+        top: 14px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         font-size: 10px !important;
-        white-space: nowrap !important;
+        max-width: calc(100% - 24px) !important;
+        white-space: normal !important;
+        text-align: center !important;
+        justify-content: center !important;
+        line-height: 1.3 !important;
         padding: 5px 12px !important;
     }
 }
@@ -4502,22 +4563,22 @@ body.support-page .site-footer .section-container {
 }
 
 .site-footer .brand-disclaimer {
-    border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
-    padding: 22px 0 16px 0 !important;
-    margin-top: 24px !important;
-}
-
-.site-footer .brand-disclaimer p {
-    color: #9ec3b7 !important;
-    font-size: 12px !important;
-    line-height: 1.7 !important;
+    border-top: none !important;
+    padding: 0 0 8px 0 !important;
     margin: 0 !important;
 }
 
-.site-footer .footer-bottom p {
+.site-footer .footer-bottom > p {
     color: #8bb0a4 !important;
-    font-size: 13px !important;
-    margin-top: 12px !important;
+    font-size: 11.5px !important;
+    margin-top: 8px !important;
+}
+
+.site-footer .footer-bottom .brand-disclaimer p {
+    color: #9ec3b7 !important;
+    font-size: 10.5px !important;
+    line-height: 1.48 !important;
+    margin: 0 !important;
 }
 
 
@@ -4593,10 +4654,7 @@ body.support-page .site-footer .section-container {
     }
 }
 
-/* Hide top-bar on tablets, mobile, and split screens (visible only on full desktop view) */
-@media (max-width: 1024px) {
-    .top-bar { display: none !important; }
-}
+/* Top-bar responsiveness is managed centrally in mobile-nav.css */
 
 /* Gemini Priority Action Styles */
 .call-option-priority {
@@ -4679,4 +4737,786 @@ body.support-page .site-footer .section-container {
     background-color: #10b981;
     border-radius: 50%;
     margin-right: 5px;
+}
+
+/* ==========================================================================
+   FINAL AUTHORITATIVE RESPONSIVE POLISH FOR SUPPORT PAGE (Mobile/Tablet/Desktop)
+   ========================================================================== */
+.site-footer .guarantee-icon-wrap img {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    object-fit: contain !important;
+    display: block !important;
+}
+
+.chat-message {
+    animation: fadeInUp 0.22s ease;
+}
+
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 18px !important;
+    }
+
+    .stat-item:nth-child(2n)::after {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .chat-panel {
+        height: auto !important;
+        min-height: 520px !important;
+        max-height: none !important;
+    }
+
+    .chat-header {
+        padding: 15px 16px !important;
+    }
+
+    .chat-header-title {
+        font-size: 16.5px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .chat-body {
+        flex: 1 1 280px !important;
+        min-height: 280px !important;
+        max-height: 60dvh !important;
+        padding: 14px 12px 10px !important;
+    }
+
+    .chat-input-area {
+        padding: 8px 14px 16px !important;
+        gap: 8px !important;
+    }
+
+    .chat-input {
+        font-size: 16px !important;
+        padding: 12px 14px !important;
+    }
+
+    .chat-medical-advisory {
+        font-size: 11px !important;
+        line-height: 1.4 !important;
+        margin-top: 6px !important;
+        padding-bottom: 2px !important;
+    }
+
+    .stats-rounded-card {
+        padding: 28px 18px !important;
+        border-radius: 22px !important;
+    }
+
+    .stat-number {
+        font-size: 34px !important;
+    }
+
+    .stat-label {
+        font-size: 13px !important;
+    }
+
+    .cta-section {
+        padding: 36px 0 !important;
+    }
+
+    .cta-banner-card-s .cta-s-image-layer {
+        height: 230px !important;
+    }
+
+    .cta-banner-card-s .cta-content-pocket {
+        padding: 24px 18px 30px !important;
+    }
+
+    .cta-banner-card-s .cta-content-pocket h2 {
+        font-size: 24px !important;
+    }
+
+    .cta-banner-card-s .cta-content-pocket .cta-btn {
+        width: 100% !important;
+        max-width: 320px !important;
+        text-align: center !important;
+        padding: 14px 20px !important;
+    }
+
+    .site-footer {
+        padding: 42px 0 34px 0 !important;
+    }
+
+    .site-footer .section-container {
+        padding: 0 18px !important;
+    }
+
+    .site-footer .footer-grid {
+        grid-template-columns: 1fr !important;
+        gap: 26px !important;
+    }
+}
+
+@media (max-width: 540px) {
+    /* Mobile-first Call & Chat option cards: prevents narrow-column text crushing & badge collisions */
+    .connect-option-pro {
+        display: grid !important;
+        grid-template-columns: 38px minmax(0, 1fr) 18px !important;
+        align-items: center !important;
+        column-gap: 10px !important;
+        row-gap: 8px !important;
+        padding: 12px 12px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .connect-option-pro .option-pro-icon {
+        width: 38px !important;
+        height: 38px !important;
+        grid-column: 1 !important;
+    }
+
+    .connect-option-pro .option-pro-content {
+        grid-column: 2 !important;
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    .connect-option-pro > .option-pro-arrow {
+        grid-column: 3 !important;
+        justify-self: end !important;
+    }
+
+    /* Priority Call Card: place RECOMMENDED badge neatly across top row so title & desc get full width */
+    .call-option-priority .option-pro-right {
+        display: contents !important;
+    }
+
+    .call-option-priority .badge-recommended {
+        grid-column: 1 / -1 !important;
+        grid-row: 1 !important;
+        justify-self: start !important;
+        font-size: 10px !important;
+        padding: 3px 9px !important;
+        margin: 0 !important;
+    }
+
+    .call-option-priority .option-pro-icon {
+        grid-row: 2 !important;
+    }
+
+    .call-option-priority .option-pro-content {
+        grid-row: 2 !important;
+    }
+
+    .call-option-priority .option-pro-arrow {
+        grid-column: 3 !important;
+        grid-row: 2 !important;
+        justify-self: end !important;
+    }
+
+    .option-pro-title {
+        font-size: 14px !important;
+        line-height: 1.3 !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+    }
+
+    .option-pro-desc {
+        font-size: 12px !important;
+        line-height: 1.35 !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+    }
+
+    .call-details-panel,
+    .call-panel {
+        padding: 22px 18px 22px !important;
+    }
+
+    .call-panel-title {
+        font-size: 17px !important;
+        margin-bottom: 14px !important;
+        padding-right: 26px !important;
+    }
+
+    .call-panel-expert {
+        padding: 12px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .call-panel-number,
+    #callPanelPhoneNumberVisible {
+        font-size: 18px !important;
+    }
+
+    .call-panel-number {
+        padding: 12px 14px !important;
+    }
+
+    .call-panel-trust {
+        flex-wrap: wrap !important;
+        gap: 10px 14px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .expert-popup-card {
+        padding: 26px 18px 22px !important;
+    }
+
+    .expert-popup-badge {
+        font-size: 11px !important;
+        padding: 5px 14px !important;
+        margin-bottom: 18px !important;
+    }
+
+    .expert-popup-cta {
+        width: 100% !important;
+        padding: 14px 20px !important;
+        font-size: 16px !important;
+        box-sizing: border-box !important;
+    }
+
+    .stats-rounded-card {
+        padding: 22px 14px !important;
+    }
+
+    .stat-item {
+        padding: 8px 6px !important;
+    }
+
+    .stat-item:not(:last-child)::after {
+        display: none !important;
+    }
+
+    .stat-number {
+        font-size: 28px !important;
+    }
+
+    .cta-top-badge {
+        font-size: 9.5px !important;
+        padding: 5px 10px !important;
+    }
+}
+
+/* Also ensure compact desktop chat panel (440px) gives Call option comfortable horizontal space */
+@media (min-width: 541px) {
+    .connect-option-pro {
+        padding: 12px 14px;
+        gap: 12px;
+    }
+
+    .connect-option-pro .option-pro-content {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .connect-option-pro .badge-recommended {
+        font-size: 10px;
+        padding: 3px 7px;
+    }
+}
+
+/* ===== CONSULTATIVE SUMMARY QUICK-REPLY CHIPS ===== */
+.chat-quick-replies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px 0 8px 42px;
+    max-width: 100%;
+    box-sizing: border-box;
+    animation: fadeIn 0.25s ease;
+}
+
+.quick-reply-chip {
+    background: #ffffff;
+    border: 1.5px solid #278b7d;
+    color: #123e35;
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    box-shadow: 0 2px 6px rgba(18, 62, 53, 0.08);
+    max-width: 100%;
+    white-space: normal;
+    text-align: left;
+}
+
+.quick-reply-chip:hover {
+    background: #278b7d;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(39, 139, 125, 0.25);
+}
+
+@media (max-width: 600px) {
+    .chat-quick-replies {
+        padding-left: 0;
+    }
+    .quick-reply-chip {
+        font-size: 12.5px;
+        padding: 7px 12px;
+    }
+}
+
+/* ===== SUPPORT LANDING PAGE (ASKTECH-STYLE CHAT-FIRST FOCUS) ===== */
+body.support-page .site-header {
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid rgba(18, 62, 53, 0.08);
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+}
+
+body.support-page .header-inner {
+    height: 60px;
+}
+
+body.support-page .hero {
+    min-height: calc(100vh - 60px);
+    padding: 28px 0;
+    align-items: center;
+}
+
+body.support-page .hero-inner {
+    align-items: center;
+    gap: 48px;
+}
+
+body.support-page .hero-subtext {
+    margin-bottom: 24px;
+}
+
+body.support-page .support-steps-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px 26px;
+}
+
+body.support-page .support-step-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.94);
+    font-size: 14.5px;
+    font-weight: 600;
+}
+
+body.support-page .support-step-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(94, 234, 212, 0.22);
+    border: 1.5px solid #5eead4;
+    color: #5eead4;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12.5px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+body.support-page .chat-panel {
+    height: 600px;
+    max-height: calc(100vh - 96px);
+}
+
+body.support-page .chat-header {
+    padding: 18px 20px 16px;
+}
+
+body.support-page .chat-header-title {
+    margin-bottom: 11px;
+}
+
+body.support-page .chat-body {
+    background: #ffffff;
+    padding: 16px 18px 10px;
+}
+
+body.support-page .chat-input-area {
+    background: #f4f7f5;
+    padding: 12px 18px 14px;
+    gap: 8px;
+    border-top: 1px solid #e2ebe5;
+}
+
+body.support-page .start-chat-btn {
+    padding: 13px;
+}
+
+body.support-page .support-trust-strip {
+    background: var(--iv-bg-base);
+    border-top: 1px solid var(--iv-line);
+    padding: 28px 0;
+}
+
+body.support-page .support-trust-grid {
+    margin: 0;
+    border-top: none;
+    padding: 0;
+}
+
+body.support-page .support-trust-strip .footer-guarantee-item strong {
+    color: var(--iv-ink);
+}
+
+body.support-page .support-trust-strip .footer-guarantee-item p {
+    color: var(--iv-body);
+}
+
+body.support-page .site-footer.support-minimal-footer {
+    padding: 24px 0 20px;
+}
+
+body.support-page .support-footer-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+body.support-page .site-footer.support-minimal-footer .footer-bottom {
+    margin-top: 0;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+body.support-page .site-footer.support-minimal-footer .brand-disclaimer p {
+    margin-top: 0 !important;
+}
+
+body.support-page .support-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px 24px;
+}
+
+body.support-page .support-footer-links a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+body.support-page .support-footer-links a:hover {
+    color: #5eead4;
+}
+
+@media (max-width: 1024px) {
+    body.support-page .hero {
+        padding: 18px 0 28px;
+        min-height: auto;
+    }
+
+    body.support-page .hero-inner {
+        gap: 18px;
+    }
+
+    body.support-page .support-steps-strip {
+        justify-content: center;
+    }
+
+    body.support-page .support-trust-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+/* Mobile-First AskTech-Style Landing Page: Full Chat + Input + CTA 100% Above the Fold */
+@media (max-width: 768px) {
+    body.support-page .header-inner {
+        min-height: 50px !important;
+        height: 50px !important;
+        padding: 6px 14px !important;
+    }
+
+    body.support-page .logo-icon {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    body.support-page .logo-name {
+        font-size: 17px !important;
+    }
+
+    body.support-page .logo-sub {
+        font-size: 8px !important;
+    }
+
+    body.support-page .mobile-menu-btn {
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    body.support-page .hero {
+        padding: 10px 0 18px !important;
+        min-height: calc(100dvh - 50px) !important;
+        align-items: flex-start !important;
+    }
+
+    body.support-page .hero-inner {
+        padding: 0 12px !important;
+        gap: 10px !important;
+        align-items: stretch !important;
+    }
+
+    body.support-page .hero-left {
+        padding: 0 !important;
+        gap: 0 !important;
+        align-items: center !important;
+    }
+
+    body.support-page .hero-headline {
+        font-size: 19px !important;
+        line-height: 1.2 !important;
+        margin: 0 !important;
+        text-align: center !important;
+    }
+
+    body.support-page .hero-headline br {
+        display: none;
+    }
+
+    body.support-page .hero-headline .highlight-word {
+        color: #6ef7e0;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    body.support-page .hero-headline.category-detected {
+        font-size: 17.5px !important;
+        line-height: 1.22 !important;
+    }
+
+    body.support-page .hero-subtext,
+    body.support-page .support-steps-strip {
+        display: none !important;
+    }
+
+    body.support-page .chat-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: clamp(340px, calc(100dvh - 118px), 630px) !important;
+        min-height: 340px !important;
+        max-height: calc(100dvh - 112px) !important;
+        border-radius: 16px !important;
+        margin: 0 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    body.support-page .chat-header {
+        padding: 10px 14px !important;
+        flex: 0 0 auto !important;
+    }
+
+    body.support-page .chat-header-title {
+        display: none !important;
+    }
+
+    body.support-page .experts-row {
+        gap: 10px !important;
+    }
+
+    body.support-page .expert-avatars {
+        gap: 0 !important;
+    }
+
+    body.support-page .expert-avatar-wrap {
+        margin-left: -8px !important;
+    }
+
+    body.support-page .expert-avatar-wrap:first-child {
+        margin-left: 0 !important;
+    }
+
+    body.support-page .expert-avatar {
+        width: 32px !important;
+        height: 32px !important;
+        margin-left: 0 !important;
+    }
+
+    body.support-page .expert-avatar-beacon {
+        width: 10px !important;
+        height: 10px !important;
+        border-width: 2px !important;
+    }
+
+    body.support-page .experts-count {
+        font-size: 13px !important;
+        line-height: 1.3 !important;
+    }
+
+    body.support-page .chat-body {
+        flex: 1 1 auto !important;
+        min-height: 170px !important;
+        max-height: none !important;
+        padding: 12px 12px 8px !important;
+        overflow-y: auto !important;
+    }
+
+    body.support-page .chat-input-area {
+        flex: 0 0 auto !important;
+        padding: 10px 12px 12px !important;
+        gap: 8px !important;
+    }
+
+    body.support-page .chat-input {
+        font-size: 16px !important;
+        padding: 11px 13px !important;
+    }
+
+    body.support-page .start-chat-btn {
+        padding: 12px !important;
+        font-size: 14.5px !important;
+        letter-spacing: 1.2px !important;
+    }
+
+    body.support-page .online-status {
+        font-size: 12px !important;
+    }
+
+    body.support-page .support-trust-strip {
+        padding: 22px 0 !important;
+    }
+
+    body.support-page .support-trust-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    body.support-page .site-footer.support-minimal-footer {
+        padding: 26px 0 22px !important;
+    }
+
+    body.support-page .support-footer-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    body.support-page .support-footer-links {
+        gap: 12px 18px;
+    }
+}
+
+
+/* ==========================================================================
+   SUPPORT PAGE - WHAT YOU GET (below chat & trust strip)
+   ========================================================================== */
+body.support-page .support-what-you-get {
+    background: var(--iv-bg-base);
+    border-top: 1px solid var(--iv-line);
+    padding: 40px 0 44px;
+}
+
+body.support-page .support-wyg-title {
+    font-size: 30px;
+    font-weight: 800;
+    color: #123e35;
+    letter-spacing: -0.02em;
+    margin: 0 0 6px;
+}
+
+body.support-page .support-wyg-subtitle {
+    font-size: 15px;
+    color: #64748b;
+    margin: 0 0 24px;
+}
+
+body.support-page .support-wyg-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+body.support-page .support-wyg-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.support-page .support-wyg-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+}
+
+body.support-page .support-wyg-img-wrap {
+    flex-shrink: 0;
+    width: 124px;
+    height: 124px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #edf5f2;
+    box-shadow: 0 6px 18px rgba(18, 62, 53, 0.08);
+}
+
+body.support-page .support-wyg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    display: block;
+}
+
+body.support-page .support-wyg-text {
+    min-width: 0;
+}
+
+body.support-page .support-wyg-text h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 8px;
+}
+
+body.support-page .support-wyg-text p {
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    body.support-page .support-what-you-get {
+        padding: 30px 0 32px;
+    }
+
+    body.support-page .support-wyg-title,
+    body.support-page .support-wyg-subtitle {
+        text-align: center;
+    }
+
+    body.support-page .support-wyg-title {
+        font-size: 24px;
+    }
+
+    body.support-page .support-wyg-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    body.support-page .support-wyg-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 22px 18px;
+        gap: 14px;
+    }
+
+    body.support-page .support-wyg-img-wrap {
+        width: 112px;
+        height: 112px;
+    }
 }

@@ -45,7 +45,7 @@
                     content: 'Go to <strong>Settings &gt; Bluetooth &amp; Devices &gt; Printers &amp; Scanners</strong>. Click your printer &gt; <strong>Printer Properties</strong> &gt; <strong>Ports</strong> tab. Select your IP port, click <strong>Configure Port</strong>, and uncheck <strong>SNMP Status Enabled</strong>.'
                 }
             ],
-            warning: 'If your printer is connected to a shared office server, registry adjustments under HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Print (RpcAuthnLevelPrivacyEnabled = 0) may be required. Consult an IT specialist before modifying server registries.',
+            warning: 'If your printer is connected to a shared office server, registry adjustments under HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Print (RpcAuthnLevelPrivacyEnabled = 0) may be required. Consult an IT expert before modifying server registries.',
             proTip: 'Assigning a static DHCP IP reservation on your router permanently prevents network printers from dropping offline after router reboots.',
             supportPrompt: 'My printer is showing offline error 0x0000011b on Windows 11 and won\'t print.'
         },
@@ -100,7 +100,7 @@
             difficulty: 'Intermediate',
             author: {
                 name: 'James Wilson',
-                role: 'Apple & iOS Specialist',
+                role: 'Apple & iOS Expert',
                 avatar: 'assets/expert-2.png'
             },
             snippet: 'MacBook powers on, chimes, displays the Apple logo with progress bar at 100%, but never reaches the login screen.',
@@ -139,7 +139,7 @@
             difficulty: 'Beginner',
             author: {
                 name: 'James Wilson',
-                role: 'Apple & iOS Specialist',
+                role: 'Apple & iOS Expert',
                 avatar: 'assets/expert-2.png'
             },
             snippet: 'iPhone continuously flashes the Apple logo every 10 seconds or shows a computer cable pointing to a screen.',
@@ -373,7 +373,7 @@
             difficulty: 'Beginner',
             author: {
                 name: 'James Wilson',
-                role: 'Mobile Systems Specialist',
+                role: 'Mobile Systems Expert',
                 avatar: 'assets/expert-2.png'
             },
             snippet: 'Phone battery drops precipitously overnight while idle with screen off, and device feels warm to the touch.',
@@ -643,23 +643,23 @@
     const faqData = [
         {
             q: 'How does AnswerDesk\'s 3-step diagnostic matching work?',
-            a: '<p>AnswerDesk uses an intelligent diagnostic intake process rather than a generic ticketing system:</p><ul><li><strong>Step 1: Problem Intake</strong> — You describe the issue, symptoms, or error code in our private support portal.</li><li><strong>Step 2: Category &amp; Specialist Routing</strong> — Our system analyzes your specific hardware, software version, or situation and pairs you with a verified, credentialed specialist (e.g., Windows Systems Engineer, ASE Master Mechanic, Licensed Veterinarian).</li><li><strong>Step 3: Rapid Connection</strong> — You are connected in under 2 minutes for interactive diagnostic guidance via live chat, phone call, or secure screen share.</li></ul>'
+            a: '<p>AnswerDesk uses an intelligent diagnostic intake process rather than a generic ticketing system:</p><ul><li><strong>Step 1: Problem Intake</strong>: You describe the issue, symptoms, or error code in our private support portal.</li><li><strong>Step 2: Category &amp; Expert Routing</strong>: Our system analyzes your specific hardware, software version, or situation and pairs you with a verified, credentialed expert (e.g., Windows Systems Engineer, ASE Master Mechanic, Licensed Veterinarian).</li><li><strong>Step 3: Rapid Connection</strong>: You are connected in under 2 minutes for interactive diagnostic guidance via live chat, phone call, or secure screen share.</li></ul>'
         },
         {
-            q: 'Are the specialists real certified professionals or automated AI bots?',
-            a: '<p>Every consultation is conducted with <strong>real, verified human professionals</strong>. While an AI assistant facilitates initial symptom intake and triages your technical details to save time, the actual diagnosis and troubleshooting guidance is delivered directly by credentialed specialists.</p><p>Our specialists include ASE-certified master mechanics, Apple Certified Support Professionals, Microsoft Certified Systems Engineers, licensed veterinarians (DVM), bar-admitted attorneys, and licensed appliance technicians with years of hands-on field experience.</p>'
+            q: 'Are the experts real certified professionals or automated AI bots?',
+            a: '<p>Every consultation is conducted with <strong>real, verified human professionals</strong>. While an AI assistant facilitates initial symptom intake and triages your technical details to save time, the actual diagnosis and troubleshooting guidance is delivered directly by credentialed experts.</p><p>Our experts include ASE-certified master mechanics, Apple Certified Support Professionals, Microsoft Certified Systems Engineers, licensed veterinarians (DVM), bar-admitted attorneys, and licensed appliance technicians with years of hands-on field experience.</p>'
         },
         {
             q: 'What if a troubleshooting article or guide doesn\'t fix my specific model?',
-            a: '<p>Modern devices feature thousands of firmware revisions, model variations, and unique configuration conflicts. Static articles solve standard root causes, but unique quirks often require hands-on troubleshooting.</p><p>If a guide doesn\'t completely resolve your issue, simply click the <strong>"Ask Our Support Team"</strong> button. Our specialists will review the steps you already tried and perform a custom diagnostic tailored to your exact device make, model, and error code.</p>'
+            a: '<p>Modern devices feature thousands of firmware revisions, model variations, and unique configuration conflicts. Static articles solve standard root causes, but unique quirks often require hands-on troubleshooting.</p><p>If a guide doesn\'t completely resolve your issue, simply click the <strong>"Ask Our Support Team"</strong> button. Our experts will review the steps you already tried and perform a custom diagnostic tailored to your exact device make, model, and error code.</p>'
         },
         {
             q: 'How does the "Pay After Solution" guarantee work?',
-            a: '<p>AnswerDesk operates on a solution-first standard: <strong>we do not believe you should pay for incomplete answers or unhelpful suggestions</strong>.</p><p>There are zero upfront retainers. Your specialist works with you step-by-step until your question is answered and your problem is resolved to your complete satisfaction. If we are unable to diagnose or solve your issue, you pay nothing.</p>'
+            a: '<p>AnswerDesk operates on a solution-first standard: <strong>we do not believe you should pay for incomplete answers or unhelpful suggestions</strong>.</p><p>There are zero upfront retainers. Your expert works with you step-by-step until your question is answered and your problem is resolved to your complete satisfaction. If we are unable to diagnose or solve your issue, you pay nothing.</p>'
         },
         {
             q: 'Can I get help via a direct phone call, screen share, or live chat?',
-            a: '<p>Yes! AnswerDesk offers flexible omnichannel support depending on your comfort and the complexity of your issue:</p><ul><li><strong>Live Chat</strong> — Convenient for sending screenshots, error codes, and step-by-step checklists.</li><li><strong>Direct Phone Consultation</strong> — Perfect for automotive issues, appliances, or complex situations where talking live with a verified engineer is fastest.</li><li><strong>Secure Screen Sharing</strong> — Ideal for tricky Windows/Mac software glitches, email setups, and printer configurations where you want the specialist to pinpoint the fix directly on screen.</li></ul>'
+            a: '<p>Yes! AnswerDesk offers flexible omnichannel support depending on your comfort and the complexity of your issue:</p><ul><li><strong>Live Chat</strong>: Convenient for sending screenshots, error codes, and step-by-step checklists.</li><li><strong>Direct Phone Consultation</strong>: Perfect for automotive issues, appliances, or complex situations where talking live with a verified engineer is fastest.</li><li><strong>Secure Screen Sharing</strong>: Ideal for tricky Windows/Mac software glitches, email setups, and printer configurations where you want the expert to pinpoint the fix directly on screen.</li></ul>'
         },
         {
             q: 'What categories, brands, and device types does AnswerDesk support?',
@@ -667,11 +667,11 @@
         },
         {
             q: 'What information should I have ready before connecting with an expert?',
-            a: '<p>To ensure the fastest possible resolution, having the following details ready is helpful:</p><ul><li>The exact brand, model number, and year of the device, appliance, or vehicle.</li><li>The exact wording of any error messages or diagnostic codes (e.g. 0x0000011b, P0420, OE).</li><li>What happened immediately before the issue began (e.g. recent software update, power surge, strange noise).</li><li>Any troubleshooting steps you have already attempted so the specialist doesn\'t make you repeat them.</li></ul>'
+            a: '<p>To ensure the fastest possible resolution, having the following details ready is helpful:</p><ul><li>The exact brand, model number, and year of the device, appliance, or vehicle.</li><li>The exact wording of any error messages or diagnostic codes (e.g. 0x0000011b, P0420, OE).</li><li>What happened immediately before the issue began (e.g. recent software update, power surge, strange noise).</li><li>Any troubleshooting steps you have already attempted so the expert doesn\'t make you repeat them.</li></ul>'
         },
         {
             q: 'How are my personal data, privacy, and payment security protected?',
-            a: '<p>We enforce rigorous enterprise security standards:</p><ul><li>All chats, diagnostic transmissions, and phone connections are encrypted with <strong>256-bit TLS 1.3 encryption</strong>.</li><li>We maintain a strict <strong>Zero Data Sharing</strong> policy — your personal contact information is never sold, shared, or distributed to third-party advertisers.</li><li>All transactions are processed through Level 1 PCI-DSS certified payment processors. Specialists never see your financial card details.</li></ul>'
+            a: '<p>We enforce rigorous enterprise security standards:</p><ul><li>All chats, diagnostic transmissions, and phone connections are encrypted with <strong>256-bit TLS 1.3 encryption</strong>.</li><li>We maintain a strict <strong>Zero Data Sharing</strong> policy: your personal contact information is never sold, shared, or distributed to third-party advertisers.</li><li>All transactions are processed through Level 1 PCI-DSS certified payment processors. Experts never see your financial card details.</li></ul>'
         }
     ];
 
@@ -749,7 +749,7 @@
                 kbZeroResults.style.display = 'block';
                 if (kbZeroQuery) kbZeroQuery.textContent = searchQuery ? `"${searchQuery}"` : 'this issue';
                 if (kbZeroAskBtn) {
-                    kbZeroAskBtn.innerHTML = `Ask Our Support Team About ${searchQuery ? `"${searchQuery}"` : 'Your Issue'} &rarr;`;
+                    kbZeroAskBtn.textContent = `Ask Our Support Team About ${searchQuery ? `"${searchQuery}"` : 'Your Issue'} →`;
                     kbZeroAskBtn.onclick = () => {
                         bridgeToSupportChat(searchQuery || 'I need help diagnosing an issue');
                     };
@@ -857,7 +857,7 @@
 
                 ${art.proTip ? `
                     <p style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 12px 16px; border-radius: 8px; font-size: 14px; color: #1e40af;">
-                        <strong>Pro Specialist Tip:</strong> ${art.proTip}
+                        <strong>Pro Expert Tip:</strong> ${art.proTip}
                     </p>
                 ` : ''}
 
@@ -871,10 +871,10 @@
 
                 <div class="kb-modal-bridge-card">
                     <div class="kb-modal-bridge-text">
-                        <h4>Facing a tricky variation or want a specialist to walk you through it?</h4>
-                        <p>Our verified ${art.categoryLabel} specialists are online 24/7 to solve your exact situation.</p>
+                        <h4>Facing a tricky variation or want an expert to walk you through it?</h4>
+                        <p>Our verified ${art.categoryLabel} experts are online 24/7 to solve your exact situation.</p>
                     </div>
-                    <button class="kb-modal-bridge-btn" id="kbBridgeBtn">Connect with Specialist &rarr;</button>
+                    <button class="kb-modal-bridge-btn" id="kbBridgeBtn">Connect with Expert &rarr;</button>
                 </div>
             </div>
         `;
@@ -882,7 +882,7 @@
         kbModal.classList.add('active');
         document.body.style.overflow = 'hidden';
 
-        // Connect with specialist button handler
+        // Connect with expert button handler
         const bridgeBtn = document.getElementById('kbBridgeBtn');
         if (bridgeBtn) {
             bridgeBtn.addEventListener('click', () => {
