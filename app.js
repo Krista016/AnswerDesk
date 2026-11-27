@@ -213,23 +213,63 @@
         { id: 35, name: 'Scott Donovan', avatar: 'assets/expert-35.png', customers: 10056 }
     ];
 
-    // ===== Category Directory & Roles =====
+    // ===== Category Directory & Roles (Ad-Compliant Independent Titles; Phones Resolved Dynamically via Admin Config) =====
     const categories = {
-        crypto: { label: 'Digital Payments & Fintech', expertType: 'Finance', specialistGroup: 'Payments & Finance Experts', phone: '1-800-555-0188', expertRole: 'Digital Payments & Crypto Expert' },
-        microsoft: { label: 'Microsoft & Windows', expertType: 'Tech', specialistGroup: 'Tech Support Experts', phone: '1-800-936-5700', expertRole: 'Windows & Microsoft Systems Engineer' },
-        ios: { label: 'iPhone & Apple Devices', expertType: 'Apple', specialistGroup: 'Apple Support Experts', phone: '1-800-275-2273', expertRole: 'Apple & iOS Expert' },
-        xbox: { label: 'Xbox & Gaming Systems', expertType: 'Tech', specialistGroup: 'Gaming Support Experts', phone: '1-800-469-9269', expertRole: 'Gaming Support Expert' },
-        android: { label: 'Android & Mobile', expertType: 'Tech', specialistGroup: 'Android Support Experts', phone: '1-800-726-7864', expertRole: 'Android Tech Expert' },
-        plumbing: { label: 'Plumbing & Home Systems', expertType: 'Home', specialistGroup: 'Plumbing Experts', phone: '1-800-555-0199', expertRole: 'Licensed Plumber' },
-        legal: { label: 'Legal & Consumer Rights', expertType: 'Legal', specialistGroup: 'Legal Experts', phone: '1-800-555-0177', expertRole: 'Licensed Attorney' },
-        veterinary: { label: 'Veterinary & Pet Care', expertType: 'Vet', specialistGroup: 'Veterinary Experts', phone: '1-800-555-0145', expertRole: 'Licensed Veterinarian' },
-        medical: { label: 'Health & Medical Guidance', expertType: 'Health', specialistGroup: 'Medical Experts', phone: '1-800-555-0134', expertRole: 'Board Certified Physician' },
-        automotive: { label: 'Automotive & Mechanical', expertType: 'Auto', specialistGroup: 'Automotive Experts', phone: '1-800-555-0156', expertRole: 'ASE Certified Mechanic' },
-        subscription: { label: 'Billing & Subscriptions', expertType: 'Billing', specialistGroup: 'Billing Support Experts', phone: '1-800-555-0122', expertRole: 'Billing Expert' },
-        account: { label: 'Account & Security', expertType: 'Tech', specialistGroup: 'Account & Security Experts', phone: '1-800-555-0111', expertRole: 'Account Security Expert' },
-        appliances: { label: 'Appliances & Electronics', expertType: 'Appliance', specialistGroup: 'Appliance Experts', phone: '1-800-555-0210', expertRole: 'Appliance Expert' },
-        finance: { label: 'Taxes & Financial Planning', expertType: 'Finance', specialistGroup: 'Tax & Finance Experts', phone: '1-800-555-0220', expertRole: 'Certified Public Accountant' }
+        crypto: { label: 'Digital Payments & Fintech', expertType: 'Finance', specialistGroup: 'Payments & Finance Specialists', expertRole: 'Independent Payments & Fintech Specialist' },
+        microsoft: { label: 'Microsoft & Windows', expertType: 'Tech', specialistGroup: 'Windows & Office Specialists', expertRole: 'Independent Windows & Office Specialist' },
+        ios: { label: 'iPhone & Apple Devices', expertType: 'Apple', specialistGroup: 'Apple & iOS Specialists', expertRole: 'Independent Apple & iOS Specialist' },
+        xbox: { label: 'Xbox & Gaming Systems', expertType: 'Tech', specialistGroup: 'Gaming Systems Specialists', expertRole: 'Independent Gaming Systems Specialist' },
+        android: { label: 'Android & Mobile', expertType: 'Tech', specialistGroup: 'Android & Mobile Specialists', expertRole: 'Independent Android & Mobile Specialist' },
+        plumbing: { label: 'Plumbing & Home Systems', expertType: 'Home', specialistGroup: 'Plumbing & Home Specialists', expertRole: 'Independent Plumbing & Home Specialist' },
+        legal: { label: 'Legal & Consumer Rights', expertType: 'Legal', specialistGroup: 'Legal Consultants', expertRole: 'Independent Legal Consultant' },
+        veterinary: { label: 'Veterinary & Pet Care', expertType: 'Vet', specialistGroup: 'Veterinary Consultants', expertRole: 'Independent Veterinary Consultant' },
+        medical: { label: 'Health & Medical Guidance', expertType: 'Health', specialistGroup: 'Medical Consultants', expertRole: 'Independent Medical Consultant' },
+        automotive: { label: 'Automotive & Mechanical', expertType: 'Auto', specialistGroup: 'Automotive Specialists', expertRole: 'Independent Automotive Specialist' },
+        subscription: { label: 'Billing & Subscriptions', expertType: 'Billing', specialistGroup: 'Billing & Subscription Specialists', expertRole: 'Independent Billing & Subscription Specialist' },
+        account: { label: 'Account & Security', expertType: 'Tech', specialistGroup: 'Account & Security Specialists', expertRole: 'Independent Account & Security Specialist' },
+        appliances: { label: 'Appliances & Electronics', expertType: 'Appliance', specialistGroup: 'Appliance Specialists', expertRole: 'Independent Appliance Specialist' },
+        finance: { label: 'Taxes & Financial Planning', expertType: 'Finance', specialistGroup: 'Tax & Finance Consultants', expertRole: 'Independent Tax & Finance Consultant' }
     };
+
+    function syncCustomCategoriesFromConfig(cfg) {
+        if (!cfg || !Array.isArray(cfg.categories)) return;
+        cfg.categories.forEach(item => {
+            if (!item || !item.key || item.enabled === false) return;
+            if (!categories[item.key]) {
+                categories[item.key] = {
+                    label: item.label || item.key,
+                    expertType: 'Specialist',
+                    specialistGroup: item.label || 'Support Specialists',
+                    expertRole: item.expertRole || 'Independent Support Specialist'
+                };
+            } else {
+                if (item.label) categories[item.key].label = item.label;
+                if (item.expertRole) categories[item.key].expertRole = item.expertRole;
+            }
+        });
+    }
+
+    function getDynamicPhoneResolution(catKey, serverPhoneFallback) {
+        const cfgApi = window.AnswerDeskConfig;
+        if (cfgApi && typeof cfgApi.resolvePhone === 'function' && cfgApi.getConfig()) {
+            return cfgApi.resolvePhone(catKey || detectedCategory || 'general');
+        }
+        const raw = typeof serverPhoneFallback === 'string' ? serverPhoneFallback.trim() : '';
+        if (raw && cfgApi && typeof cfgApi.normalizePhone === 'function') {
+            const norm = cfgApi.normalizePhone(raw);
+            if (norm.valid) {
+                return { dialable: true, source: 'server', display: norm.display, telUri: norm.telUri, e164: norm.e164 };
+            }
+        }
+        return { dialable: false, source: 'none', display: '', telUri: '', e164: '' };
+    }
+
+    if (window.AnswerDeskConfig && window.AnswerDeskConfig.ready) {
+        window.AnswerDeskConfig.ready.then(syncCustomCategoriesFromConfig);
+    }
+    window.addEventListener('answerdesk:config-ready', (e) => {
+        syncCustomCategoriesFromConfig(e.detail);
+    });
 
     // ===== Dynamic Suggestion Chips for Left Pane =====
     const categorySuggestions = {
@@ -516,10 +556,10 @@
     // ===== Show Call Details Panel =====
     function showCallDetailsPanel(customTitle) {
         const cat = detectedCategory ? categories[detectedCategory] : null;
-        const phone = cat ? cat.phone : '1-800-555-0100';
+        const phoneRes = getDynamicPhoneResolution(detectedCategory);
         const label = cat ? cat.label : 'General';
-        const hasSpecificActiveRole = activeExpertTitle && activeExpertTitle !== 'Support Expert' && activeExpertTitle !== 'Verified Expert' && activeExpertTitle !== 'Support Specialist' && activeExpertTitle !== 'Verified Specialist';
-        const expertRole = hasSpecificActiveRole ? activeExpertTitle : (cat ? cat.expertRole : 'Verified Expert');
+        const hasSpecificActiveRole = activeExpertTitle && activeExpertTitle !== 'Support Expert' && activeExpertTitle !== 'Verified Expert' && activeExpertTitle !== 'Support Specialist' && activeExpertTitle !== 'Verified Specialist' && activeExpertTitle !== 'Independent Support Specialist';
+        const expertRole = hasSpecificActiveRole ? activeExpertTitle : (cat ? cat.expertRole : 'Independent Support Specialist');
         const expert = selectedExpert || {
             name: 'Victoria Price',
             avatar: 'assets/expert-1.png',
@@ -537,29 +577,54 @@
         const phoneVisibleEl = document.getElementById('callPanelPhoneNumberVisible');
         const avatarEl = document.getElementById('callPanelAvatar');
         const callNowBtn = document.getElementById('callNowBtn');
+        const callNowSection = panel.querySelector('.call-now-section');
+        let fallbackNote = document.getElementById('callPanelChatOnlyNote');
 
         if (titleEl) titleEl.textContent = customTitle || `Get your ${label} issue fixed now`;
         if (nameEl) nameEl.textContent = expert.name;
         if (roleEl) roleEl.textContent = expertRole;
         if (customersEl) customersEl.textContent = `${expert.customers.toLocaleString()} satisfied customers`;
-        if (phoneVisibleEl) {
-            phoneVisibleEl.textContent = phone;
-        } else if (phoneEl) {
-            phoneEl.textContent = phone;
+
+        if (phoneRes.dialable) {
+            if (fallbackNote) fallbackNote.style.display = 'none';
+            if (phoneVisibleEl) {
+                phoneVisibleEl.textContent = phoneRes.display;
+            } else if (phoneEl) {
+                phoneEl.textContent = phoneRes.display;
+            }
+            if (callNowBtn) {
+                callNowBtn.style.display = '';
+                callNowBtn.setAttribute('href', phoneRes.telUri);
+                callNowBtn.onclick = () => { window.location.href = phoneRes.telUri; };
+            }
+            if (phoneEl) {
+                phoneEl.style.display = '';
+                phoneEl.setAttribute('href', phoneRes.telUri);
+                phoneEl.onclick = () => { window.location.href = phoneRes.telUri; };
+            }
+        } else {
+            if (callNowBtn) {
+                callNowBtn.style.display = 'none';
+                callNowBtn.removeAttribute('href');
+                callNowBtn.onclick = null;
+            }
+            if (phoneEl) {
+                phoneEl.style.display = 'none';
+                phoneEl.removeAttribute('href');
+                phoneEl.onclick = null;
+            }
+            if (!fallbackNote && callNowSection) {
+                fallbackNote = document.createElement('p');
+                fallbackNote.id = 'callPanelChatOnlyNote';
+                fallbackNote.className = 'call-panel-sub';
+                fallbackNote.style.margin = '8px 0 0';
+                fallbackNote.textContent = 'Direct phone dialing is currently offline for this department. Please continue in Live Chat for immediate assistance.';
+                callNowSection.appendChild(fallbackNote);
+            } else if (fallbackNote) {
+                fallbackNote.style.display = 'block';
+            }
         }
 
-        const cleanDigits = phone.replace(/[^0-9]/g, '');
-        const formattedTel = cleanDigits.startsWith('1') ? `+${cleanDigits}` : `+1${cleanDigits}`;
-        const telUri = `tel:${formattedTel}`;
-
-        if (callNowBtn) {
-            callNowBtn.setAttribute("href", telUri);
-            callNowBtn.onclick = () => { window.location.href = telUri; };
-        }
-        if (phoneEl) {
-            phoneEl.setAttribute("href", telUri);
-            phoneEl.onclick = () => { window.location.href = telUri; };
-        }
         if (avatarEl) avatarEl.src = expert.avatar;
 
         const backdrop = document.getElementById('callPanelBackdrop');
@@ -571,6 +636,9 @@
 
         document.body.classList.add('call-panel-open');
         document.body.style.overflow = 'hidden';
+        if (window.AnswerDeskAnalytics && typeof window.AnswerDeskAnalytics.track === 'function') {
+            window.AnswerDeskAnalytics.track('call_panel_open', { category: detectedCategory || 'general' });
+        }
 
         panel.style.display = 'block';
         positionCallDetailsPanel();
@@ -583,9 +651,11 @@
             clearTimeout(expertPopupTimer);
             expertPopupTimer = null;
         }
-        expertPopupTimer = setTimeout(() => {
-            showExpertPopup(label, phone);
-        }, 60000);
+        if (phoneRes.dialable) {
+            expertPopupTimer = setTimeout(() => {
+                showExpertPopup(label, phoneRes.display);
+            }, 60000);
+        }
     }
 
     // ===== Close Call Details Panel =====
@@ -642,6 +712,8 @@
     // ===== 1-Minute Expert Popup =====
     function showExpertPopup(label, phone) {
         if (document.getElementById('expertPopupOverlay')) return;
+        const phoneRes = getDynamicPhoneResolution(detectedCategory, phone);
+        if (!phoneRes.dialable) return;
 
         const expert = selectedExpert || {
             name: 'Victoria Price',
@@ -650,10 +722,9 @@
         };
         const cat = detectedCategory ? categories[detectedCategory] : null;
         const effectiveLabel = (cat && cat.label) || label || 'Support';
-        const hasSpecificActiveRole = activeExpertTitle && activeExpertTitle !== 'Support Expert' && activeExpertTitle !== 'Verified Expert' && activeExpertTitle !== 'Support Specialist' && activeExpertTitle !== 'Verified Specialist';
-        const expertRole = hasSpecificActiveRole ? activeExpertTitle : (cat ? cat.expertRole : 'Verified Expert');
+        const hasSpecificActiveRole = activeExpertTitle && activeExpertTitle !== 'Support Expert' && activeExpertTitle !== 'Verified Expert' && activeExpertTitle !== 'Support Specialist' && activeExpertTitle !== 'Verified Specialist' && activeExpertTitle !== 'Independent Support Specialist';
+        const expertRole = hasSpecificActiveRole ? activeExpertTitle : (cat ? cat.expertRole : 'Independent Support Specialist');
         const onlineExperts = Math.floor(Math.random() * 8) + 10;
-        const telNumber = (phone || (cat ? cat.phone : '1-800-555-0100')).replace(/[^0-9]/g, '');
 
         const allAvatars = [];
         for (let i = 1; i <= 35; i++) { allAvatars.push('assets/expert-' + i + '.png'); }
@@ -668,7 +739,7 @@
         overlay.innerHTML = `
             <div class="expert-popup-card">
                 <button class="expert-popup-close" id="expertPopupClose" aria-label="Close popup">&times;</button>
-                <div class="expert-popup-badge">${onlineExperts} ${effectiveLabel} Experts are online now</div>
+                <div class="expert-popup-badge">${onlineExperts} ${effectiveLabel} Specialists are online now</div>
                 <div class="expert-popup-avatars">
                     <img src="${bgAvatars[0]}" alt="" class="popup-avatar-bg">
                     <img src="${bgAvatars[1]}" alt="" class="popup-avatar-bg">
@@ -682,11 +753,11 @@
                 <div class="expert-popup-divider"></div>
                 <p class="expert-popup-msg">Hi, we're online right now and <br>ready to answer your question</p>
                 <p class="expert-popup-sub">Get the answer you need in minutes. <br>Cancel anytime if not satisfied</p>
-                <a href="tel:+${telNumber}" class="expert-popup-cta">
+                <a href="${phoneRes.telUri}" class="expert-popup-cta">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
                         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
                     </svg>
-                    Call Now
+                    Call Now (${escapeHtmlSafe(phoneRes.display)})
                 </a>
             </div>
         `;
@@ -905,6 +976,9 @@
         }
         connectedToExpert = true;
         activeExpertTitle = expertRoleTitle || activeExpertTitle || 'Support Expert';
+        if (window.AnswerDeskAnalytics && typeof window.AnswerDeskAnalytics.track === 'function') {
+            window.AnswerDeskAnalytics.track('chat_handoff', { category: detectedCategory || 'general' });
+        }
         const expertName = selectedExpert ? selectedExpert.name : 'Victoria Price';
 
         if (!skipUserBubble) {
@@ -975,9 +1049,10 @@
         const optionsDiv = document.createElement('div');
         optionsDiv.className = 'connect-options-pro';
 
-        const expertTitle = options.expertRole ? options.expertRole : 'Expert';
+        const expertTitle = options.expertRole ? options.expertRole : 'Independent Specialist';
+        const phoneRes = getDynamicPhoneResolution(detectedCategory, options.expertPhone);
 
-        optionsDiv.innerHTML = `
+        const callOptionHtml = phoneRes.dialable ? `
             <button type="button" class="connect-option-pro call-option-pro call-option-priority" id="inChatCall">
                 <div class="option-pro-icon call-icon-pro">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
@@ -986,7 +1061,7 @@
                 </div>
                 <div class="option-pro-content">
                     <span class="option-pro-title">Call ${escapeHtmlSafe(expertTitle)}</span>
-                    <span class="option-pro-desc">Direct phone connection with a verified expert</span>
+                    <span class="option-pro-desc">Direct phone connection (${escapeHtmlSafe(phoneRes.display)})</span>
                 </div>
                 <div class="option-pro-right">
                     <span class="badge-recommended">★ RECOMMENDED</span>
@@ -994,8 +1069,11 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>
                     </div>
                 </div>
-            </button>
-            <button type="button" class="connect-option-pro chat-option-pro" id="inChatContinue">
+            </button>` : '';
+
+        optionsDiv.innerHTML = `
+            ${callOptionHtml}
+            <button type="button" class="connect-option-pro chat-option-pro ${phoneRes.dialable ? '' : 'call-option-priority'}" id="inChatContinue">
                 <div class="option-pro-icon chat-icon-pro">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
                         <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
@@ -1003,7 +1081,7 @@
                     </svg>
                 </div>
                 <div class="option-pro-content">
-                    <span class="option-pro-title">Prefer text? Chat with ${escapeHtmlSafe(expertTitle)}</span>
+                    <span class="option-pro-title">${phoneRes.dialable ? `Prefer text? Chat with ${escapeHtmlSafe(expertTitle)}` : `Chat Live with ${escapeHtmlSafe(expertTitle)}`}</span>
                     <span class="option-pro-desc">Continue troubleshooting live right here</span>
                 </div>
                 <div class="option-pro-arrow">
@@ -1099,6 +1177,9 @@
 
         if (!chatStarted) {
             chatStarted = true;
+            if (window.AnswerDeskAnalytics && typeof window.AnswerDeskAnalytics.track === 'function') {
+                window.AnswerDeskAnalytics.track('chat_start', { category: detectedCategory || 'general' });
+            }
             if (welcomeTimer) {
                 clearTimeout(welcomeTimer);
                 welcomeTimer = null;
@@ -1184,19 +1265,31 @@
                 stage: aiData.stage || 'intake',
                 category: aiData.category || detectedCategory || 'general'
             });
+            if (window.AnswerDeskAnalytics && typeof window.AnswerDeskAnalytics.track === 'function') {
+                window.AnswerDeskAnalytics.track('chat_stage', {
+                    category: aiData.category || detectedCategory || 'general',
+                    stage: aiData.stage || 'intake',
+                    api_ms: Date.now() - requestStartedAt
+                });
+            }
 
             // Dynamically update category hero & left suggestions
             if (aiData.category && categories[aiData.category]) {
+                window.__answerdeskActiveCategory = aiData.category;
                 updateHeroForCategory({ key: aiData.category, ...categories[aiData.category] });
                 renderLeftSuggestions(aiData.category);
             }
 
-            // Update phone dialer if available
-            if (aiData.phone_number) {
-                const callNowBtn = document.getElementById('callNowBtn');
-                if (callNowBtn) callNowBtn.href = 'tel:' + aiData.phone_number.replace(/[^0-9+]/g, '');
-                const phoneDisplay = document.getElementById('callPanelPhoneNumberVisible');
-                if (phoneDisplay) phoneDisplay.textContent = aiData.phone_number;
+            // Update phone dialer dynamically via Admin Config / server resolution
+            const resolvedDial = getDynamicPhoneResolution(aiData.category || detectedCategory, aiData.phone_number);
+            const callNowBtn = document.getElementById('callNowBtn');
+            const phoneDisplay = document.getElementById('callPanelPhoneNumberVisible');
+            if (resolvedDial.dialable) {
+                if (callNowBtn) callNowBtn.href = resolvedDial.telUri;
+                if (phoneDisplay) phoneDisplay.textContent = resolvedDial.display;
+            } else {
+                if (callNowBtn) callNowBtn.removeAttribute('href');
+                if (phoneDisplay) phoneDisplay.textContent = '';
             }
 
             // Strictly respect server FSM stage for Call/Chat cards and quick replies
@@ -1352,8 +1445,11 @@
     }
     if (callExpertBtn) {
         callExpertBtn.addEventListener('click', () => {
-            const cat = detectedCategory ? categories[detectedCategory] : null;
-            if (cat) document.getElementById('expertPhoneNumber').textContent = cat.phone;
+            const phoneRes = getDynamicPhoneResolution(detectedCategory);
+            const phoneEl = document.getElementById('expertPhoneNumber');
+            if (phoneEl) {
+                phoneEl.textContent = phoneRes.dialable ? phoneRes.display : 'Live Chat Recommended';
+            }
             document.querySelector('.modal-options').style.display = 'none';
             phoneReveal.style.display = 'block';
         });

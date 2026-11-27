@@ -3273,16 +3273,29 @@ body {
         gap: 26px !important;
     }
 
+    .categories-section .section-subtitle {
+        padding-right: 60px !important;
+    }
+
     /* Sleeker mobile floating chat button & zero-overlap chat panel */
     .floating-chat-btn {
-        width: 56px !important;
-        height: 56px !important;
-        bottom: 16px !important;
-        right: 16px !important;
+        width: 48px !important;
+        height: 48px !important;
+        bottom: 14px !important;
+        right: 12px !important;
+        border-width: 2px !important;
+    }
+
+    .floating-chat-btn .chat-badge {
+        width: 18px !important;
+        height: 18px !important;
+        font-size: 10px !important;
+        top: -3px !important;
+        right: -3px !important;
     }
 
     .floating-chat-panel {
-        bottom: 84px !important;
+        bottom: 72px !important;
         right: 12px !important;
         left: 12px !important;
         width: auto !important;

@@ -34,8 +34,8 @@
     ];
 
     const PAGE_SIZE = 24;
-    const DEFAULT_TITLE = '700+ Troubleshooting Articles & Diagnostic Guides | AnswerDesk Knowledge Base';
-    const DEFAULT_DESC = 'Explore over 700+ verified, AI-readable step-by-step troubleshooting guides covering Microsoft Windows, Apple iPhone/Mac/Watch, PayPal, Amazon, Antivirus, Windows Defender, appliances, OBD-II auto codes, and more.';
+    const DEFAULT_TITLE = '700+ Troubleshooting Guides & Articles | AnswerDesk';
+    const DEFAULT_DESC = 'Browse 700+ step-by-step troubleshooting guides and diagnostic articles covering Windows, Mac, mobile, automotive, home systems, pets, and more.';
 
     // Precompute lowercase search index once for instant filtering across 700+ articles
     const SEARCH_INDEX = new Map();
@@ -313,7 +313,7 @@
 
         if (!article) return;
 
-        const canonicalUrl = `https://answerdesk-zeta.vercel.app/articles.html?article=${encodeURIComponent(article.id)}`;
+        const canonicalUrl = `https://answerdesk.online/articles?article=${encodeURIComponent(article.id)}`;
         const answerText = (article.directAnswer || article.snippet || '').trim();
         const questionText = (article.question || article.title || '').trim();
 
@@ -337,7 +337,7 @@
                     'publisher': {
                         '@type': 'Organization',
                         'name': 'AnswerDesk',
-                        'url': 'https://answerdesk-zeta.vercel.app/'
+                        'url': 'https://answerdesk.online/'
                     }
                 },
                 {

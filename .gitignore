@@ -4,6 +4,7 @@
 .env.production
 
 node_modules/
+data/
 
 # OS metadata
 .DS_Store

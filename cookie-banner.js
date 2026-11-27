@@ -15,7 +15,7 @@
             banner.className = 'cookie-banner';
             banner.innerHTML = `
                 <div class="cookie-text">
-                    <strong>🍪 We respect your privacy:</strong> We only use essential cookies strictly necessary for chat operation and anonymous analytics to improve resolution time. We never sell, track, or share your personal data with third-party advertisers. Learn more in our <a href="/privacy">Privacy Policy</a>.
+                    <strong>🍪 We respect your privacy:</strong> We only use essential cookies for chat functionality and privacy-first first-party analytics (zero raw IP storage, zero third-party ad trackers). Learn more in our <a href="/privacy">Privacy Policy</a>.
                 </div>
                 <div class="cookie-actions">
                     <button type="button" class="btn-cookie-essential" id="cookieEssentialBtn">Essential Only</button>
@@ -43,6 +43,7 @@
             document.body.classList.remove('has-cookie-banner');
             document.documentElement.style.removeProperty('--cookie-banner-offset');
             window.removeEventListener('resize', updateBannerOffset);
+            window.dispatchEvent(new CustomEvent('answerdesk:consent-changed', { detail: { consent: choice } }));
         }
 
         const acceptBtn = document.getElementById('cookieAcceptBtn');

@@ -3,12 +3,18 @@
 .git*
 node_modules/
 .agents/
+data/
 
 # Non-production test, benchmark & scratch files
 tests/
 scripts/
 docs/
 processed_guarantees/
+candidates/
+seo_audit*/
+/*.png
+/*.jpg
+/*.jpeg
 test-*.js
 test_*.js
 benchmark_*.js
@@ -21,5 +27,16 @@ expert-overview.html
 expert-overview.png
 assets/render-piston.html
 server.js
+serve.json
 build-seo-pages.js
+capture-*.js
+capture_*.js
+compare_*.js
+verify-*.js
+verify_*.js
+e2e-audit.js
+convert-all.js
+process-image.js
+step_*.txt
+debug*
 *.log

@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /api/
 
 # Search Engines
 User-agent: Googlebot
@@ -34,7 +36,7 @@ User-agent: Applebot-Extended
 Allow: /
 
 # LLM Knowledge Base Indexes
-# https://answerdesk-zeta.vercel.app/llms.txt
-# https://answerdesk-zeta.vercel.app/llms-full.txt
+# https://answerdesk.online/llms.txt
+# https://answerdesk.online/llms-full.txt
 
-Sitemap: https://answerdesk-zeta.vercel.app/sitemap.xml
+Sitemap: https://answerdesk.online/sitemap.xml

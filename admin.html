@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin Portal | AnswerDesk</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><path d='M8 6C8 4.9 8.9 4 10 4H30C31.1 4 32 4.9 32 6V28C32 29.1 31.1 30 30 30H22L16 36V30H10C8.9 30 8 29.1 8 28V6Z' fill='%23278b7d'/><path d='M14 14L19 19L26 12' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg>" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css?v=20261127_v6">
+</head>
+<body>
+    <header class="admin-topbar">
+        <div class="admin-topbar-inner">
+            <a href="/" class="admin-brand">
+                <svg width="28" height="28" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 6C8 4.89543 8.89543 4 10 4H30C31.1046 4 32 4.89543 32 6V28C32 29.1046 31.1046 30 30 30H22L16 36V30H10C8.9 30 8 29.1046 8 28V6Z" fill="#278b7d"/>
+                    <path d="M14 14L19 19L26 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div>
+                    <span class="brand-name">Answer<span>Desk</span></span>
+                    <span class="brand-tag">Admin Portal</span>
+                </div>
+            </a>
+            <div class="admin-topbar-actions" id="topbarActions" style="display:none;">
+                <span class="dirty-pill" id="dirtyBadge" style="display:none;">Unsaved changes</span>
+                <button type="button" class="btn btn-primary" id="saveAllBtn">Save All Changes</button>
+                <a href="/" class="btn btn-ghost" target="_blank" rel="noopener">View Site</a>
+                <button type="button" class="btn btn-outline" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Login & Reset View -->
+    <main class="admin-login-wrap" id="loginView">
+        <div class="login-card">
+            <div class="login-icon">🔐</div>
+            <h1>Admin Portal Sign In</h1>
+            <p class="login-sub">Manage live analytics, phone routing, expert categories, emails, and tickets.</p>
+            <div class="alert alert-warning" id="configMissingBanner" style="display:none; margin-bottom: 14px;">
+                <strong>Admin credential not configured:</strong> Set <code>ADMIN_PASSWORD_HASH</code> in Vercel Environment Variables and redeploy.
+            </div>
+            <div class="alert alert-success" id="loginSuccessBanner" style="display:none; margin-bottom: 14px;"></div>
+
+            <form id="loginForm">
+                <label for="adminPasswordInput">Admin Password</label>
+                <div class="password-input-row">
+                    <input type="password" id="adminPasswordInput" placeholder="Enter admin password" required autocomplete="current-password">
+                    <button type="button" class="btn-icon" id="togglePwBtn" aria-label="Show password">Show</button>
+                </div>
+                <div class="alert alert-error" id="loginError" style="display:none;"></div>
+                <button type="submit" class="btn btn-primary btn-full" id="loginSubmitBtn">Sign In to Admin Portal</button>
+            </form>
+
+            <div class="login-reset-toggle-wrap">
+                <button type="button" class="link-btn" id="toggleLoginResetBtn">Reset Admin Password</button>
+            </div>
+
+            <form id="loginResetForm" class="reset-subpanel" style="display:none;">
+                <div class="reset-subpanel-title">Reset Admin Password</div>
+                <div class="form-group">
+                    <label for="loginSuperPwInput">Authorization Password</label>
+                    <input type="password" id="loginSuperPwInput" placeholder="Enter authorization password" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="loginNewPwInput">New Admin Password</label>
+                    <input type="password" id="loginNewPwInput" placeholder="Min 8 chars, upper, lower, number/symbol" required autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="loginConfirmPwInput">Confirm New Password</label>
+                    <input type="password" id="loginConfirmPwInput" placeholder="Re-enter new Admin password" required autocomplete="new-password">
+                </div>
+                <div class="alert alert-error" id="loginResetError" style="display:none;"></div>
+                <div style="display:flex; gap:8px;">
+                    <button type="submit" class="btn btn-primary" id="loginResetSubmitBtn" style="flex:1;">Reset Admin Password</button>
+                    <button type="button" class="btn btn-outline" id="cancelLoginResetBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Authenticated Console -->
+    <main class="admin-shell" id="dashboardView" style="display:none;">
+        <div id="globalToast" class="toast" style="display:none;"></div>
+        <div id="warningsBanner" class="alert alert-warning" style="display:none; margin-bottom: 16px;"></div>
+        <div id="ephemeralBanner" class="alert alert-info" style="display:none; margin-bottom: 16px;">
+            <strong>Cloud Persistence Notice:</strong> Upstash Redis / Vercel KV is not linked yet, so changes on serverless are temporary (<code>/tmp</code>). Link <strong>Upstash Redis</strong> in Vercel for permanent persistence across deployments, or back up via the <em>Security &amp; Backup</em> tab.
+        </div>
+
+        <nav class="admin-tabs" role="tablist">
+            <button type="button" class="tab-btn active" data-tab="analyticsTab">📊 Analytics</button>
+            <button type="button" class="tab-btn" data-tab="phoneTab">📞 Phone Routing</button>
+            <button type="button" class="tab-btn" data-tab="categoriesTab">🗂️ Expert Categories (<span id="catCountBadge">0</span>)</button>
+            <button type="button" class="tab-btn" data-tab="emailsTab">✉️ Emails &amp; Contact</button>
+            <button type="button" class="tab-btn" data-tab="inboxTab">📥 Tickets Inbox (<span id="inboxCountBadge">0</span>)</button>
+            <button type="button" class="tab-btn" data-tab="storageTab">🔐 Security &amp; Backup</button>
+        </nav>
+
+        <!-- TAB 1: ANALYTICS -->
+        <section class="tab-panel active" id="analyticsTab">
+            <div class="analytics-toolbar card">
+                <div>
+                    <h2 style="margin-bottom:2px;">Site Analytics, SEO Intelligence &amp; Health</h2>
+                    <p class="card-desc" style="margin:0;">100% first-party privacy-safe analytics: live visitors, AI &amp; organic search attribution, Core Web Vitals, search gaps, deep chat funnel, and 404 monitoring.</p>
+                </div>
+                <div class="analytics-controls">
+                    <span class="live-pill" id="liveNowBadge" title="Active visitors in the last 5 minutes">
+                        <span class="live-dot"></span>
+                        <span id="liveNowCount">0</span> Live Now
+                    </span>
+                    <select id="analyticsRangeSelect" aria-label="Analytics timeframe">
+                        <option value="24h">Last 24 Hours</option>
+                        <option value="7d" selected>Last 7 Days</option>
+                        <option value="30d">Last 30 Days</option>
+                        <option value="all">All Time</option>
+                    </select>
+                    <button type="button" class="btn btn-outline" id="exportAnalyticsCsvBtn">Export CSV</button>
+                    <button type="button" class="btn btn-outline" id="refreshAnalyticsBtn">Refresh</button>
+                    <button type="button" class="btn btn-primary" id="runHealthCheckBtn">Run Health Check</button>
+                    <button type="button" class="btn btn-danger" id="clearAnalyticsBtn">Clear Analytics</button>
+                </div>
+            </div>
+
+            <div class="live-strip card" id="livePagesStrip" style="display:none; margin-bottom:20px; padding:12px 18px;"></div>
+
+            <!-- 6 KPI Cards -->
+            <div class="kpi-grid" id="analyticsKpiGrid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Visitors &amp; Views</div>
+                    <div class="kpi-val" id="kpiVisitors">0</div>
+                    <div class="kpi-sub" id="kpiViewsSub">0 total page views</div>
+                    <div class="kpi-sub kpi-sub-extra" id="kpiNewReturnSub">0% new &bull; 0 returning</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Avg. Time &amp; Scroll</div>
+                    <div class="kpi-val" id="kpiAvgTime">0s</div>
+                    <div class="kpi-sub" id="kpiScrollSub">0% avg scroll depth</div>
+                </div>
+                <div class="kpi-card kpi-highlight">
+                    <div class="kpi-label">Call Now Clicks</div>
+                    <div class="kpi-val" id="kpiCallClicks">0</div>
+                    <div class="kpi-sub" id="kpiCallRateSub">0% call conversion rate</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Conversions</div>
+                    <div class="kpi-val" id="kpiTotalConv">0</div>
+                    <div class="kpi-sub" id="kpiConvSplitSub">0 chats &bull; 0 forms</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Bounce &amp; Web Vitals</div>
+                    <div class="kpi-val" id="kpiBounce">0%</div>
+                    <div class="kpi-sub" id="kpiLoadSub">0 ms avg load</div>
+                    <div class="kpi-sub kpi-sub-extra" id="kpiVitalsSub">LCP: — &bull; CLS: —</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Site Health &amp; Uptime</div>
+                    <div class="kpi-val" id="kpiUptime">100%</div>
+                    <div class="kpi-sub" id="kpiErrorsSub">0 client issues &bull; 0 404s</div>
+                </div>
+            </div>
+
+            <!-- Row 2: Trend + Deep Chat & Call Funnel -->
+            <div class="grid-2" style="margin-bottom: 20px;">
+                <div class="card">
+                    <h2>Traffic &amp; Conversions Trend</h2>
+                    <p class="card-desc">Daily page views vs. conversions (Call clicks, Chats started, Contact forms).</p>
+                    <div id="trendChartContainer" class="trend-chart-box"></div>
+                </div>
+                <div class="card">
+                    <div class="card-head">
+                        <h2>Deep Chat &amp; Call Funnel</h2>
+                        <span class="stat-chip" id="chatLatencyBadge">AI Latency: —</span>
+                    </div>
+                    <p class="card-desc">Every step from session entry through intake, summary, channel choice, and Call Now click.</p>
+                    <div id="funnelContainer" class="funnel-box"></div>
+                </div>
+            </div>
+
+            <!-- Row 3: Geo + Sources & AI Search -->
+            <div class="grid-2" style="margin-bottom: 20px;">
+                <div class="card">
+                    <h2>Visitor Locations (IP-Derived Geo)</h2>
+                    <p class="card-desc">Derived at edge from visitor IP and aggregated anonymously—raw IP addresses are never stored.</p>
+                    <div class="table-wrap" id="geoTableWrap"></div>
+                </div>
+                <div class="card">
+                    <h2>Traffic Sources &amp; AI Search Engines</h2>
+                    <p class="card-desc">Distinguishes ChatGPT, Perplexity, Claude, Gemini, Copilot, Organic Google/Bing, YouTube, Reddit, Ads &amp; Direct.</p>
+                    <div id="aiSearchSummaryBox" class="chip-grid" style="margin-bottom: 12px;"></div>
+                    <div class="table-wrap" id="sourcesTableWrap"></div>
+                </div>
+            </div>
+
+            <!-- Row 4: Top Referring Domains + Peak Traffic Hours (24h) -->
+            <div class="grid-2" style="margin-bottom: 20px;">
+                <div class="card">
+                    <h2>Top Referring Domains</h2>
+                    <p class="card-desc">Exact external domains sending organic, community, AI, or referral visitors and conversions.</p>
+                    <div class="table-wrap" id="referrersTableWrap"></div>
+                </div>
+                <div class="card">
+                    <h2>Peak Traffic Hours (Visitor Local 24h)</h2>
+                    <p class="card-desc">Hourly views &amp; conversions distribution to time live specialist coverage and content updates.</p>
+                    <div id="hourlyChartContainer" class="hourly-chart-box"></div>
+                </div>
+            </div>
+
+            <!-- Row 5: SEO Landing & Exit Pages + Top Pages & Engagement -->
+            <div class="grid-2" style="margin-bottom: 20px;">
+                <div class="card">
+                    <h2>Top Landing Pages (SEO Winners) &amp; Exits</h2>
+                    <p class="card-desc">First page each visitor enters on (with conversion attribution) and where sessions end.</p>
+                    <h3 class="sub-heading" style="margin-top:0;">Landing Pages</h3>
+                    <div class="table-wrap" id="landingPagesTableWrap"></div>
+                    <h3 class="sub-heading">Top Exit Pages</h3>
+                    <div class="table-wrap" id="exitPagesTableWrap"></div>
+                </div>
+                <div class="card">
+                    <h2>Top Pages &amp; Engagement</h2>
+                    <p class="card-desc">Views, active time spent, scroll depth, and Call Now clicks per route.</p>
+                    <div class="table-wrap" id="pagesTableWrap"></div>
+                </div>
+            </div>
+
+            <!-- Row 6: On-Site Searches & Zero-Result Gaps + CTA Clicks & Guide Helpfulness -->
+            <div class="grid-2" style="margin-bottom: 20px;">
+                <div class="card">
+                    <h2>On-Site Searches &amp; Content Gaps</h2>
+                    <p class="card-desc">PII-scrubbed searches across Home, Articles, and FAQ. Zero-result queries show guides you should write next.</p>
+                    <h3 class="sub-heading" style="margin-top:0;">Zero-Result Content Gaps</h3>
+                    <div class="table-wrap" id="zeroSearchesWrap"></div>
+                    <h3 class="sub-heading">Top Site Searches</h3>
+                    <div class="table-wrap" id="topSearchesWrap"></div>
+                </div>
+                <div class="card">
+                    <h2>CTA Clicks &amp; Guide Helpfulness</h2>
+                    <p class="card-desc">Whether guides solved the user's issue on the spot or led them to ask an expert, plus category &amp; CTA clicks.</p>
+                    <div id="guideOutcomesBox" class="guide-meter-wrap" style="margin-bottom: 14px;"></div>
+                    <div class="table-wrap" id="ctaClicksWrap"></div>
+                </div>
+            </div>
+
+            <!-- Row 7: Devices/Categories + Core Web Vitals & 404 Monitor -->
+            <div class="grid-2" style="margin-bottom: 20px;">
+                <div class="card">
+                    <h2>Devices, Browsers &amp; Expert Categories</h2>
+                    <p class="card-desc">Device breakdown and specialist categories driving chats and calls.</p>
+                    <div id="deviceSummaryBox" class="chip-grid"></div>
+                    <div class="table-wrap" id="categoryAnalyticsWrap" style="margin-top: 14px;"></div>
+                </div>
+                <div class="card">
+                    <h2>Core Web Vitals &amp; Broken 404 Hits</h2>
+                    <p class="card-desc">Google ranking speed vitals (LCP, CLS, TTFB) and missing URLs hit by visitors or crawlers.</p>
+                    <div id="webVitalsSummaryBox" class="vitals-grid" style="margin-bottom: 14px;"></div>
+                    <h3 class="sub-heading">Detected 404 Broken URLs</h3>
+                    <div class="table-wrap" id="notFound404Wrap"></div>
+                </div>
+            </div>
+
+            <!-- Row 8: Site Health & Issue Monitor + Ads Compliance & Guardrails -->
+            <div class="grid-2" style="margin-bottom: 20px;">
+                <div class="card">
+                    <div class="card-head">
+                        <h2>Site Health, Uptime &amp; Issues</h2>
+                        <span class="badge badge-category" id="healthStatusPill">Operational</span>
+                    </div>
+                    <p class="card-desc" id="healthMetaSub">Live diagnostics for storage, core routes, AI chat, and client JS error log.</p>
+                    <div id="healthChecksList" class="health-checks-list"></div>
+                    <h3 class="sub-heading">Detected Client / JS Issues</h3>
+                    <div class="table-wrap" id="clientErrorsWrap"></div>
+                </div>
+
+                <div class="card">
+                    <h2>Privacy &amp; Ads Compliance Guardrails</h2>
+                    <p class="card-desc">100% first-party analytics tracking every direct, organic, AI search, referral, and ad-parameter visitor—with zero third-party ad pixels or raw IP storage.</p>
+                    <div id="complianceChecklist" class="compliance-list"></div>
+                </div>
+            </div>
+
+            <!-- Row 9: Recent Conversion Feed -->
+            <div class="card">
+                <h2>Recent Conversion Activity</h2>
+                <p class="card-desc">Live feed of Call Now clicks, Chat consultations started, and Contact form submissions.</p>
+                <div class="table-wrap" id="recentConversionsWrap"></div>
+            </div>
+        </section>
+
+        <!-- TAB 2: PHONE ROUTING -->
+        <section class="tab-panel" id="phoneTab">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-head">
+                        <h2>Phone Routing</h2>
+                        <label class="switch">
+                            <input type="checkbox" id="phoneEnabledToggle">
+                            <span class="slider"></span>
+                            <span class="switch-label">Phone Dialing Active</span>
+                        </label>
+                    </div>
+                    <p class="card-desc">Set your Master Phone Number and choose whether it overrides every expert category or acts as the automatic fallback when a category has no assigned number or the issue is unidentified.</p>
+
+                    <div class="form-group">
+                        <label for="masterPhoneInput">Master Phone Number</label>
+                        <input type="text" id="masterPhoneInput" placeholder="e.g. +1 (800) 234-5678">
+                        <div class="field-meta" id="masterPhonePreview">Leave blank to hide direct call buttons until your real line is ready.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="masterDisplayInput">Optional Custom Display Format</label>
+                        <input type="text" id="masterDisplayInput" placeholder="e.g. 1-800-234-5678 (optional)">
+                        <div class="field-meta">If empty, AnswerDesk automatically formats the Master Number cleanly for display while dialing E.164.</div>
+                    </div>
+
+                    <div class="override-box" style="margin-bottom: 14px;">
+                        <label class="switch">
+                            <input type="checkbox" id="masterOverrideToggle">
+                            <span class="slider"></span>
+                            <span class="switch-label"><strong>Master Override Mode</strong></span>
+                        </label>
+                        <p class="override-help" id="overrideModeExplainer"></p>
+                    </div>
+
+                    <div class="routing-rules-box">
+                        <div class="routing-rules-title">How Routing Priority Works</div>
+                        <ul>
+                            <li><strong>1. Master Override ON:</strong> Master Number overrides all expert categories across the site.</li>
+                            <li><strong>2. Master Override OFF + Category Number Set:</strong> Dials that category's own phone number.</li>
+                            <li><strong>3. Master Override OFF + No Category Number (or Unidentified):</strong> Automatically defaults to the Master Number.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="sim-title-row">
+                        <h2>Live Dial Routing Simulator</h2>
+                        <div class="info-tooltip-wrap">
+                            <button type="button" class="info-icon-btn" id="simInfoBtn" aria-label="About Live Dial Routing Simulator" aria-expanded="false">i</button>
+                            <div class="info-tooltip-popover" id="simInfoPopover" role="tooltip">
+                                <strong>What is this?</strong>
+                                <p>A live preview tool (no real call is placed). Select any expert category or type a customer issue to verify the exact phone number and <code>tel:</code> link visitors will dial under your current Master Override and Category settings.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="card-desc">Test exactly which phone number and <code>tel:</code> link will be dialed when a user clicks <strong>Call Now</strong> in chat or on the Contact page.</p>
+
+                    <div class="form-group">
+                        <label for="simCategorySelect">Test Category / Department</label>
+                        <select id="simCategorySelect"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="simKeywordInput">Or Test Free-Text Issue / Keyword</label>
+                        <input type="text" id="simKeywordInput" placeholder="e.g. 'iphone screen frozen' or 'tax audit'">
+                    </div>
+
+                    <div class="sim-result" id="simResultBox">
+                        <div class="sim-row">
+                            <span>Resolution Path:</span>
+                            <strong id="simSourceBadge">—</strong>
+                        </div>
+                        <div class="sim-row">
+                            <span>Displayed Number:</span>
+                            <strong id="simDisplayVal">—</strong>
+                        </div>
+                        <div class="sim-row">
+                            <span>Dial URI (<code>href</code>):</span>
+                            <code id="simTelVal">—</code>
+                        </div>
+                        <div class="sim-row">
+                            <span>Chat Call Option:</span>
+                            <strong id="simCallUiStatus">—</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: EXPERT CATEGORIES & DEPARTMENTS -->
+        <section class="tab-panel" id="categoriesTab">
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-head">
+                    <div>
+                        <h2>Add New Expert Category / Department</h2>
+                        <p class="card-desc" style="margin:0;">Create custom specialist departments with their own routing keywords, dedicated phone number, and optional email.</p>
+                    </div>
+                </div>
+                <form id="addCategoryForm" class="add-cat-grid">
+                    <div class="form-group">
+                        <label for="newCatKey">Category Key (slug)</label>
+                        <input type="text" id="newCatKey" placeholder="e.g. realestate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newCatLabel">Department Label</label>
+                        <input type="text" id="newCatLabel" placeholder="e.g. Real Estate & Property" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newCatRole">Specialist Title (Ad-Compliant)</label>
+                        <input type="text" id="newCatRole" placeholder="e.g. Independent Real Estate Specialist" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newCatKeywords">Routing Keywords (comma-separated)</label>
+                        <input type="text" id="newCatKeywords" placeholder="mortgage, escrow, deed, closing">
+                    </div>
+                    <div class="form-group">
+                        <label for="newCatPhone">Department Phone (optional)</label>
+                        <input type="text" id="newCatPhone" placeholder="Uses Master if empty">
+                    </div>
+                    <div class="form-group">
+                        <label for="newCatEmail">Department Email (optional)</label>
+                        <input type="email" id="newCatEmail" placeholder="Optional dept email">
+                    </div>
+                    <div class="form-group add-cat-submit">
+                        <button type="submit" class="btn btn-primary">+ Add Category</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-head">
+                    <h2>All Expert Categories</h2>
+                    <input type="search" id="catSearchInput" class="search-inline" placeholder="Filter categories or keywords...">
+                </div>
+                <div class="cat-list" id="categoriesList"></div>
+            </div>
+        </section>
+
+        <!-- TAB 4: EMAILS & CONTACT -->
+        <section class="tab-panel" id="emailsTab">
+            <div class="grid-2">
+                <div class="card">
+                    <h2>Dynamic Section Emails</h2>
+                    <p class="card-desc">Every <code>mailto:</code> link across Contact, Privacy, and Terms updates automatically from these fields. Blank fields safely route to the Contact Form instead of fake placeholder addresses.</p>
+
+                    <div class="form-group">
+                        <label for="masterEmailInput">Master Catch-All Email</label>
+                        <input type="email" id="masterEmailInput" placeholder="e.g. support@answerdesk.online">
+                    </div>
+
+                    <div class="override-box" style="margin-bottom: 18px;">
+                        <label class="switch">
+                            <input type="checkbox" id="masterEmailOverrideToggle">
+                            <span class="slider"></span>
+                            <span class="switch-label"><strong>Master Email Override All Sections</strong></span>
+                        </label>
+                        <p class="override-help">When ON, every email slot across the site uses the Master Email. When OFF, each section uses its dedicated email below and falls back to Master Email if blank.</p>
+                    </div>
+
+                    <div class="email-grid">
+                        <div class="form-group">
+                            <label for="emailGeneral">General Inquiries (Contact &amp; Terms)</label>
+                            <input type="email" id="emailGeneral" placeholder="e.g. info@answerdesk.online">
+                        </div>
+                        <div class="form-group">
+                            <label for="emailSupport">Technical Support (Contact &amp; Privacy)</label>
+                            <input type="email" id="emailSupport" placeholder="e.g. support@answerdesk.online">
+                        </div>
+                        <div class="form-group">
+                            <label for="emailBilling">Refunds &amp; Billing (Contact &amp; Terms)</label>
+                            <input type="email" id="emailBilling" placeholder="e.g. billing@answerdesk.online">
+                        </div>
+                        <div class="form-group">
+                            <label for="emailPrivacy">Privacy &amp; Data Protection (Privacy)</label>
+                            <input type="email" id="emailPrivacy" placeholder="e.g. privacy@answerdesk.online">
+                        </div>
+                        <div class="form-group">
+                            <label for="emailSecurity">Security Contact (.well-known/security.txt)</label>
+                            <input type="email" id="emailSecurity" placeholder="e.g. security@answerdesk.online">
+                        </div>
+                        <div class="form-group">
+                            <label for="emailEscalations">Compliance &amp; Escalations</label>
+                            <input type="email" id="emailEscalations" placeholder="e.g. escalations@answerdesk.online">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Business Profile &amp; Contact Card</h2>
+                    <p class="card-desc">Displayed dynamically on the Contact page and structured metadata.</p>
+                    <div class="form-group">
+                        <label for="officeAddressInput">Corporate Office Address</label>
+                        <textarea id="officeAddressInput" rows="3" placeholder="Street, City, State, Postal Code, Country"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="hoursLabelInput">Support Availability Label</label>
+                        <input type="text" id="hoursLabelInput" placeholder="Available 24/7">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: TICKETS INBOX -->
+        <section class="tab-panel" id="inboxTab">
+            <div class="card">
+                <div class="card-head">
+                    <div>
+                        <h2>Contact &amp; Escalation Inbox</h2>
+                        <p class="card-desc" style="margin:0;">Real submissions posted from <code>/contact</code> via <code>POST /api/contact</code>.</p>
+                    </div>
+                    <div class="inbox-filters">
+                        <select id="inboxTypeFilter">
+                            <option value="all">All Types</option>
+                            <option value="general">General Inquiries</option>
+                            <option value="escalation">Formal Escalations</option>
+                        </select>
+                        <select id="inboxStatusFilter">
+                            <option value="all">All Statuses</option>
+                            <option value="open">Open</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                        <button type="button" class="btn btn-outline" id="refreshInboxBtn">Refresh</button>
+                    </div>
+                </div>
+                <div id="inboxList" class="inbox-list"></div>
+            </div>
+        </section>
+
+        <!-- TAB 6: SECURITY & BACKUP -->
+        <section class="tab-panel" id="storageTab">
+            <div class="grid-2">
+                <div class="card">
+                    <h2>Reset Admin Password</h2>
+
+                    <div class="security-meta-bar" id="securityMetaBar" style="margin-top: 12px;">
+                        <span>Encryption: <strong>scrypt + AES-256-GCM Vault</strong></span>
+                        <span id="passwordUpdatedMeta">Credential active</span>
+                    </div>
+
+                    <form id="adminResetForm">
+                        <div class="form-group">
+                            <label for="secSuperPwInput">Authorization Password</label>
+                            <input type="password" id="secSuperPwInput" placeholder="Enter authorization password" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label for="secNewPwInput">New Admin Password</label>
+                            <input type="password" id="secNewPwInput" placeholder="Min 8 chars, upper, lower, number/symbol" required autocomplete="new-password">
+                            <div class="field-meta" id="secPwStrengthMeta">Requires uppercase, lowercase, and a number or symbol.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="secConfirmPwInput">Confirm New Password</label>
+                            <input type="password" id="secConfirmPwInput" placeholder="Re-enter new Admin password" required autocomplete="new-password">
+                        </div>
+                        <div class="alert alert-error" id="secResetError" style="display:none;"></div>
+                        <button type="submit" class="btn btn-primary" id="secResetSubmitBtn">Reset Admin Password</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Backup, Export &amp; Storage</h2>
+                    <p class="card-desc">Active storage mode: <strong id="storageModeDetail">—</strong></p>
+
+                    <div class="backup-actions">
+                        <button type="button" class="btn btn-primary" id="exportJsonBtn">Download Config JSON</button>
+                        <button type="button" class="btn btn-outline" id="copyEnvJsonBtn">Copy SITE_CONFIG_JSON</button>
+                        <label class="btn btn-ghost file-btn">
+                            Import JSON File
+                            <input type="file" id="importJsonInput" accept="application/json" style="display:none;">
+                        </label>
+                    </div>
+
+                    <pre class="json-preview" id="jsonPreviewBox"></pre>
+
+                    <ul class="setup-list" style="margin-top: 14px;">
+                        <li><strong>Vercel Production:</strong> Link <strong>Upstash Redis</strong> (<code>KV_REST_API_URL</code> + <code>KV_REST_API_TOKEN</code>) and set <code>ADMIN_PASSWORD_HASH</code>, <code>SUPER_ADMIN_PASSWORD_HASH</code>, and <code>ADMIN_SESSION_SECRET</code>.</li>
+                        <li><strong>Optional Webhook:</strong> Set <code>CONTACT_WEBHOOK_URL</code> to forward contact/escalation tickets.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="admin.js?v=20261127_v6"></script>
+</body>
+</html>

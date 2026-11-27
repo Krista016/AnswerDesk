@@ -41,17 +41,27 @@ const server = http.createServer((req, res) => {
     const urlObj = new URL(req.url, `http://localhost:${PORT}`);
     const pathname = urlObj.pathname;
 
-    // Route /api/chat to our API handler (hot-reload both pearl-rules and chat in dev)
-    if (pathname === '/api/chat') {
+    // Route /api/* handlers (hot-reload in dev)
+    const apiRoutes = {
+        '/api/chat': './api/chat.js',
+        '/api/config': './api/config.js',
+        '/api/admin-config': './api/admin-config.js',
+        '/api/contact': './api/contact.js',
+        '/api/analytics': './api/analytics.js',
+        '/api/health': './api/health.js'
+    };
+    if (apiRoutes[pathname]) {
+        try { delete require.cache[require.resolve('./api/_store.js')]; } catch (_) {}
         try { delete require.cache[require.resolve('./api/pearl-rules.js')]; } catch (_) {}
-        delete require.cache[require.resolve('./api/chat.js')];
-        const freshHandler = require('./api/chat.js');
+        delete require.cache[require.resolve(apiRoutes[pathname])];
+        const freshHandler = require(apiRoutes[pathname]);
         freshHandler(req, res);
         return;
     }
 
     // Static file serving
-    let filePath = path.join(BASE_DIR, pathname === '/' ? 'index.html' : pathname);
+    const mappedPath = pathname === '/' ? 'home.html' : (pathname === '/admin' ? 'admin.html' : pathname);
+    let filePath = path.join(BASE_DIR, mappedPath);
 
     // Prevent directory traversal
     if (!filePath.startsWith(BASE_DIR)) {
@@ -70,7 +80,13 @@ const server = http.createServer((req, res) => {
                     return;
                 }
             }
+            const notFoundPage = path.join(BASE_DIR, '404.html');
             res.statusCode = 404;
+            if (fs.existsSync(notFoundPage)) {
+                res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+                fs.createReadStream(notFoundPage).pipe(res);
+                return;
+            }
             res.end('Not Found');
             return;
         }

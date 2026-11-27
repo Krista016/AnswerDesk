@@ -11,9 +11,25 @@
     { "source": "/contact", "destination": "/contact.html" },
     { "source": "/privacy", "destination": "/privacy.html" },
     { "source": "/terms", "destination": "/terms.html" },
-    { "source": "/expert-verification", "destination": "/expert-verification.html" }
+    { "source": "/expert-verification", "destination": "/expert-verification.html" },
+    { "source": "/admin", "destination": "/admin.html" }
   ],
   "headers": [
+    {
+      "source": "/admin(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, private" }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [

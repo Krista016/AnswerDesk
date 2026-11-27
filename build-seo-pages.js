@@ -18,12 +18,12 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-const SITE_ORIGIN = (process.env.SITE_ORIGIN || 'https://answerdesk-zeta.vercel.app').replace(/\/+$/, '');
+const SITE_ORIGIN = (process.env.SITE_ORIGIN || 'https://answerdesk.online').replace(/\/+$/, '');
 const LAST_MOD = '2026-11-21';
 const DISPLAY_DATE = 'November 2026';
 const INDEXNOW_KEY = 'a7d94f2b8e1c4a6d9b3f5e2c8a1d7f4e';
 const CSS_VER = '20261121_v8';
-const JS_VER = '20261121_v3';
+const JS_VER = '20261127_v5';
 
 const CATEGORIES = [
     {
@@ -1186,6 +1186,8 @@ function writeCrawlAndIndexNowFiles(articles) {
     const robots = [
         'User-agent: *',
         'Allow: /',
+        'Disallow: /admin',
+        'Disallow: /api/',
         '',
         '# Search Engines',
         'User-agent: Googlebot',

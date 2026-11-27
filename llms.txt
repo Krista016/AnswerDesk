@@ -3,28 +3,28 @@
 > AnswerDesk is an independent 24/7 technical troubleshooting knowledge base and expert consultation platform offering 704 verified, step-by-step problem resolution guides across Microsoft Windows, Apple (iPhone, Mac, iPad, Watch, iCloud), PayPal, Amazon, Antivirus suites, Windows Defender, appliances, automotive OBD-II, printers, Wi-Fi networking, and more.
 
 ## Core Pages
-- [Home](https://answerdesk-zeta.vercel.app/)
-- [All 704 Troubleshooting Guides Hub](https://answerdesk-zeta.vercel.app/articles)
-- [Live 24/7 Expert Support Chat](https://answerdesk-zeta.vercel.app/support)
-- [Frequently Asked Questions](https://answerdesk-zeta.vercel.app/faq)
-- [Expert Vetting & Verification Standards](https://answerdesk-zeta.vercel.app/expert-verification)
-- [Full Plain-Markdown Q&A Corpus (704 Guides)](https://answerdesk-zeta.vercel.app/llms-full.txt)
-- [XML Sitemap (729 URLs)](https://answerdesk-zeta.vercel.app/sitemap.xml)
+- [Home](https://answerdesk.online/)
+- [All 704 Troubleshooting Guides Hub](https://answerdesk.online/articles)
+- [Live 24/7 Expert Support Chat](https://answerdesk.online/support)
+- [Frequently Asked Questions](https://answerdesk.online/faq)
+- [Expert Vetting & Verification Standards](https://answerdesk.online/expert-verification)
+- [Full Plain-Markdown Q&A Corpus (704 Guides)](https://answerdesk.online/llms-full.txt)
+- [XML Sitemap (729 URLs)](https://answerdesk.online/sitemap.xml)
 
 ## Static Category Hubs (All Guides Crawlable in Plain HTML)
-- [Microsoft & Windows (128 guides)](https://answerdesk-zeta.vercel.app/guides/category/windows): Windows 11/10 updates, BSOD stop codes, BitLocker, Microsoft 365, Outlook, Teams, OneDrive, and Surface/Xbox troubleshooting.
-- [Apple, Mac, iPhone & Watch (128 guides)](https://answerdesk-zeta.vercel.app/guides/category/apple): iPhone & iOS restore errors, macOS boot & kernel fixes, MacBook battery/display, Apple Watch pairing, iCloud, AirPods, and Apple ID recovery.
-- [PayPal & Digital Payments (80 guides)](https://answerdesk-zeta.vercel.app/guides/category/paypal): PayPal 21-day & 180-day holds, account limitations, Pay in 4 declines, unauthorized dispute protection, linked card/bank errors, and scam prevention.
-- [Amazon, Prime & Devices (80 guides)](https://answerdesk-zeta.vercel.app/guides/category/amazon): Amazon order & refund issues, locked accounts, Prime Video error codes, Fire TV Stick, Kindle, Echo/Alexa Wi-Fi, and Ring/Blink troubleshooting.
-- [Antivirus & Security Suites (75 guides)](https://answerdesk-zeta.vercel.app/guides/category/antivirus): Norton 360, McAfee, Bitdefender, Malwarebytes, Avast, AVG, Kaspersky, and ESET install errors, removal tools, VPN fixes, and billing cancellation.
-- [Windows Defender (75 guides)](https://answerdesk-zeta.vercel.app/guides/category/defender): Microsoft Defender Antivirus error codes, WinDefend service repair, Firewall rules, SmartScreen, Core Isolation, MsMpEng.exe high CPU, and Offline Scan.
-- [Home Appliances (18 guides)](https://answerdesk-zeta.vercel.app/guides/category/appliances): Washer, dryer, refrigerator, dishwasher, HVAC, and oven error codes and diagnostic repair protocols.
-- [Automotive & OBD-II (18 guides)](https://answerdesk-zeta.vercel.app/guides/category/auto): Check Engine Light OBD-II trouble codes (P0xxx/P0420/P0300), battery/alternator diagnostics, and vehicle sensor fixes.
-- [Printers & Hardware (14 guides)](https://answerdesk-zeta.vercel.app/guides/category/printers): HP, Canon, Epson, and Brother offline printer errors, spooler crashes, cartridge recognition, and Wi-Fi scanning fixes.
-- [Smart Home & WiFi (14 guides)](https://answerdesk-zeta.vercel.app/guides/category/networking): Router drops, DNS/DHCP failures, mesh Wi-Fi dead zones, Ethernet link faults, and smart home device connectivity.
-- [Smart TVs & Audio (14 guides)](https://answerdesk-zeta.vercel.app/guides/category/tvaudio): Samsung, LG, Sony, Roku TV HDMI ARC/eARC, black screen, soundbar sync, and streaming app crash fixes.
-- [Gaming Consoles (12 guides)](https://answerdesk-zeta.vercel.app/guides/category/gaming): PS5, Xbox Series X|S, and Nintendo Switch NAT type, controller drift, storage corruption, and display errors.
-- [Mobile & Android (12 guides)](https://answerdesk-zeta.vercel.app/guides/category/mobile): Samsung Galaxy & Android boot loops, charging port moisture warnings, SIM/eSIM activation, and app crash recovery.
-- [Veterinary & Pet Care (12 guides)](https://answerdesk-zeta.vercel.app/guides/category/veterinary): Urgent dog and cat triage signs, toxin awareness, digestive/skin symptoms, and guidance on when to visit an emergency vet.
-- [Accounts & Security (12 guides)](https://answerdesk-zeta.vercel.app/guides/category/security): Account recovery, 2FA/authenticator lockouts, phishing cleanup, password manager access, and compromised email hardening.
-- [Legal & Consumer Rights (12 guides)](https://answerdesk-zeta.vercel.app/guides/category/legal): Consumer chargeback rights, warranty disputes, landlord-tenant notices, debt collection rules, and small claims preparation.
+- [Microsoft & Windows (128 guides)](https://answerdesk.online/guides/category/windows): Windows 11/10 updates, BSOD stop codes, BitLocker, Microsoft 365, Outlook, Teams, OneDrive, and Surface/Xbox troubleshooting.
+- [Apple, Mac, iPhone & Watch (128 guides)](https://answerdesk.online/guides/category/apple): iPhone & iOS restore errors, macOS boot & kernel fixes, MacBook battery/display, Apple Watch pairing, iCloud, AirPods, and Apple ID recovery.
+- [PayPal & Digital Payments (80 guides)](https://answerdesk.online/guides/category/paypal): PayPal 21-day & 180-day holds, account limitations, Pay in 4 declines, unauthorized dispute protection, linked card/bank errors, and scam prevention.
+- [Amazon, Prime & Devices (80 guides)](https://answerdesk.online/guides/category/amazon): Amazon order & refund issues, locked accounts, Prime Video error codes, Fire TV Stick, Kindle, Echo/Alexa Wi-Fi, and Ring/Blink troubleshooting.
+- [Antivirus & Security Suites (75 guides)](https://answerdesk.online/guides/category/antivirus): Norton 360, McAfee, Bitdefender, Malwarebytes, Avast, AVG, Kaspersky, and ESET install errors, removal tools, VPN fixes, and billing cancellation.
+- [Windows Defender (75 guides)](https://answerdesk.online/guides/category/defender): Microsoft Defender Antivirus error codes, WinDefend service repair, Firewall rules, SmartScreen, Core Isolation, MsMpEng.exe high CPU, and Offline Scan.
+- [Home Appliances (18 guides)](https://answerdesk.online/guides/category/appliances): Washer, dryer, refrigerator, dishwasher, HVAC, and oven error codes and diagnostic repair protocols.
+- [Automotive & OBD-II (18 guides)](https://answerdesk.online/guides/category/auto): Check Engine Light OBD-II trouble codes (P0xxx/P0420/P0300), battery/alternator diagnostics, and vehicle sensor fixes.
+- [Printers & Hardware (14 guides)](https://answerdesk.online/guides/category/printers): HP, Canon, Epson, and Brother offline printer errors, spooler crashes, cartridge recognition, and Wi-Fi scanning fixes.
+- [Smart Home & WiFi (14 guides)](https://answerdesk.online/guides/category/networking): Router drops, DNS/DHCP failures, mesh Wi-Fi dead zones, Ethernet link faults, and smart home device connectivity.
+- [Smart TVs & Audio (14 guides)](https://answerdesk.online/guides/category/tvaudio): Samsung, LG, Sony, Roku TV HDMI ARC/eARC, black screen, soundbar sync, and streaming app crash fixes.
+- [Gaming Consoles (12 guides)](https://answerdesk.online/guides/category/gaming): PS5, Xbox Series X|S, and Nintendo Switch NAT type, controller drift, storage corruption, and display errors.
+- [Mobile & Android (12 guides)](https://answerdesk.online/guides/category/mobile): Samsung Galaxy & Android boot loops, charging port moisture warnings, SIM/eSIM activation, and app crash recovery.
+- [Veterinary & Pet Care (12 guides)](https://answerdesk.online/guides/category/veterinary): Urgent dog and cat triage signs, toxin awareness, digestive/skin symptoms, and guidance on when to visit an emergency vet.
+- [Accounts & Security (12 guides)](https://answerdesk.online/guides/category/security): Account recovery, 2FA/authenticator lockouts, phishing cleanup, password manager access, and compromised email hardening.
+- [Legal & Consumer Rights (12 guides)](https://answerdesk.online/guides/category/legal): Consumer chargeback rights, warranty disputes, landlord-tenant notices, debt collection rules, and small claims preparation.

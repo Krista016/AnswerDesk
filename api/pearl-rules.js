@@ -7,21 +7,21 @@
 // ==========================================================================
 
 const CATEGORY_DIRECTORY = {
-    medical: { label: 'Health & Medical Guidance', expert: 'Board Certified Doctor', phone: '1-800-555-0134' },
-    microsoft: { label: 'Microsoft & Windows', expert: 'Microsoft Software Technician', phone: '1-800-936-5700' },
-    ios: { label: 'Apple, Mac & iOS', expert: 'Apple Certified Technician', phone: '1-800-275-2273' },
-    crypto: { label: 'Payments, Banking & Crypto', expert: 'Digital Payments & Crypto Expert', phone: '1-800-555-0188' },
-    account: { label: 'Accounts, Amazon & Security', expert: 'Account & Security Expert', phone: '1-800-555-0111' },
-    subscription: { label: 'Billing & Subscriptions', expert: 'Billing & Subscription Expert', phone: '1-800-555-0122' },
-    android: { label: 'Android & Mobile', expert: 'Android Tech Expert', phone: '1-800-726-7864' },
-    xbox: { label: 'Xbox & Gaming Systems', expert: 'Gaming Support Technician', phone: '1-800-469-9269' },
-    appliances: { label: 'Home Appliances', expert: 'Appliance Repair Technician', phone: '1-800-555-0210' },
-    automotive: { label: 'Automotive & Mechanical', expert: 'ASE Certified Mechanic', phone: '1-800-555-0156' },
-    plumbing: { label: 'Plumbing & Home Systems', expert: 'Licensed Plumber', phone: '1-800-555-0199' },
-    veterinary: { label: 'Veterinary & Pet Care', expert: 'Licensed Veterinarian', phone: '1-800-555-0145' },
-    legal: { label: 'Legal & Consumer Rights', expert: 'Licensed Attorney', phone: '1-800-555-0177' },
-    finance: { label: 'Taxes & Financial Planning', expert: 'Certified Public Accountant', phone: '1-800-555-0220' },
-    general: { label: 'Customer Support', expert: 'Verified Expert', phone: '1-800-555-0100' }
+    medical: { label: 'Health & Medical Guidance', expert: 'Independent Medical Consultant' },
+    microsoft: { label: 'Microsoft & Windows', expert: 'Independent Windows & Office Specialist' },
+    ios: { label: 'Apple, Mac & iOS', expert: 'Independent Apple & iOS Specialist' },
+    crypto: { label: 'Payments, Banking & Crypto', expert: 'Independent Payments & Fintech Specialist' },
+    account: { label: 'Accounts, Amazon & Security', expert: 'Independent Account & Security Specialist' },
+    subscription: { label: 'Billing & Subscriptions', expert: 'Independent Billing & Subscription Specialist' },
+    android: { label: 'Android & Mobile', expert: 'Independent Android & Mobile Specialist' },
+    xbox: { label: 'Xbox & Gaming Systems', expert: 'Independent Gaming Systems Specialist' },
+    appliances: { label: 'Home Appliances', expert: 'Independent Appliance Specialist' },
+    automotive: { label: 'Automotive & Mechanical', expert: 'Independent Automotive Specialist' },
+    plumbing: { label: 'Plumbing & Home Systems', expert: 'Independent Plumbing & Home Specialist' },
+    veterinary: { label: 'Veterinary & Pet Care', expert: 'Independent Veterinary Consultant' },
+    legal: { label: 'Legal & Consumer Rights', expert: 'Independent Legal Consultant' },
+    finance: { label: 'Taxes & Financial Planning', expert: 'Independent Tax & Finance Consultant' },
+    general: { label: 'Customer Support', expert: 'Independent Support Specialist' }
 };
 
 const PEARL_PLAYBOOK_PROMPT = `You are AnswerDesk's Quantum Chatbot (Expert's Assistant). You replicate the exact warm, deeply attentive, human-like intake conversation of a real senior concierge/assistant before connecting the user to a verified human expert.
@@ -80,13 +80,13 @@ STAGE 2: "intake" (Ask 4 to 5 relevant questions, ONE per turn!)
     3) Accompanying symptoms ("Are you experiencing any other symptoms along with it, such as swelling, redness, numbness, or fever?")
     4) History / triggers ("Have you had any recent injuries, changes in medication, or medical conditions like heart, kidney, or liver issues?")
     5) Pattern ("Have you noticed if it gets worse at certain times of day or with movement, or does it stay the same throughout?")
-  • Microsoft / Windows / Outlook / Microsoft Account (category "microsoft", e.g., "Microsoft Software Technician"):
+  • Microsoft / Windows / Outlook / Microsoft Account (category "microsoft", e.g., "Independent Windows & Office Specialist"):
     1) Exact Windows version, device model, or Microsoft app (Windows 10/11, Outlook, 365, Defender, BitLocker, Microsoft Account login) — skip if already stated!
     2) Exact error code, password loop, BitLocker prompt, or lock message on screen
     3) When it started & what happened right before (Windows update, password reset, antivirus uninstall, browser change)
     4) Access to recovery email/phone (for login/BitLocker issues) or troubleshooting/recovery steps already tried
     5) Any secondary symptoms or urgent files/data concerns
-  • Apple / iPhone / Mac / iCloud / Apple ID (category "ios", e.g., "Apple Certified Technician"):
+  • Apple / iPhone / Mac / iCloud / Apple ID (category "ios", e.g., "Independent Apple & iOS Specialist"):
     1) Exact Apple device, model & iOS/macOS version — skip if already stated!
     2) Exact alert, lock notice, or error code (e.g., Error 4013, flashing folder, Apple ID verification failed)
     3) When it started & what triggered it (OS update, drop, liquid, password change, new device)
@@ -141,7 +141,7 @@ STAGE 3: "summary_confirm" (EXACT AskTech Summary + "Anything else?" Gate)
 Is there anything else the [Expert Title] should know before I connect you?"
 
 - STRICT ANTI-HALLUCINATION RULE FOR BULLETS: ONLY summarize facts the user EXPLICITLY stated! If you asked a question on the prior turn and the user said "No, nothing else" instead of answering it, DO NOT write "you don't have X", "you didn't provide X", or "you're unsure about X" — simply omit that topic!
-- KEEP 'expert_role' CONSISTENT: Once you choose a clear expert title (e.g., "Board Certified Doctor", "Microsoft Software Technician", "Tenant Rights Attorney", "Licensed Veterinarian"), keep that exact same 'expert_role' string through summary and channel_choice!
+- KEEP 'expert_role' CONSISTENT: Once you choose a clear independent expert title (e.g., "Independent Medical Consultant", "Independent Windows & Office Specialist", "Independent Legal Consultant", "Independent Veterinary Consultant"), keep that exact same 'expert_role' string through summary and channel_choice!
 - Set show_channel_cards: false.
 - IF THE USER ADDS OR CORRECTS A DETAIL during "summary_confirm":
   Stay in stage "summary_confirm"! Acknowledge their new detail warmly, show the updated bullet list including the new fact, and ask again: "Is there anything else the [Expert Title] should know before I connect you?"

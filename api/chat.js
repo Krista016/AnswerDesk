@@ -46,12 +46,29 @@ function refreshLocalEnv() {
 
 // Strict Origin allowlist, payload bounds, input sanitization & per-IP rate limiting
 const ALLOWED_ORIGINS = new Set([
-    'https://answerdesk-zeta.vercel.app',
+    'https://answerdesk.online',
+    'https://www.answerdesk.online',
     'http://localhost:3000',
     'http://127.0.0.1:3000'
 ]);
 if (process.env.VERCEL_URL) {
     ALLOWED_ORIGINS.add(`https://${process.env.VERCEL_URL}`);
+}
+if (process.env.SITE_ORIGIN) {
+    ALLOWED_ORIGINS.add(process.env.SITE_ORIGIN.replace(/\/+$/, ''));
+}
+
+function isOriginAllowed(req, requestOrigin) {
+    if (!requestOrigin) return true;
+    if (ALLOWED_ORIGINS.has(requestOrigin)) return true;
+    const host = req.headers && req.headers.host;
+    if (host) {
+        try {
+            const parsed = new URL(requestOrigin);
+            if (parsed.host === host) return true;
+        } catch (_) {}
+    }
+    return false;
 }
 
 const MAX_BODY_BYTES = 32768;
@@ -116,6 +133,7 @@ function sanitizeControlField(val, maxLen = 80) {
 // ==========================================================================
 
 const { CATEGORY_DIRECTORY, PEARL_PLAYBOOK_PROMPT } = require('./pearl-rules.js');
+const { loadConfig, resolvePhone, readJsonBody } = require('./_store.js');
 
 function sanitizeReplyText(text) {
     if (!text) return '';
@@ -305,7 +323,7 @@ async function callLiveLLM(staticSystemPrompt, trailingHint, history, currentMes
                 'https://openrouter.ai/api/v1/chat/completions',
                 process.env.OPENROUTER_API_KEY.trim(),
                 process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash',
-                { 'HTTP-Referer': 'https://answerdesk-zeta.vercel.app', 'X-Title': 'AnswerDesk' }
+                { 'HTTP-Referer': 'https://answerdesk.online', 'X-Title': 'AnswerDesk' }
             );
         } catch (e) { errors.push(e.message); }
     }
@@ -489,7 +507,7 @@ function extractPlainTopic(msg, category) {
     return (CATEGORY_DIRECTORY[category] || CATEGORY_DIRECTORY.general).label.toLowerCase();
 }
 
-function runFallbackPearlFlow({ message, history, prevIntake, specialistHandoff, connectedToExpert, expertName, expertRole }) {
+function runFallbackPearlFlow({ message, history, prevIntake, specialistHandoff, connectedToExpert, expertName, expertRole, getPhone }) {
     const state = prevIntake && typeof prevIntake === 'object'
         ? {
             stage: prevIntake.stage || 'greeting',
@@ -501,6 +519,7 @@ function runFallbackPearlFlow({ message, history, prevIntake, specialistHandoff,
         : { stage: 'greeting', category: 'general', stepIndex: 0, topic: '', facts: [] };
 
     const catInfo = () => CATEGORY_DIRECTORY[state.category] || CATEGORY_DIRECTORY.general;
+    const phoneFor = (catKey) => (typeof getPhone === 'function' ? getPhone(catKey || state.category) : '');
 
     if (specialistHandoff) {
         state.stage = 'connected';
@@ -513,7 +532,7 @@ function runFallbackPearlFlow({ message, history, prevIntake, specialistHandoff,
             reply_text: `Hi! I'm **${name}**, your verified **${role}**. I just reviewed everything you shared with our Care Assistant (${summaryLine}). I'm here to walk through this with you right now — what is your biggest concern or first question you'd like me to address?`,
             category: state.category,
             expert_role: role,
-            phone_number: ci.phone,
+            phone_number: phoneFor(state.category),
             cta_headline: `Get help with ${state.topic || ci.label}`,
             summary_bullets: state.facts.map(f => `You shared: ${f}`),
             show_channel_cards: false,
@@ -530,7 +549,7 @@ function runFallbackPearlFlow({ message, history, prevIntake, specialistHandoff,
                 reply_text: `Of course, let's switch to a direct phone call right now so I can help you faster.`,
                 category: state.category,
                 expert_role: expertRole || ci.expert,
-                phone_number: ci.phone,
+                phone_number: phoneFor(state.category),
                 cta_headline: `Get help with ${state.topic || ci.label}`,
                 show_channel_cards: false,
                 auto_open_call: true,
@@ -542,7 +561,7 @@ function runFallbackPearlFlow({ message, history, prevIntake, specialistHandoff,
             reply_text: `Thank you for that update. I'm taking that into account right now. To make sure I give you the most accurate guidance, could you tell me if anything has changed in the last hour, or would you prefer to switch to a quick phone call?`,
             category: state.category,
             expert_role: expertRole || ci.expert,
-            phone_number: ci.phone,
+            phone_number: phoneFor(state.category),
             cta_headline: `Get help with ${state.topic || ci.label}`,
             show_channel_cards: false,
             intake_state: state
@@ -562,8 +581,8 @@ function runFallbackPearlFlow({ message, history, prevIntake, specialistHandoff,
             stage: 'greeting',
             reply_text: replies[idx],
             category: 'general',
-            expert_role: 'Support Expert',
-            phone_number: CATEGORY_DIRECTORY.general.phone,
+            expert_role: 'Independent Support Specialist',
+            phone_number: phoneFor('general'),
             cta_headline: '',
             summary_bullets: [],
             show_channel_cards: false,
@@ -581,7 +600,7 @@ function runFallbackPearlFlow({ message, history, prevIntake, specialistHandoff,
                 reply_text: `OK, got it. I'm opening the direct phone connection for the **${ci.expert}** now and passing along your full summary so you don't have to repeat yourself.`,
                 category: state.category,
                 expert_role: ci.expert,
-                phone_number: ci.phone,
+                phone_number: phoneFor(state.category),
                 cta_headline: `Get help with ${state.topic || ci.label}`,
                 summary_bullets: state.facts,
                 show_channel_cards: false,
@@ -596,7 +615,7 @@ function runFallbackPearlFlow({ message, history, prevIntake, specialistHandoff,
                 reply_text: `OK, got it. I'm passing your summary to the **${ci.expert}** and connecting you right here in live chat now.`,
                 category: state.category,
                 expert_role: ci.expert,
-                phone_number: ci.phone,
+                phone_number: phoneFor(state.category),
                 cta_headline: `Get help with ${state.topic || ci.label}`,
                 summary_bullets: state.facts,
                 show_channel_cards: false,
@@ -616,7 +635,7 @@ function runFallbackPearlFlow({ message, history, prevIntake, specialistHandoff,
                 reply_text: `Thank you for providing the details. And, how would you like to connect with the **${ci.expert}** - phone call or online chat? Under the circumstances, I recommend a phone call.`,
                 category: state.category,
                 expert_role: ci.expert,
-                phone_number: ci.phone,
+                phone_number: phoneFor(state.category),
                 cta_headline: `Get help with ${state.topic || ci.label}`,
                 summary_bullets: state.facts,
                 show_channel_cards: true,
@@ -630,7 +649,7 @@ function runFallbackPearlFlow({ message, history, prevIntake, specialistHandoff,
             reply_text: `Thank you for adding that. Here is the updated summary I'll share with the **${ci.expert}**:\n\n${bullets.join('\n')}\n\nIs there anything else the ${ci.expert} should know before I connect you?`,
             category: state.category,
             expert_role: ci.expert,
-            phone_number: ci.phone,
+            phone_number: phoneFor(state.category),
             cta_headline: `Get help with ${state.topic || ci.label}`,
             summary_bullets: state.facts,
             show_channel_cards: false,
@@ -658,7 +677,7 @@ function runFallbackPearlFlow({ message, history, prevIntake, specialistHandoff,
             reply_text: q,
             category: state.category,
             expert_role: ci.expert,
-            phone_number: ci.phone,
+            phone_number: phoneFor(state.category),
             cta_headline: '',
             summary_bullets: [],
             show_channel_cards: false,
@@ -674,7 +693,7 @@ function runFallbackPearlFlow({ message, history, prevIntake, specialistHandoff,
         reply_text: `Thank you for sharing the details. The **${ci.expert}** will help with your ${state.topic || ci.label.toLowerCase()}. Here's what I'll tell them:\n\n${naturalBullets.join('\n')}\n\nIs there anything else the ${ci.expert} should know before I connect you?`,
         category: state.category,
         expert_role: ci.expert,
-        phone_number: ci.phone,
+        phone_number: phoneFor(state.category),
         cta_headline: `Get help with ${state.topic || ci.label}`,
         summary_bullets: state.facts,
         show_channel_cards: false,
@@ -688,7 +707,7 @@ module.exports = async function handler(req, res) {
     const requestOrigin = req.headers.origin;
     res.setHeader('Vary', 'Origin');
     if (requestOrigin) {
-        if (!ALLOWED_ORIGINS.has(requestOrigin)) {
+        if (!isOriginAllowed(req, requestOrigin)) {
             res.statusCode = 403;
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify({ error: 'Origin not allowed' }));
@@ -721,32 +740,24 @@ module.exports = async function handler(req, res) {
         return;
     }
 
-    const chunks = [];
-    let bytesReceived = 0;
-    let payloadTooLarge = false;
-    req.on('data', chunk => {
-        if (payloadTooLarge) return;
-        bytesReceived += chunk.length;
-        if (bytesReceived > MAX_BODY_BYTES) {
-            payloadTooLarge = true;
-            res.statusCode = 413;
+    let parsed;
+    try {
+        parsed = await readJsonBody(req, MAX_BODY_BYTES);
+    } catch (err) {
+        const status = /too large/i.test(err.message) ? 413 : 400;
+        res.statusCode = status;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ error: /too large/i.test(err.message) ? 'Request payload too large' : err.message }));
+        return;
+    }
+
+    try {
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+            res.statusCode = 400;
             res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify({ error: 'Request payload too large' }));
+            res.end(JSON.stringify({ error: 'Invalid request payload' }));
             return;
         }
-        chunks.push(chunk);
-    });
-    req.on('end', async () => {
-        if (payloadTooLarge || res.writableEnded) return;
-        try {
-            const body = Buffer.concat(chunks).toString('utf8');
-            const parsed = body ? JSON.parse(body) : {};
-            if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-                res.statusCode = 400;
-                res.setHeader('Content-Type', 'application/json');
-                res.end(JSON.stringify({ error: 'Invalid request payload' }));
-                return;
-            }
             if (typeof parsed.message !== 'string') {
                 res.statusCode = 400;
                 res.setHeader('Content-Type', 'application/json');
@@ -791,6 +802,10 @@ module.exports = async function handler(req, res) {
                 trailingHint = `SESSION_STATE: Prior stage was "${prevIntake.stage}", prior category was "${prevIntake.category || 'general'}", locked expert_role was "${prevIntake.expert_role || ''}". Follow PEARL_PLAYBOOK_PROMPT strictly. Keep that EXACT expert_role string in both JSON and reply_text UNLESS the user switches to a different topic/issue (if they pivot, set topic_switched: true, switch category and expert_role to the new topic, and start fresh intake without carrying old topic details into the new summary).`;
             }
 
+            let siteConfig = null;
+            try { siteConfig = await loadConfig(); } catch (_) {}
+            const getPhone = (catKey) => resolvePhone(siteConfig, catKey).display || '';
+
             let finalData;
             let engineUsed = 'offline-fallback';
             let llmErrorReason = null;
@@ -802,7 +817,7 @@ module.exports = async function handler(req, res) {
 
             // 1. Zero-Token Fast Path: Pure greetings & direct channel picks cost $0 API tokens
             if (isPureGreeting(message) && (!prevIntake || prevIntake.stage === 'greeting')) {
-                const fb = runFallbackPearlFlow({ message, history, prevIntake });
+                const fb = runFallbackPearlFlow({ message, history, prevIntake, getPhone });
                 finalData = {
                     ...fb,
                     reply: sanitizeReplyText(fb.reply_text),
@@ -813,7 +828,7 @@ module.exports = async function handler(req, res) {
                 };
                 engineUsed = 'zero-token-greeting';
             } else if (prevIntake && prevIntake.stage === 'channel_choice' && (isPhoneChoice(message) || isChatChoice(message))) {
-                const fb = runFallbackPearlFlow({ message, history, prevIntake });
+                const fb = runFallbackPearlFlow({ message, history, prevIntake, getPhone });
                 const preservedCta = prevIntake.cta_headline || fb.cta_headline;
                 const preservedRole = prevIntake.expert_role || fb.expert_role;
                 const isCall = isPhoneChoice(message);
@@ -844,6 +859,7 @@ module.exports = async function handler(req, res) {
             } else if (cacheKey && getCachedReply(cacheKey)) {
                 // 2. Zero-Token Cache Hit for identical Turn-1 questions (deep-cloned to avoid cross-session mutation)
                 finalData = JSON.parse(JSON.stringify(getCachedReply(cacheKey)));
+                finalData.phone_number = getPhone(finalData.category || 'general');
                 engineUsed = `${finalData.engine || 'llm'}:cached`;
             } else {
                 // 3. Live LLM Call (100% static prefix prompt -> DeepSeek/OpenAI context cache hit)
@@ -893,7 +909,7 @@ module.exports = async function handler(req, res) {
                         category: catKey,
                         expert_role: resolvedRole,
                         expertRole: resolvedRole,
-                        phone_number: catInfo.phone,
+                        phone_number: getPhone(catKey),
                         cta_headline: isPreChoiceStage ? '' : resolvedCta,
                         summary_items: Array.isArray(d.summary_bullets) ? d.summary_bullets : [],
                         show_channel_cards: showChannelCards,
@@ -922,7 +938,8 @@ module.exports = async function handler(req, res) {
                         specialistHandoff: Boolean(parsed.specialist_handoff),
                         connectedToExpert: Boolean(parsed.connected_to_expert),
                         expertName: safeExpertName,
-                        expertRole: safeExpertRole
+                        expertRole: safeExpertRole,
+                        getPhone
                     });
                     finalData = {
                         ...fb,
@@ -945,5 +962,4 @@ module.exports = async function handler(req, res) {
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify({ error: 'Invalid JSON request' }));
         }
-    });
 };
