@@ -1255,3 +1255,36 @@ textarea:focus {
         grid-template-columns: 1fr;
     }
 }
+
+.device-breakdown-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dev-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dev-row-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.dev-bar-bg {
+    background: #edf4ec;
+    border-radius: 999px;
+    height: 9px;
+    overflow: hidden;
+}
+
+.dev-bar-fill {
+    background: linear-gradient(90deg, var(--teal) 0%, var(--deep) 100%);
+    height: 100%;
+    border-radius: 999px;
+}

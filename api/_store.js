@@ -1020,7 +1020,8 @@ function getDefaultAnalyticsStore() {
         recentConversions: [],
         clientErrors: [],
         activeSessions: {},
-        notFound404s: []
+        notFound404s: [],
+        recentEvents: []
     };
 }
 
@@ -1044,7 +1045,8 @@ async function loadAnalyticsStore() {
         recentConversions: Array.isArray(stored.recentConversions) ? stored.recentConversions : [],
         clientErrors: Array.isArray(stored.clientErrors) ? stored.clientErrors : [],
         activeSessions: (stored.activeSessions && typeof stored.activeSessions === 'object') ? stored.activeSessions : {},
-        notFound404s: Array.isArray(stored.notFound404s) ? stored.notFound404s : []
+        notFound404s: Array.isArray(stored.notFound404s) ? stored.notFound404s : [],
+        recentEvents: Array.isArray(stored.recentEvents) ? stored.recentEvents : []
     };
 }
 

@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="admin.css?v=20261127_v6">
+    <link rel="stylesheet" href="admin.css?v=20261127_v7">
 </head>
 <body>
     <header class="admin-topbar">
@@ -106,19 +106,22 @@
                     <p class="card-desc" style="margin:0;">100% first-party privacy-safe analytics: live visitors, AI &amp; organic search attribution, Core Web Vitals, search gaps, deep chat funnel, and 404 monitoring.</p>
                 </div>
                 <div class="analytics-controls">
-                    <span class="live-pill" id="liveNowBadge" title="Active visitors in the last 5 minutes">
+                    <span class="live-pill" id="liveNowBadge" title="Active visitors in the last 3 minutes">
                         <span class="live-dot"></span>
-                        <span id="liveNowCount">0</span> Live Now
+                        <span id="liveNowCount">0</span> Live Now (3m)
                     </span>
                     <select id="analyticsRangeSelect" aria-label="Analytics timeframe">
                         <option value="24h">Last 24 Hours</option>
                         <option value="7d" selected>Last 7 Days</option>
                         <option value="30d">Last 30 Days</option>
-                        <option value="all">All Time</option>
+                        <option value="90d">Last 90 Days</option>
+                        <option value="180d">Last 180 Days</option>
+                        <option value="all">All Time (180d)</option>
                     </select>
-                    <button type="button" class="btn btn-outline" id="exportAnalyticsCsvBtn">Export CSV</button>
+                    <button type="button" class="btn btn-primary" id="exportAnalyticsExcelBtn">Download Analytics Data (.xlsx)</button>
+                    <button type="button" class="btn btn-outline" id="submitIndexNowBtn" title="Submit all sitemap URLs instantly to Bing, Copilot & ChatGPT Search via IndexNow">Ping IndexNow (Bing/AI)</button>
                     <button type="button" class="btn btn-outline" id="refreshAnalyticsBtn">Refresh</button>
-                    <button type="button" class="btn btn-primary" id="runHealthCheckBtn">Run Health Check</button>
+                    <button type="button" class="btn btn-outline" id="runHealthCheckBtn">Run Health Check</button>
                     <button type="button" class="btn btn-danger" id="clearAnalyticsBtn">Clear Analytics</button>
                 </div>
             </div>
@@ -245,8 +248,9 @@
             <!-- Row 7: Devices/Categories + Core Web Vitals & 404 Monitor -->
             <div class="grid-2" style="margin-bottom: 20px;">
                 <div class="card">
-                    <h2>Devices, Browsers &amp; Expert Categories</h2>
-                    <p class="card-desc">Device breakdown and specialist categories driving chats and calls.</p>
+                    <h2>Devices, OS &amp; Expert Categories</h2>
+                    <p class="card-desc">Clear device split across Mobile, Tablet, Laptop &amp; Desktop plus browsers, OS, and category conversions.</p>
+                    <div id="deviceBreakdownWrap" class="device-breakdown-wrap" style="margin-bottom: 12px;"></div>
                     <div id="deviceSummaryBox" class="chip-grid"></div>
                     <div class="table-wrap" id="categoryAnalyticsWrap" style="margin-top: 14px;"></div>
                 </div>
@@ -570,6 +574,6 @@
         </section>
     </main>
 
-    <script src="admin.js?v=20261127_v6"></script>
+    <script src="admin.js?v=20261127_v7"></script>
 </body>
 </html>

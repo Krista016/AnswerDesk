@@ -17,7 +17,8 @@ const {
 const BEACON_RATE_MAP = new Map();
 const BEACON_WINDOW_MS = 60 * 1000;
 const BEACON_MAX_PER_MIN = 120;
-const LIVE_SESSION_TTL_MS = 5 * 60 * 1000;
+const LIVE_SESSION_TTL_MS = 3 * 60 * 1000;
+const ANALYTICS_RETENTION_DAYS = 180;
 
 const BOT_UA_REGEX = /bot|crawl|spider|slurp|gptbot|claudebot|perplexitybot|bingpreview|ahrefs|semrush|yandex|headlesschrome/i;
 const ALLOWED_EVENTS = new Set([
@@ -74,18 +75,29 @@ function extractGeo(req, ip) {
     return { country: 'UNK', region: 'Unknown', city: 'Unknown' };
 }
 
-function parseUserAgent(uaRaw) {
+function parseUserAgent(uaRaw, screenW = 0, maxTouch = 0) {
     const ua = String(uaRaw || '');
-    let device = 'Desktop';
-    if (/ipad|tablet|playbook|silk|(android(?!.*mobile))/i.test(ua)) {
+    const sw = Number(screenW || 0);
+    const touch = Number(maxTouch || 0);
+    let device = 'Laptop / Desktop';
+
+    if (/ipad|tablet|playbook|silk|(android(?!.*mobile))/i.test(ua) || (/macintosh/i.test(ua) && touch > 1)) {
         device = 'Tablet';
-    } else if (/mobi|iphone|ipod|android|blackberry|iemobile|opera mini/i.test(ua)) {
+    } else if (/mobi|iphone|ipod|android.*mobile|blackberry|iemobile|opera mini/i.test(ua)) {
         device = 'Mobile';
+    } else if (/cros/i.test(ua)) {
+        device = 'Laptop';
+    } else if (sw > 1600) {
+        device = 'Desktop';
+    } else if (sw > 0 && sw <= 1600) {
+        device = 'Laptop';
     }
 
     let os = 'Other';
-    if (/iphone|ipad|ipod/i.test(ua)) os = 'iOS';
+    if (/ipad/i.test(ua) || (/macintosh/i.test(ua) && touch > 1)) os = 'iPadOS';
+    else if (/iphone|ipod/i.test(ua)) os = 'iOS';
     else if (/android/i.test(ua)) os = 'Android';
+    else if (/cros/i.test(ua)) os = 'ChromeOS';
     else if (/windows/i.test(ua)) os = 'Windows';
     else if (/mac os x|macintosh/i.test(ua)) os = 'macOS';
     else if (/linux/i.test(ua)) os = 'Linux';
@@ -195,7 +207,7 @@ function createEmptyDayBucket() {
     };
 }
 
-function pruneOldDays(daysObj, keepDays = 35) {
+function pruneOldDays(daysObj, keepDays = ANALYTICS_RETENTION_DAYS) {
     const keys = Object.keys(daysObj).sort();
     if (keys.length <= keepDays) return;
     const toDelete = keys.slice(0, keys.length - keepDays);
@@ -239,6 +251,10 @@ function aggregateRange(store, range, healthLog, config) {
         cutoffDate = new Date(nowMs - 6 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     } else if (range === '30d') {
         cutoffDate = new Date(nowMs - 29 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    } else if (range === '90d') {
+        cutoffDate = new Date(nowMs - 89 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    } else if (range === '180d') {
+        cutoffDate = new Date(nowMs - 179 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     }
 
     const selectedDays = cutoffDate ? allDays.filter(d => d >= cutoffDate) : allDays;
@@ -595,6 +611,41 @@ function aggregateRange(store, range, healthLog, config) {
     const recentConversions = (store.recentConversions || [])
         .filter(ev => !cutoffTs || Date.parse(ev.ts) >= cutoffTs)
         .slice(0, 30);
+    const recentEvents = (store.recentEvents || [])
+        .filter(ev => !cutoffTs || Date.parse(ev.ts) >= cutoffTs)
+        .slice(0, 500);
+
+    const avgSessionsPerVisitor = uniqueVisitorsSet.size > 0
+        ? Number((sessionsCount / uniqueVisitorsSet.size).toFixed(2))
+        : 0;
+    const repeatSessions = Math.max(0, sessionsCount - uniqueVisitorsSet.size);
+
+    const totalDevViews = Object.values(deviceMap).reduce((a, b) => a + b, 0);
+    const deviceBreakdown = Object.entries(deviceMap)
+        .map(([device, views]) => ({
+            device,
+            views,
+            pct: totalDevViews > 0 ? Number(((views / totalDevViews) * 100).toFixed(1)) : 0
+        }))
+        .sort((a, b) => b.views - a.views);
+
+    const totalOsViews = Object.values(osMap).reduce((a, b) => a + b, 0);
+    const osBreakdown = Object.entries(osMap)
+        .map(([os, views]) => ({
+            os,
+            views,
+            pct: totalOsViews > 0 ? Number(((views / totalOsViews) * 100).toFixed(1)) : 0
+        }))
+        .sort((a, b) => b.views - a.views);
+
+    const totalBrViews = Object.values(browserMap).reduce((a, b) => a + b, 0);
+    const browserBreakdown = Object.entries(browserMap)
+        .map(([browser, views]) => ({
+            browser,
+            views,
+            pct: totalBrViews > 0 ? Number(((views / totalBrViews) * 100).toFixed(1)) : 0
+        }))
+        .sort((a, b) => b.views - a.views);
 
     const clientErrors = (store.clientErrors || []).slice(0, 30);
     const notFound404s = (store.notFound404s || []).slice(0, 30);
@@ -618,6 +669,10 @@ function aggregateRange(store, range, healthLog, config) {
             uniqueVisitors: uniqueVisitorsSet.size,
             pageViews,
             sessions: sessionsCount,
+            avgSessionsPerVisitor,
+            repeatSessions,
+            retentionDays: ANALYTICS_RETENTION_DAYS,
+            liveWindowMinutes: 3,
             liveNow,
             newVisitors,
             returningVisitors,
@@ -680,6 +735,9 @@ function aggregateRange(store, range, healthLog, config) {
         devices: deviceMap,
         browsers: browserMap,
         os: osMap,
+        deviceBreakdown,
+        osBreakdown,
+        browserBreakdown,
         categories,
         ctaClicks,
         guideOutcomes: { solved: guideSolved, notSolved: guideNotSolved, helpfulPct: guideHelpfulPct },
@@ -687,6 +745,7 @@ function aggregateRange(store, range, healthLog, config) {
         zeroResultSearches,
         hourly,
         recentConversions,
+        recentEvents,
         clientErrors,
         notFound404s,
         compliance
@@ -738,7 +797,7 @@ module.exports = async function handler(req, res) {
         const visitorHash = hashVisitorDaily(ip, ua, dayKey);
         const geo = extractGeo(req, ip);
         const geoKey = `${geo.country}|${geo.region}|${geo.city}`;
-        const uaInfo = parseUserAgent(ua);
+        const uaInfo = parseUserAgent(ua, body.screen_w, body.max_touch);
 
         const utmSource = cleanStr(body.utm_source || '', 40);
         const utmMedium = cleanStr(body.utm_medium || '', 40);
@@ -1001,7 +1060,38 @@ module.exports = async function handler(req, res) {
             }
         }
 
-        pruneOldDays(store.days, 35);
+        if (!Array.isArray(store.recentEvents)) store.recentEvents = [];
+        store.recentEvents.unshift({
+            ts: nowIso,
+            event,
+            sid: sessionId,
+            visitorId: visitorHash.slice(0, 10),
+            path: pagePath,
+            landingPath: sess.landingPath || pagePath,
+            isReturning: Boolean(body.is_returning),
+            device: uaInfo.device,
+            os: uaInfo.os,
+            browser: uaInfo.browser,
+            country: geo.country,
+            region: geo.region,
+            city: geo.city,
+            channel,
+            referrer: isExternalRef(refHost) ? refHost : '',
+            category: category || 'general',
+            activeSec: Number(body.active_sec || 0),
+            maxScroll: Number(body.max_scroll || 0),
+            loadMs: Number(body.load_ms || 0),
+            lcpMs: Number(body.lcp_ms || 0),
+            cls: Number.isFinite(Number(body.cls)) ? Number(body.cls) : '',
+            ttfbMs: Number(body.ttfb_ms || 0),
+            searchQuery: event === 'site_search' ? scrubSearchQuery(body.query || '') : '',
+            zeroResult: event === 'site_search' ? Boolean(body.zero_result) : '',
+            ctaLabel: event === 'cta_click' ? cleanStr(body.cta_label || body.cta_id || '', 80) : '',
+            chatStage: event === 'chat_stage' ? cleanStr(body.stage || '', 32) : ''
+        });
+        store.recentEvents = store.recentEvents.slice(0, 500);
+
+        pruneOldDays(store.days, ANALYTICS_RETENTION_DAYS);
         await saveAnalyticsStore(store);
         return sendJson(res, 200, { success: true });
     }
@@ -1014,7 +1104,7 @@ module.exports = async function handler(req, res) {
     if (req.method === 'GET') {
         const urlObj = new URL(req.url, 'http://localhost');
         const range = cleanStr(urlObj.searchParams.get('range') || '7d', 10);
-        const validRange = ['24h', '7d', '30d', 'all'].includes(range) ? range : '7d';
+        const validRange = ['24h', '7d', '30d', '90d', '180d', 'all'].includes(range) ? range : '7d';
 
         const [store, healthLog, config] = await Promise.all([
             loadAnalyticsStore(),

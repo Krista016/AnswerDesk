@@ -416,9 +416,11 @@
 
         const nvr = data.newVsReturning || {};
         $('kpiVisitors').textContent = String(s.uniqueVisitors || 0);
-        $('kpiViewsSub').textContent = `${s.pageViews || 0} views • ${s.sessions || 0} sessions`;
+        const avgV = s.avgSessionsPerVisitor || 0;
+        const repS = s.repeatSessions || 0;
+        $('kpiViewsSub').textContent = `${s.pageViews || 0} views • ${s.sessions || 0} sessions (${avgV}x/user)`;
         if ($('kpiNewReturnSub')) {
-            $('kpiNewReturnSub').textContent = `${nvr.newPct || 0}% new (${nvr.newVisitors || 0}) • ${nvr.returningVisitors || 0} returning`;
+            $('kpiNewReturnSub').textContent = `${nvr.newPct || 0}% new (${nvr.newVisitors || 0}) • ${nvr.returningVisitors || 0} returning • ${repS} repeat`;
         }
         $('kpiAvgTime').textContent = formatDuration(s.avgTimeSec || 0);
         $('kpiScrollSub').textContent = `${s.avgScrollPct || 0}% avg scroll depth`;
@@ -598,11 +600,27 @@
                 : '<p class="card-desc" style="margin:0;">No CTA clicks recorded yet.</p>';
         }
 
-        // Devices & Browsers Chips
+        // Clear Device Breakdown (Mobile, Tablet, Laptop, Desktop) + OS & Browsers
+        const devList = data.deviceBreakdown || Object.entries(data.devices || {}).map(([device, views]) => ({ device, views, pct: 0 }));
+        if ($('deviceBreakdownWrap')) {
+            $('deviceBreakdownWrap').innerHTML = devList.length
+                ? devList.map(d => `
+                    <div class="dev-row">
+                        <div class="dev-row-meta">
+                            <span>${escapeHtml(d.device)}</span>
+                            <span>${d.views} views (${d.pct}%)</span>
+                        </div>
+                        <div class="dev-bar-bg">
+                            <div class="dev-bar-fill" style="width:${Math.min(100, d.pct || 0)}%;"></div>
+                        </div>
+                    </div>
+                `).join('')
+                : '<span class="card-desc" style="margin:0;">No device visits recorded yet.</span>';
+        }
         const chips = [];
-        for (const [k, v] of Object.entries(data.devices || {})) chips.push(`<span class="stat-chip">${escapeHtml(k)}: ${v}</span>`);
+        for (const [k, v] of Object.entries(data.os || {})) chips.push(`<span class="stat-chip">${escapeHtml(k)}: ${v}</span>`);
         for (const [k, v] of Object.entries(data.browsers || {})) chips.push(`<span class="stat-chip">${escapeHtml(k)}: ${v}</span>`);
-        $('deviceSummaryBox').innerHTML = chips.length ? chips.join('') : '<span class="card-desc" style="margin:0;">No device metrics yet.</span>';
+        $('deviceSummaryBox').innerHTML = chips.length ? chips.join('') : '<span class="card-desc" style="margin:0;">No OS/browser metrics yet.</span>';
 
         // Category Analytics
         const cats = data.categories || [];
@@ -660,48 +678,399 @@
             : '<p class="card-desc" style="margin:0;">No conversions logged yet. Call clicks, chat starts, and form submits appear here in real time.</p>';
     }
 
-    function csvCell(val) {
-        const s = String(val == null ? '' : val);
-        return '"' + s.replace(/"/g, '""') + '"';
+    function escXml(str) {
+        return String(str == null ? '' : str)
+            .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
     }
 
-    function exportAnalyticsCsv() {
+    function xlsxColName(idx) {
+        let s = '';
+        let n = idx + 1;
+        while (n > 0) {
+            const rem = (n - 1) % 26;
+            s = String.fromCharCode(65 + rem) + s;
+            n = Math.floor((n - 1) / 26);
+        }
+        return s;
+    }
+
+    const CRC32_TABLE = (() => {
+        const t = new Uint32Array(256);
+        for (let i = 0; i < 256; i++) {
+            let c = i;
+            for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+            t[i] = c >>> 0;
+        }
+        return t;
+    })();
+
+    function crc32Bytes(u8) {
+        let c = 0xFFFFFFFF;
+        for (let i = 0; i < u8.length; i++) c = CRC32_TABLE[(c ^ u8[i]) & 0xFF] ^ (c >>> 8);
+        return (c ^ 0xFFFFFFFF) >>> 0;
+    }
+
+    function buildZipStore(entries) {
+        const enc = new TextEncoder();
+        const locals = [];
+        const centrals = [];
+        let offset = 0;
+
+        for (const e of entries) {
+            const nameU8 = enc.encode(e.name);
+            const dataU8 = typeof e.data === 'string' ? enc.encode(e.data) : e.data;
+            const crc = crc32Bytes(dataU8);
+
+            const lh = new Uint8Array(30 + nameU8.length);
+            const lv = new DataView(lh.buffer);
+            lv.setUint32(0, 0x04034B50, true);
+            lv.setUint16(4, 20, true);
+            lv.setUint16(6, 0x0800, true);
+            lv.setUint16(8, 0, true);
+            lv.setUint16(10, 0, true);
+            lv.setUint16(12, 0, true);
+            lv.setUint32(14, crc, true);
+            lv.setUint32(18, dataU8.length, true);
+            lv.setUint32(22, dataU8.length, true);
+            lv.setUint16(26, nameU8.length, true);
+            lv.setUint16(28, 0, true);
+            lh.set(nameU8, 30);
+
+            locals.push(lh, dataU8);
+
+            const ch = new Uint8Array(46 + nameU8.length);
+            const cv = new DataView(ch.buffer);
+            cv.setUint32(0, 0x02014B50, true);
+            cv.setUint16(4, 20, true);
+            cv.setUint16(6, 20, true);
+            cv.setUint16(8, 0x0800, true);
+            cv.setUint16(10, 0, true);
+            cv.setUint16(12, 0, true);
+            cv.setUint16(14, 0, true);
+            cv.setUint32(16, crc, true);
+            cv.setUint32(20, dataU8.length, true);
+            cv.setUint32(24, dataU8.length, true);
+            cv.setUint16(28, nameU8.length, true);
+            cv.setUint16(30, 0, true);
+            cv.setUint16(32, 0, true);
+            cv.setUint16(34, 0, true);
+            cv.setUint16(36, 0, true);
+            cv.setUint32(38, 0, true);
+            cv.setUint32(42, offset, true);
+            ch.set(nameU8, 46);
+
+            centrals.push(ch);
+            offset += lh.length + dataU8.length;
+        }
+
+        const cdSize = centrals.reduce((s, a) => s + a.length, 0);
+        const eocd = new Uint8Array(22);
+        const ev = new DataView(eocd.buffer);
+        ev.setUint32(0, 0x06054B50, true);
+        ev.setUint16(4, 0, true);
+        ev.setUint16(6, 0, true);
+        ev.setUint16(8, entries.length, true);
+        ev.setUint16(10, entries.length, true);
+        ev.setUint32(12, cdSize, true);
+        ev.setUint32(16, offset, true);
+        ev.setUint16(20, 0, true);
+
+        const total = offset + cdSize + 22;
+        const out = new Uint8Array(total);
+        let pos = 0;
+        for (const chunk of locals) { out.set(chunk, pos); pos += chunk.length; }
+        for (const chunk of centrals) { out.set(chunk, pos); pos += chunk.length; }
+        out.set(eocd, pos);
+        return out;
+    }
+
+    function buildWorksheetXml(rows) {
+        const safeRows = (rows && rows.length) ? rows : [['No records recorded yet for this timeframe']];
+        const colWidths = [];
+        for (let r = 0; r < safeRows.length; r++) {
+            const row = safeRows[r] || [];
+            for (let c = 0; c < row.length; c++) {
+                const len = String(row[c] == null ? '' : row[c]).length;
+                if (!colWidths[c] || len > colWidths[c]) colWidths[c] = len;
+            }
+        }
+        const colsXml = colWidths.length
+            ? `<cols>${colWidths.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${Math.max(12, Math.min(54, w + 4))}" customWidth="1"/>`).join('')}</cols>`
+            : '';
+
+        const rowsXml = safeRows.map((row, rIdx) => {
+            const rNum = rIdx + 1;
+            const cells = (row || []).map((val, cIdx) => {
+                const ref = xlsxColName(cIdx) + rNum;
+                const styleAttr = rIdx === 0 ? ' s="1"' : '';
+                if (typeof val === 'number' && Number.isFinite(val)) {
+                    return `<c r="${ref}"${styleAttr}><v>${val}</v></c>`;
+                }
+                const strVal = typeof val === 'boolean' ? (val ? 'Yes' : 'No') : String(val == null ? '' : val);
+                return `<c r="${ref}"${styleAttr} t="inlineStr"><is><t xml:space="preserve">${escXml(strVal)}</t></is></c>`;
+            }).join('');
+            return `<row r="${rNum}">${cells}</row>`;
+        }).join('');
+
+        return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` +
+            `<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">` +
+            colsXml +
+            `<sheetData>${rowsXml}</sheetData>` +
+            `</worksheet>`;
+    }
+
+    function buildXlsxBlob(sheets) {
+        const usedNames = new Set();
+        const cleanSheets = sheets.map((sh, i) => {
+            let nm = String(sh.name || `Sheet${i + 1}`).replace(/[\[\]*?\/\\:]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 31) || `Sheet${i + 1}`;
+            while (usedNames.has(nm)) {
+                nm = nm.slice(0, 28) + '_' + (i + 1);
+            }
+            usedNames.add(nm);
+            return { name: nm, rows: sh.rows };
+        });
+
+        const entries = [];
+        entries.push({
+            name: '[Content_Types].xml',
+            data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` +
+                `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">` +
+                `<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>` +
+                `<Default Extension="xml" ContentType="application/xml"/>` +
+                `<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>` +
+                `<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>` +
+                cleanSheets.map((_, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('') +
+                `</Types>`
+        });
+        entries.push({
+            name: '_rels/.rels',
+            data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` +
+                `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">` +
+                `<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>` +
+                `</Relationships>`
+        });
+        entries.push({
+            name: 'xl/workbook.xml',
+            data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` +
+                `<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">` +
+                `<sheets>${cleanSheets.map((sh, i) => `<sheet name="${escXml(sh.name)}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join('')}</sheets>` +
+                `</workbook>`
+        });
+        entries.push({
+            name: 'xl/_rels/workbook.xml.rels',
+            data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` +
+                `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">` +
+                cleanSheets.map((_, i) => `<Relationship Id="rId${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join('') +
+                `<Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>` +
+                `</Relationships>`
+        });
+        entries.push({
+            name: 'xl/styles.xml',
+            data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` +
+                `<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">` +
+                `<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FF123E35"/><name val="Calibri"/></font></fonts>` +
+                `<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEBF6F2"/></patternFill></fill></fills>` +
+                `<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>` +
+                `<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>` +
+                `<cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs>` +
+                `</styleSheet>`
+        });
+        cleanSheets.forEach((sh, i) => {
+            entries.push({
+                name: `xl/worksheets/sheet${i + 1}.xml`,
+                data: buildWorksheetXml(sh.rows)
+            });
+        });
+
+        const zipBytes = buildZipStore(entries);
+        return new Blob([zipBytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    }
+
+    function exportAnalyticsExcel() {
         const d = state.analytics;
         if (!d) {
             showToast('Analytics data is not loaded yet.', true);
             return;
         }
-        const rows = [];
-        const pushRow = (arr) => rows.push(arr.map(csvCell).join(','));
         const s = d.summary || {};
+        const wv = d.webVitals || {};
+        const cf = d.chatFunnel || {};
+        const fn = d.funnel || {};
+        const nvr = d.newVsReturning || {};
+        const go = d.guideOutcomes || {};
+        const h = state.health || {};
 
-        pushRow(['Section', 'Metric / Item', 'Value 1', 'Value 2', 'Value 3', 'Value 4']);
-        pushRow(['Summary', 'Range', d.range || '7d', '', '', '']);
-        pushRow(['Summary', 'Live Visitors Now', s.liveNow || 0, '', '', '']);
-        pushRow(['Summary', 'Unique Visitors', s.uniqueVisitors || 0, 'New %', s.newPct || 0, 'Returning: ' + (s.returningVisitors || 0)]);
-        pushRow(['Summary', 'Page Views', s.pageViews || 0, 'Sessions', s.sessions || 0, 'Bounce %: ' + (s.bounceRatePct || 0)]);
-        pushRow(['Summary', 'Call Now Clicks', s.callClicks || 0, 'Total Conversions', s.totalConversions || 0, 'Call Conv %: ' + (s.callConversionRatePct || 0)]);
-        pushRow(['Summary', 'Web Vitals', 'LCP ms: ' + (s.avgLcpMs || 0), 'CLS: ' + (s.avgCls || 0), 'TTFB ms: ' + (s.avgTtfbMs || 0), '']);
+        const sheets = [
+            {
+                name: 'Summary & KPIs',
+                rows: [
+                    ['Metric', 'Value', 'Notes'],
+                    ['Timeframe', d.range || '7d', 'Selected filter range'],
+                    ['Exported At (UTC)', new Date().toISOString(), ''],
+                    ['Retention Window (Days)', s.retentionDays || 180, 'Rolling history stored in Upstash Redis'],
+                    ['Live Active Window (Minutes)', s.liveWindowMinutes || 3, 'Visitors active in last 3 minutes'],
+                    ['Live Visitors Now', s.liveNow || 0, (d.livePages || []).map(x => `${x.path} (${x.count})`).join(', ')],
+                    ['Unique Visitors', s.uniqueVisitors || 0, 'Daily salted privacy hash'],
+                    ['Total Page Views', s.pageViews || 0, ''],
+                    ['Total Sessions', s.sessions || 0, ''],
+                    ['Avg Visits Per Visitor', s.avgSessionsPerVisitor || 0, 'Sessions divided by unique visitors'],
+                    ['Repeat Sessions', s.repeatSessions || 0, 'Multi-visit sessions in selected range'],
+                    ['New Visitors', nvr.newVisitors || 0, (nvr.newPct || 0) + '% of typed sessions'],
+                    ['Returning Visitors', nvr.returningVisitors || 0, (nvr.returningPct || 0) + '% of typed sessions'],
+                    ['Avg Active Time (sec)', s.avgTimeSec || 0, formatDuration(s.avgTimeSec || 0)],
+                    ['Avg Scroll Depth (%)', s.avgScrollPct || 0, ''],
+                    ['Bounce Rate (%)', s.bounceRatePct || 0, 'Single-page <10s and <25% scroll'],
+                    ['Call Now Clicks', s.callClicks || 0, (s.callConversionRatePct || 0) + '% of page views'],
+                    ['Call Panel Opens', s.callPanelOpens || 0, ''],
+                    ['Live Chat Starts', s.chatStarts || 0, ''],
+                    ['Specialist Chat Handoffs', s.chatHandoffs || 0, ''],
+                    ['Contact Form Submits', s.contactSubmits || 0, ''],
+                    ['Total Conversions', s.totalConversions || 0, 'Calls + Chats + Contact Forms'],
+                    ['Avg Page Load (ms)', s.avgLoadMs || 0, ''],
+                    ['Core Web Vitals LCP (ms)', wv.avgLcpMs || 0, 'Good <= 2500 ms'],
+                    ['Core Web Vitals CLS', wv.avgCls || 0, 'Good <= 0.1'],
+                    ['Core Web Vitals TTFB (ms)', wv.avgTtfbMs || 0, 'Fast <= 800 ms'],
+                    ['Site Uptime (%)', s.uptimePct != null ? s.uptimePct : 100, ''],
+                    ['Client JS Errors', s.clientErrorsCount || 0, ''],
+                    ['404 Broken URL Hits', s.notFound404Count || 0, '']
+                ]
+            },
+            {
+                name: 'Daily Trend',
+                rows: [
+                    ['Date', 'Page Views', 'Unique Visitors', 'Call Clicks', 'Total Conversions'],
+                    ...(d.dailySeries || []).map(r => [r.date, r.views || 0, r.visitors || 0, r.callClicks || 0, r.conversions || 0])
+                ]
+            },
+            {
+                name: 'Devices OS Browsers',
+                rows: [
+                    ['Dimension', 'Name', 'Views', 'Share (%)'],
+                    ...(d.deviceBreakdown || []).map(x => ['Device Type', x.device, x.views, x.pct]),
+                    ...(d.osBreakdown || []).map(x => ['Operating System', x.os, x.views, x.pct]),
+                    ...(d.browserBreakdown || []).map(x => ['Browser', x.browser, x.views, x.pct])
+                ]
+            },
+            {
+                name: 'Locations Geo',
+                rows: [
+                    ['Country', 'Region', 'City', 'Views', 'Conversions'],
+                    ...(d.geo || []).map(g => [g.country, g.region, g.city, g.views || 0, g.conversions || 0])
+                ]
+            },
+            {
+                name: 'Traffic & AI Search',
+                rows: [
+                    ['Channel', 'Campaign', 'Views', 'Call Clicks', 'Total Conversions', 'Conversion Rate (%)'],
+                    ...(d.sources || []).map(src => [src.channel, src.campaign, src.views || 0, src.callClicks || 0, src.conversions || 0, src.convRatePct || 0])
+                ]
+            },
+            {
+                name: 'Referring Domains',
+                rows: [
+                    ['Referring Domain', 'Classified Channel', 'Views', 'Conversions'],
+                    ...(d.referrers || []).map(r => [r.host, r.channel, r.views || 0, r.conversions || 0])
+                ]
+            },
+            {
+                name: 'Top Pages',
+                rows: [
+                    ['Page Path', 'Views', 'Avg Active Time (s)', 'Avg Scroll (%)', 'Call Clicks', 'Total Conversions'],
+                    ...(d.topPages || []).map(p => [p.path, p.views || 0, p.avgTimeSec || 0, p.avgScrollPct || 0, p.callClicks || 0, p.conversions || 0])
+                ]
+            },
+            {
+                name: 'Landing & Exit Pages',
+                rows: [
+                    ['Type', 'URL Path', 'Entries / Exits', 'Calls', 'Conversions', 'Rate / Share (%)'],
+                    ...(d.landingPages || []).map(lp => ['Landing Page (Entry)', lp.path, lp.entries || 0, lp.callClicks || 0, lp.conversions || 0, lp.convRatePct || 0]),
+                    ...(d.exitPages || []).map(ex => ['Exit Page (Drop-off)', ex.path, ex.exits || 0, '', '', ex.exitSharePct || 0])
+                ]
+            },
+            {
+                name: 'Searches & Gaps',
+                rows: [
+                    ['Query', 'Surface', 'Total Searches', 'Zero-Result Hits', 'Is Content Gap'],
+                    ...(d.topSearches || []).map(q => [q.query, q.surface, q.count || 0, q.zeroResultCount || 0, (q.zeroResultCount || 0) > 0])
+                ]
+            },
+            {
+                name: 'CTAs & Guides',
+                rows: [
+                    ['Metric / Element', 'Category', 'Count / Share'],
+                    ['Guide Helpful: Solved On Spot', 'guides', `${go.solved || 0} (${go.helpfulPct || 0}%)`],
+                    ['Guide Unresolved: Asked Expert', 'guides', go.notSolved || 0],
+                    ...(d.ctaClicks || []).map(c => [c.label, c.category, c.clicks || 0])
+                ]
+            },
+            {
+                name: 'Categories & Funnel',
+                rows: [
+                    ['Section', 'Step / Category', 'Views / Count', 'Chats / Intake', 'Call Opens / Summary', 'Call Clicks'],
+                    ['Funnel', '1. Site Visits / Sessions', fn.visits || 0, '', '', ''],
+                    ['Funnel', '2. Engaged Visitors (10s+ or 25%+ scroll)', fn.engaged || 0, '', '', ''],
+                    ['Funnel', '3. Live Chat Started', fn.chatStarts || 0, cf.intakeTurns || 0, '', ''],
+                    ['Funnel', '4. Summary Confirmed & Channel Offered', cf.summaryConfirms || 0, '', cf.channelChoices || 0, ''],
+                    ['Funnel', '5. Call Panel Opened -> Call Now Clicked', fn.callPanelOpens || 0, '', '', fn.callClicks || 0],
+                    ['Funnel', 'AI Average Response Latency (ms)', cf.avgApiMs || 0, '', '', ''],
+                    ...(d.categories || []).map(c => ['Category', c.category, c.views || 0, c.chatStarts || 0, c.callPanelOpens || 0, c.callClicks || 0])
+                ]
+            },
+            {
+                name: 'Hourly Traffic 24h',
+                rows: [
+                    ['Visitor Local Hour (00-23)', 'Views', 'Conversions'],
+                    ...(d.hourly || []).map(hr => [`${hr.label}:00`, hr.views || 0, hr.conversions || 0])
+                ]
+            },
+            {
+                name: 'Health Errors 404s',
+                rows: [
+                    ['Type', 'Check / Message / Broken URL', 'Detail / Page / Referrer', 'Latency ms / Count', 'Status / Last Seen'],
+                    ...(h.checks || []).map(c => ['Health Check', c.name, c.detail, c.latencyMs || 0, c.ok ? 'PASS' : 'CHECK']),
+                    ...(d.notFound404s || []).map(n => ['404 Broken URL', n.path, n.referrer, n.count || 1, n.lastSeen || '']),
+                    ...(d.clientErrors || []).map(e => ['Client JS Error', e.message, e.path, e.count || 1, e.lastSeen || ''])
+                ]
+            },
+            {
+                name: 'Recent Conversions',
+                rows: [
+                    ['Timestamp (UTC)', 'Conversion Type', 'Page Path', 'Category', 'Traffic Channel', 'Location', 'Device'],
+                    ...(d.recentConversions || []).map(c => [c.ts, c.type, c.path, c.category, c.channel, c.geo, c.device])
+                ]
+            },
+            {
+                name: 'Raw Activity Log',
+                rows: [
+                    ['Timestamp (UTC)', 'Event', 'Session ID', 'Anon Visitor ID', 'Page Path', 'Landing Path', 'Returning?', 'Device', 'OS', 'Browser', 'Country', 'Region', 'City', 'Channel', 'Referrer', 'Category', 'Active Sec', 'Max Scroll %', 'Load ms', 'LCP ms', 'CLS', 'TTFB ms', 'Search Query', 'Zero Result?', 'CTA Label', 'Chat Stage'],
+                    ...(d.recentEvents || []).map(ev => [
+                        ev.ts, ev.event, ev.sid, ev.visitorId, ev.path, ev.landingPath,
+                        Boolean(ev.isReturning), ev.device, ev.os, ev.browser,
+                        ev.country, ev.region, ev.city, ev.channel, ev.referrer,
+                        ev.category, ev.activeSec || 0, ev.maxScroll || 0, ev.loadMs || 0,
+                        ev.lcpMs || 0, ev.cls === '' ? '' : ev.cls, ev.ttfbMs || 0,
+                        ev.searchQuery || '', ev.zeroResult === '' ? '' : Boolean(ev.zeroResult),
+                        ev.ctaLabel || '', ev.chatStage || ''
+                    ])
+                ]
+            }
+        ];
 
-        (d.dailySeries || []).forEach(r => pushRow(['Daily Trend', r.date, 'Views: ' + r.views, 'Visitors: ' + r.visitors, 'Calls: ' + r.callClicks, 'Conv: ' + r.conversions]));
-        (d.sources || []).forEach(r => pushRow(['Traffic Source', r.channel, r.campaign, 'Views: ' + r.views, 'Calls: ' + r.callClicks, 'Conv %: ' + r.convRatePct]));
-        (d.referrers || []).forEach(r => pushRow(['Referrer', r.host, r.channel, 'Views: ' + r.views, 'Conv: ' + r.conversions, '']));
-        (d.landingPages || []).forEach(r => pushRow(['Landing Page', r.path, 'Entries: ' + r.entries, 'Calls: ' + r.callClicks, 'Conv %: ' + r.convRatePct, '']));
-        (d.zeroResultSearches || []).forEach(r => pushRow(['Zero-Result Search Gap', r.query, r.surface, '0-Result Hits: ' + r.zeroResultCount, '', '']));
-        (d.topSearches || []).forEach(r => pushRow(['Site Search', r.query, r.surface, 'Count: ' + r.count, '0-Result: ' + r.zeroResultCount, '']));
-        (d.categories || []).forEach(r => pushRow(['Category', r.category, 'Views: ' + r.views, 'Chats: ' + r.chatStarts, 'Calls: ' + r.callClicks, '']));
-        (d.notFound404s || []).forEach(r => pushRow(['404 Broken URL', r.path, r.referrer, 'Hits: ' + r.count, r.lastSeen || '', '']));
-
-        const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const blob = buildXlsxBlob(sheets);
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `answerdesk-analytics-${d.range || '7d'}-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.download = `answerdesk-full-analytics-${d.range || '7d'}-${new Date().toISOString().slice(0, 10)}.xlsx`;
         document.body.appendChild(a);
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
-        showToast('Analytics CSV downloaded.');
+        showToast('Detailed 15-sheet Excel workbook (.xlsx) downloaded.');
     }
 
     function renderHealth() {
@@ -1010,7 +1379,26 @@
 
         // Analytics toolbar bindings
         $('analyticsRangeSelect')?.addEventListener('change', loadAnalyticsAndHealth);
-        $('exportAnalyticsCsvBtn')?.addEventListener('click', exportAnalyticsCsv);
+        $('exportAnalyticsExcelBtn')?.addEventListener('click', exportAnalyticsExcel);
+        $('submitIndexNowBtn')?.addEventListener('click', async () => {
+            const btn = $('submitIndexNowBtn');
+            const orig = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Pinging IndexNow...';
+            try {
+                const res = await fetch('/api/indexnow', { method: 'POST' });
+                const json = await res.json().catch(() => ({}));
+                if (!res.ok || !json.success) {
+                    throw new Error(json.error || 'IndexNow submission failed');
+                }
+                showToast(`Submitted ${json.submittedCount} URLs to ${json.engine}!`);
+            } catch (err) {
+                showToast(err.message, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = orig;
+            }
+        });
         $('refreshAnalyticsBtn')?.addEventListener('click', loadAnalyticsAndHealth);
         $('runHealthCheckBtn')?.addEventListener('click', async () => {
             await loadAnalyticsAndHealth();
